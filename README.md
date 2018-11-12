@@ -1,2 +1,2 @@
 # ATLZoo
-Class project for CS4400 
+Class project Database Design
