@@ -1,6 +1,8 @@
 # ATLZoo
 Class project Database Design
 
+Prerequisites:
+- Run 'pip install -r requirements.txt' to make sure you have all the right dependencies
 
 TODO:
 
