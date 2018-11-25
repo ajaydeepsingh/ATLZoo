@@ -46,31 +46,7 @@ class ATLzooSearchExhibits:
         backButton = Button(searchExhibitWindow, text="Back", command=self.searchExhibitWindowBackButtonClicked)
         backButton.grid(row=5,column=1)
 
-        # Get stops informatin from the database.
 
-        # self.cursor.execute("SELECT StationName From Stop GROUP BY StationName")
-        # stationNameTuple = self.cursor.fetchall()
-
-        # stationNameList = []
-        # for i in stationNameTuple:
-        #     stationNameList.append(i[0])
-        # # Drop down menu
-        # self.departsFromSV=StringVar()
-        # self.departsFromSV.set("poop")
-
-        # departsFromOptionMenu = OptionMenu(searchExhibitWindow, self.departsFromSV, *stationNameList)
-        # departsFromOptionMenu.grid(row=2,column=2)
-
-        # self.arrivesAtSV=StringVar()
-        # self.arrivesAtSV.set(stationNameList[0])
-
-        # arrivesAtOptionMenu = OptionMenu(searchExhibitWindow, self.arrivesAtSV, *stationNameList)
-        # arrivesAtOptionMenu.grid(row=3,column=2)
-
-        # self.departureDateSV = StringVar()
-        # self.departureDateSV.set("yyyy-mm-dd")
-        # departureDateEntry = Entry(searchExhibitWindow, textvariable=self.departureDateSV,width=20)
-        # departureDateEntry.grid(row=4, column=2,sticky=W)
 
     def searchExhibitWindowFindExhibitsButtonClicked(self):
 
