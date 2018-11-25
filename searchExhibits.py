@@ -29,15 +29,15 @@ class ATLzooSearchExhibits:
 
         # Title Label
         titleLabel= Label(searchExhibitWindow,text = "Search Exhibits")
-        titleLabel.grid(row=1,column=2,sticky=W+E)
+        titleLabel.grid(row=1, column=2, sticky=W+E)
 
         # Labels
-        departsFromLabel= Label(searchExhibitWindow,text = "Number of Animals")
-        departsFromLabel.grid(row=2,column=1)
-        arrivesAtLabel= Label(searchExhibitWindow,text = "Water Feature")
-        arrivesAtLabel.grid(row=3,column=1)
-        departureDateLabel= Label(searchExhibitWindow,text = "Size")
-        departureDateLabel.grid(row=4,column=1)
+        numAnimalsLabel= Label(searchExhibitWindow,text = "Number of Animals")
+        numAnimalsLabel.grid(row=2,column=1)
+        waterFeatureLabel= Label(searchExhibitWindow,text = "Water Feature")
+        waterFeatureLabel.grid(row=3,column=1)
+        sizeLabel= Label(searchExhibitWindow,text = "Size")
+        sizeDateLabel.grid(row=4,column=1)
 
         # Button
         findExhibitsButton = Button(searchExhibitWindow, text="Find Exhibits", command=self.searchExhibitWindowFindExhibitsButtonClicked)
