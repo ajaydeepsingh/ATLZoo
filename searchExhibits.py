@@ -38,7 +38,7 @@ class ATLzooSearchExhibits():
         nameLabel= Label(searchExhibitWindow,text = "Name")
         nameLabel.grid(row=2,column=0)
 
-        # Entry
+        # Name Entry
         self.exhibitNameSV = StringVar()
         exhibitNameEntry = Entry(searchExhibitWindow, textvariable=self.exhibitNameSV, width=20)
         exhibitNameEntry.grid(row=2, column=1)
@@ -55,7 +55,7 @@ class ATLzooSearchExhibits():
         backButton = Button(searchExhibitWindow, text="Back", command=self.searchExhibitWindowBackButtonClicked)
         backButton.grid(row=6,column=1)
 
-        selectExhibitTree = ttk.Treeview(searchExhibitWindow, columns=("Name", "Size", "NumAnimals", "Water"))
+        selectExhibitTree = ttk.Treeview(searchExhibitWindow, columns=("Name", "Size", "NumAnimals"))
         # self.selectExhibitTree['show'] = "headings"
         selectExhibitTree.heading('#0', text = "Name")
         selectExhibitTree.heading('#1', text = "Size")
@@ -80,7 +80,7 @@ class ATLzooSearchExhibits():
 
         self.searchExhibitWindow.destroy()
         self.createExhibitDetailWindow()
-        self.buildExhibitWindow(self.selectDepartureWindow)
+        self.buildExhibitDetailWindow(self.exhibitDetailWindow)
 
     def  searchExhibitWindowBackButtonClicked(self):
         self.searchExhibitWindow.destroy()
