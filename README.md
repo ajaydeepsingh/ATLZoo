@@ -27,7 +27,7 @@ Pages that the final application should have:
   - View Shows
   - Add Show
   - View Staff :heavy_check_mark:
-  - View Animals
+  - View Animals :heavy_check_mark:
 
 
 - Overall Design (Coloring, Images, Fonts, Animations?)
