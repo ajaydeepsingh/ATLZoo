@@ -6,9 +6,6 @@ from tkinter import ttk
 from datetime import datetime, timedelta
 import decimal
 
-
-
-
 class exhibitDetail():
 
     def __init__(self):
@@ -41,22 +38,23 @@ class exhibitDetail():
         ## Name , Num Animals, Water Feature, List of Animals in the exhibit
         nameLabel= Label(exhibitDetailWindow, text = "Name:")
         nameLabel.place(x=400, y=150, anchor="center")
+        
         numAnimalsLabel= Label(exhibitDetailWindow, text = "Number of Animals")
         numAnimalsLabel.place(x=400, y=175, anchor="center")
+
         sizeLabel= Label(exhibitDetailWindow, text = "Size:")
         sizeLabel.place(x=400, y=200, anchor="center")
+
         waterFeatureLabel= Label(exhibitDetailWindow, text = "Water Feature")
         waterFeatureLabel.place(x=400, y=225, anchor="center")
 
 
-        # Log Out Buttons
+        # Buttons
 
         logVisitButton = Button(exhibitDetailWindow, text="Log Visit", command=self.exhibitDetailWindowLogVisitButtonClicked)
         # logVisitButton.grid(row=8, column=2,sticky=E)
         logVisitButton.grid(row=4)
         logVisitButton.place(x = 400, y=300, anchor="center")
-
-
 
         # Table of Animals
 
