@@ -11,9 +11,9 @@ Pages that the final application should have:
 - Login :heavy_check_mark:
 - Registration :heavy_check_mark:
 - Visitor Functionality :heavy_check_mark:
-  - Search for Exhibit
-  - Exhibit Detail
-  - Animal Detail
+  - Search for Exhibit :heavy_check_mark: (Waiting for SQL statements so I can finalize
+  - Exhibit Detail :heavy_check_mark:
+  - Animal Detail :heavy_check_mark:
   - Search for Animals
   - Search for Shows
   - Exhibit History
