@@ -48,11 +48,12 @@ class ATLzooAnimalsAdmin:
 
         speciesLabel = Label(showAnimalWindowAdmin,text = "Species")
         speciesLabel.grid(row=3, column=2)
-        # Name Entry
+        # Species Entry
         self.animalSpeciesSV = StringVar()
         animalSpeciesEntry = Entry(showAnimalWindowAdmin, textvariable=self.animalSpeciesSV, width=20)
         animalSpeciesEntry.grid(row=2, column=3)
 
+        # Display Table for Results
         selectAnimalTree = ttk.Treeview(showAnimalWindowAdmin, columns=("Name", "Size", "Exhibit", "Age"))
         selectAnimalTree.heading('#0', text = "Name")
         selectAnimalTree.heading('#1', text = "Species")
