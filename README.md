@@ -14,7 +14,7 @@ Pages that the final application should have:
   - Search for Exhibit :heavy_check_mark: (Waiting for SQL statements so I can finalize)
   - Exhibit Detail :heavy_check_mark:
   - Animal Detail :heavy_check_mark:
-  - Search for Animals
+  - Search for Animals :heavy_check_mark:
   - Search for Shows
   - Exhibit History
   - Show History
