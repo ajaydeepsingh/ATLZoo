@@ -14,95 +14,95 @@ class ATLzooAdminFunctionality:
         # self.db = self.connect()
         # self.cursor = self.db.cursor()
         # Login Window
-        self.createChooseFunctionalityWindow()
-        self.buildChooseFunctionalityWindow(self.chooseFunctionalityWindow)
-        self.chooseFunctionalityWindow.mainloop()
+        self.createAdminChooseFunctionalityWindow()
+        self.buildAdminChooseFunctionalityWindow(self.chooseAdminFunctionalityWindow)
+        self.chooseAdminFunctionalityWindow.mainloop()
         sys.exit()
 
-    def createChooseFunctionalityWindow(self):
+    def createAdminChooseFunctionalityWindow(self):
             # Create blank chooseFunctionalityWindow
-            self.chooseFunctionalityWindow = Toplevel()
-            self.chooseFunctionalityWindow.title("Zoo Atlanta")
-            self.chooseFunctionalityWindow.geometry("800x600")
-            self.chooseFunctionalityWindow.resizable(0,0)
+            self.chooseAdminFunctionalityWindow = Toplevel()
+            self.chooseAdminFunctionalityWindow.title("Zoo Atlanta")
+            self.chooseAdminFunctionalityWindow.geometry("800x600")
+            self.chooseAdminFunctionalityWindow.resizable(0,0)
 
-    def buildChooseFunctionalityWindow(self,chooseFunctionalityWindow):
+    def buildAdminChooseFunctionalityWindow(self,chooseAdminFunctionalityWindow):
         # Add component to chooseFunctionalityWindow
 
         #Choose Functionality Label
-        chooseFunctionalityLabel = Label(chooseFunctionalityWindow, text="Choose Functionality",font = "Verdana 16 bold ")
+        chooseFunctionalityLabel = Label(chooseAdminFunctionalityWindow, text="Choose Functionality",font = "Verdana 16 bold ")
         # chooseFunctionalityLabel.grid(row=1, column=1, sticky=W+E)
         chooseFunctionalityLabel.place(x=400, y = 25, anchor="center")
 
         # View Visitors Label
-        viewVisitorsLabel = Label(chooseFunctionalityWindow, text="View Visitors", font = "Verdana 13")
+        viewVisitorsLabel = Label(chooseAdminFunctionalityWindow, text="View Visitors", font = "Verdana 13")
         # viewVisitorsLabel.grid(row=2, column=1)
-        viewVisitorsLabel.bind("<ButtonPress-1>", self.chooseFunctionalityWindowViewVisitorsLabelClicked)
+        viewVisitorsLabel.bind("<ButtonPress-1>", self.chooseAdminFunctionalityWindowViewVisitorsLabelClicked)
         viewVisitorsLabel.place(x=400, y = 100, anchor="center")
 
         # View Shows 
-        viewShowsLabel = Label(chooseFunctionalityWindow, text="View Shows", font = "Verdana 13")
+        viewShowsLabel = Label(chooseAdminFunctionalityWindow, text="View Shows", font = "Verdana 13")
         # viewShowsLabel.grid(row=3, column=1)
-        viewShowsLabel.bind("<ButtonPress-1>", self.chooseFunctionalityWindowViewShowsLabelClicked)
+        viewShowsLabel.bind("<ButtonPress-1>", self.chooseAdminFunctionalityWindowViewShowsLabelClicked)
         viewShowsLabel.place(x=400, y = 200, anchor="center")
 
         # View Animals Label
-        viewAnimalsLabel = Label(chooseFunctionalityWindow, text="View Animals", font = "Verdana 13")
+        viewAnimalsLabel = Label(chooseAdminFunctionalityWindow, text="View Animals", font = "Verdana 13")
         # viewAnimalsLabel.grid(row=4,column=1)
-        viewAnimalsLabel.bind("<ButtonPress-1>", self.chooseFunctionalityWindowViewAnimalsLabelClicked)
+        viewAnimalsLabel.bind("<ButtonPress-1>", self.chooseAdminFunctionalityWindowViewAnimalsLabelClicked)
         viewAnimalsLabel.place(x=400, y = 300, anchor="center")
 
         # View Staff
-        viewStaffLabel = Label(chooseFunctionalityWindow, text="View Staff", font = "Verdana 13")
+        viewStaffLabel = Label(chooseAdminFunctionalityWindow, text="View Staff", font = "Verdana 13")
         # viewStaffLabel.grid(row=5,column=1)
-        viewStaffLabel.bind("<ButtonPress-1>", self.chooseFunctionalityWindowViewStaffLabelClicked)
+        viewStaffLabel.bind("<ButtonPress-1>", self.chooseAdminFunctionalityWindowViewStaffLabelClicked)
         viewStaffLabel.place(x=400, y = 400, anchor="center")
 
 
         # View Show History Label
-        viewShowAdd = Label(chooseFunctionalityWindow, text="Add Show", font = "Verdana 13")
+        viewShowAdd = Label(chooseAdminFunctionalityWindow, text="Add Show", font = "Verdana 13")
         # viewReviewLabel.grid(row=6,column=1)
-        viewShowAdd.bind("<ButtonPress-1>", self.chooseFunctionalityWindowViewShowAddLabelClicked)
+        viewShowAdd.bind("<ButtonPress-1>", self.chooseAdminFunctionalityWindowViewShowAddLabelClicked)
         viewShowAdd.place(x=400, y = 500, anchor="center")
 
         # Log Out Buttons
 
-        logOutButton = Button(chooseFunctionalityWindow, text="Log out", command=self.chooseFunctionalityWindowLogOutButtonClicked)
+        logOutButton = Button(chooseAdminFunctionalityWindow, text="Log out", command=self.chooseAdminFunctionalityWindowLogOutButtonClicked)
         logOutButton.grid(row=8, column=2,sticky=E)
         logOutButton.place(x = 720, y = 570)
 
-    def chooseFunctionalityWindowViewVisitorsLabelClicked(self,event):
+    def chooseAdminFunctionalityWindowViewVisitorsLabelClicked(self,event):
         # Hide Choose Functionality Window.
         self.createViewVisitorsWindow()
         self.buildViewVisitorsWindow(self.viewVisitorsWindow)
-        self.chooseFunctionalityWindow.withdraw()
+        self.chooseAdminFunctionalityWindow.withdraw()
 
-    def chooseFunctionalityWindowViewShowsLabelClicked(self,event):
+    def chooseAdminFunctionalityWindowViewShowsLabelClicked(self,event):
         # Hide Choose Functionality Window
         self.createViewShowsWindow()
         self.buildViewShowsWindow(self.viewShowWindow)
-        self.chooseFunctionalityWindow.withdraw()
+        self.chooseAdminFunctionalityWindow.withdraw()
 
-    def chooseFunctionalityWindowViewAnimalsLabelClicked(self,event):
+    def chooseAdminFunctionalityWindowViewAnimalsLabelClicked(self,event):
         self.createViewAnimalsWindow()
         self.buildViewAnimalsWindow(self.viewAnimalsWindow)
-        self.chooseFunctionalityWindow.withdraw()
+        self.chooseAdminFunctionalityWindow.withdraw()
 
-    def chooseFunctionalityWindowViewStaffLabelClicked(self,event):
+    def chooseAdminFunctionalityWindowViewStaffLabelClicked(self,event):
         self.createViewStaffWindow()
         self.buildViewStaffWindow(self.viewStaffWindow)
-        self.chooseFunctionalityWindow.withdraw()
+        self.chooseAdminFunctionalityWindow.withdraw()
 
-    def chooseFunctionalityWindowViewShowAddLabelClicked(self,event):
+    def chooseAdminFunctionalityWindowViewShowAddLabelClicked(self,event):
         self.createViewShowAddWindow()
         self.buildViewShowAddWindow(self.viewShowAddWindow)
-        self.chooseFunctionalityWindow.withdraw()
+        self.chooseAdminFunctionalityWindow.withdraw()
 
-    def chooseFunctionalityWindowLogOutButtonClicked(self):
+    def chooseAdminFunctionalityWindowLogOutButtonClicked(self):
         # Click Log Out Buttion on Choose Functionality Window:
         # Destroy Choose Functionality Window
         # Display Login Window
-        self.chooseFunctionalityWindow.destroy()
+        self.chooseAdminFunctionalityWindow.destroy()
         self.loginWindow.deiconify()
 
 

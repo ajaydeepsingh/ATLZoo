@@ -19,56 +19,56 @@ class ATLzooVisitorFunctionality:
         self.chooseFunctionalityWindow.mainloop()
         sys.exit()
 
-    def createChooseFunctionalityWindow(self):
-            # Create blank chooseFunctionalityWindow
-            self.chooseFunctionalityWindow = Toplevel()
-            self.chooseFunctionalityWindow.title("Zoo Atlanta")
-            self.chooseFunctionalityWindow.geometry("800x600")
-            self.chooseFunctionalityWindow.resizable(0,0)
+    def createVisitorChooseFunctionalityWindow(self):
+            # Create blank chooseVisitorFunctionalityWindow
+            self.chooseVisitorFunctionalityWindow = Toplevel()
+            self.chooseVisitorFunctionalityWindow.title("Zoo Atlanta")
+            self.chooseVisitorFunctionalityWindow.geometry("800x600")
+            self.chooseVisitorFunctionalityWindow.resizable(0,0)
 
-    def buildChooseFunctionalityWindow(self,chooseFunctionalityWindow):
-        # Add component to chooseFunctionalityWindow
+    def buildVisitorChooseFunctionalityWindow(self,chooseVisitorFunctionalityWindow):
+        # Add component to chooseVisitorFunctionalityWindow
 
         #Choose Functionality Label
-        chooseFunctionalityLabel = Label(chooseFunctionalityWindow, text="Choose Functionality",font = "Verdana 16 bold ")
+        chooseFunctionalityLabel = Label(chooseVisitorFunctionalityWindow, text="Choose Functionality",font = "Verdana 16 bold ")
         # chooseFunctionalityLabel.grid(row=1, column=1, sticky=W+E)
         chooseFunctionalityLabel.place(x=400, y = 25, anchor="center")
 
         # Search Exhibits Label
-        searchExhibitLabel = Label(chooseFunctionalityWindow, text="Search Exhibits", font = "Verdana 13")
+        searchExhibitLabel = Label(chooseVisitorFunctionalityWindow, text="Search Exhibits", font = "Verdana 13")
         # searchExhibitLabel.grid(row=2, column=1)
         searchExhibitLabel.bind("<ButtonPress-1>", self.chooseFunctionalityWindowSearchExhibitLabelClicked)
         searchExhibitLabel.place(x=400, y = 100, anchor="center")
 
         # Search Shows 
-        searchShowsLabel = Label(chooseFunctionalityWindow, text="Search Shows", font = "Verdana 13")
+        searchShowsLabel = Label(chooseVisitorFunctionalityWindow, text="Search Shows", font = "Verdana 13")
         # searchShowsLabel.grid(row=3, column=1)
         searchShowsLabel.bind("<ButtonPress-1>", self.chooseFunctionalityWindowSearchShowsLabelClicked)
         searchShowsLabel.place(x=400, y = 200, anchor="center")
 
 
         # Search for Animals Label
-        searchAnimalsLabel = Label(chooseFunctionalityWindow, text="Search for Animals", font = "Verdana 13")
+        searchAnimalsLabel = Label(chooseVisitorFunctionalityWindow, text="Search for Animals", font = "Verdana 13")
         # searchAnimalsLabel.grid(row=4,column=1)
         searchAnimalsLabel.bind("<ButtonPress-1>", self.chooseFunctionalityWindowSearchAnimalsLabelClicked)
         searchAnimalsLabel.place(x=400, y = 300, anchor="center")
 
         # View Exhibit History
-        viewExhibitHistoryLabel = Label(chooseFunctionalityWindow, text="View Exhibit History", font = "Verdana 13")
+        viewExhibitHistoryLabel = Label(chooseVisitorFunctionalityWindow, text="View Exhibit History", font = "Verdana 13")
         # viewExhibitHistoryLabel.grid(row=5,column=1)
         viewExhibitHistoryLabel.bind("<ButtonPress-1>", self.chooseFunctionalityWindowViewExhibitHistoryLabelClicked)
         viewExhibitHistoryLabel.place(x=400, y = 400, anchor="center")
 
 
         # View Show History Label
-        viewShowHistory = Label(chooseFunctionalityWindow, text="View Show History", font = "Verdana 13")
+        viewShowHistory = Label(chooseVisitorFunctionalityWindow, text="View Show History", font = "Verdana 13")
         # viewReviewLabel.grid(row=6,column=1)
         viewShowHistory.bind("<ButtonPress-1>", self.chooseFunctionalityWindowViewShowHistoryLabelClicked)
         viewShowHistory.place(x=400, y = 500, anchor="center")
 
         # Log Out Buttons
 
-        logOutButton = Button(chooseFunctionalityWindow, text="Log out", command=self.chooseFunctionalityWindowLogOutButtonClicked)
+        logOutButton = Button(chooseVisitorFunctionalityWindow, text="Log out", command=self.chooseFunctionalityWindowLogOutButtonClicked)
         logOutButton.grid(row=8, column=2,sticky=E)
         logOutButton.place(x = 720, y = 570)
 
@@ -76,34 +76,34 @@ class ATLzooVisitorFunctionality:
         # Hide Choose Functionality Window.
         self.createSearchExhibitWindow()
         self.buildSearchExhibitWindow(self.viewSearchExhibitWindow)
-        self.chooseFunctionalityWindow.withdraw()
+        self.chooseVisitorFunctionalityWindow.withdraw()
 
     def chooseFunctionalityWindowSearchShowsLabelClicked(self,event):
         # Hide Choose Functionality Window
         self.createSearchShowWindow()
         self.buildSearchShowWindow(self.searchShowWindow)
-        self.chooseFunctionalityWindow.withdraw()
+        self.chooseVisitorFunctionalityWindow.withdraw()
 
     def chooseFunctionalityWindowSearchAnimalsLabelClicked(self,event):
         self.createSearchAnimalsWindow()
         self.buildSearchAnimalsWindow(self.searchAnimalsWindow)
-        self.chooseFunctionalityWindow.withdraw()
+        self.chooseVisitorFunctionalityWindow.withdraw()
 
     def chooseFunctionalityWindowViewExhibitHistoryLabelClicked(self,event):
         self.createViewExhibitHistoryWindow()
         self.buildViewExhibitHistoryWindow(self.viewExhibitHistoryWindow)
-        self.chooseFunctionalityWindow.withdraw()
+        self.chooseVisitorFunctionalityWindow.withdraw()
 
     def chooseFunctionalityWindowViewShowHistoryLabelClicked(self,event):
         self.createViewShowHistoryWindow()
         self.buildViewShowHistoryWindow(self.viewShowHistoryWindow)
-        self.chooseFunctionalityWindow.withdraw()
+        self.chooseVisitorFunctionalityWindow.withdraw()
 
     def chooseFunctionalityWindowLogOutButtonClicked(self):
         # Click Log Out Buttion on Choose Functionality Window:
         # Destroy Choose Functionality Window
         # Display Login Window
-        self.chooseFunctionalityWindow.destroy()
+        self.chooseVisitorFunctionalityWindow.destroy()
         self.loginWindow.deiconify()
 
 

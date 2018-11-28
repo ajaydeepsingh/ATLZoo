@@ -46,7 +46,7 @@ class viewVisitors():
 
 
     def viewVisitorsBackButtonClicked(self):
-        self.viewStaffWindow.destroy()
-        self.chooseFunctionalityWindow.deiconify()
+        self.viewVisitorsWindow.destroy()
+        self.chooseAdminFunctionalityWindow.deiconify()
 
 a = viewVisitors()
