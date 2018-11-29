@@ -15,13 +15,13 @@ Pages that the final application should have:
   - Exhibit Detail :heavy_check_mark:
   - Animal Detail :heavy_check_mark:
   - Search for Animals :heavy_check_mark:
-  - Search for Shows
-  - Exhibit History
-  - Show History
+  - Search for Shows :heavy_check_mark:
+  - Exhibit History :heavy_check_mark:
+  - Show History :heavy_check_mark:
 - Staff Functionality :heavy_check_mark:
-  - Shows
-  - Animals
-  - Animal Care
+  - Shows :heavy_check_mark:
+  - Animals :heavy_check_mark:
+  - Animal Care :heavy_check_mark:
 - Admin Functionality :heavy_check_mark:
   - View Visitors :heavy_check_mark:
   - View Shows
