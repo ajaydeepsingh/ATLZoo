@@ -50,9 +50,9 @@ class ATLzooStaffSearchAnimals:
 
         exhibitLabel = Label(searchAnimalWindow,text = "Exhibit")
         exhibitLabel.grid(row=4,column=0)
-        exhibitDefault = StringVar()
-        exhibitDefault.set("")
-        exhibitMenu = OptionMenu(searchAnimalWindow, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
+        self.exhibitDefault = StringVar()
+        self.exhibitDefault.set("")
+        exhibitMenu = OptionMenu(searchAnimalWindow, self.exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
         exhibitMenu.grid(row=4, column=1)
 
         minLabel=Label(searchAnimalWindow,text="Min")
@@ -77,40 +77,48 @@ class ATLzooStaffSearchAnimals:
         typeLabel = Label(searchAnimalWindow,text = "Type")
         typeLabel.grid(row=4, column=2)
         # Name Entry
-        typeDefault = StringVar()
-        typeDefault.set("mammal")
-        typeMenu = OptionMenu(searchAnimalWindow, typeDefault, "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
+        self.typeDefault = StringVar()
+        self.typeDefault.set("mammal")
+        typeMenu = OptionMenu(searchAnimalWindow, self.typeDefault, "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
         typeMenu.grid(row=4, column=3, sticky=W)
        
-        selectAnimalTree = ttk.Treeview(searchAnimalWindow, columns=("Name", "Size", "Exhibit", "Age"))
-        selectAnimalTree.heading('#0', text = "Name")
-        selectAnimalTree.heading('#1', text = "Species")
-        selectAnimalTree.heading('#2', text = "Exhibit")
-        selectAnimalTree.heading('#3', text = "Age")
-        selectAnimalTree.heading('#4', text = "Type")
-        selectAnimalTree.column('#0', width = 150, anchor = "center")
-        selectAnimalTree.column('#1', width = 150, anchor = "center")
-        selectAnimalTree.column('#2', width = 150, anchor = "center")
-        selectAnimalTree.column('#3', width = 150, anchor = "center")
-        selectAnimalTree.column('#4', width = 150, anchor = "center")
-        selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
+        self.selectAnimalTree = ttk.Treeview(searchAnimalWindow, columns=("1", "2", "3", "4","5"))
+        self.selectAnimalTree['show'] = "headings"
+        self.selectAnimalTree.column("1", width = 150, anchor = "center")
+        self.selectAnimalTree.column("2", width = 150, anchor = "center")
+        self.selectAnimalTree.column("3", width = 150, anchor = "center")
+        self.selectAnimalTree.column("4", width = 150, anchor = "center")
+        self.selectAnimalTree.column("5", width = 150, anchor = "center")
+
+        self.selectAnimalTree.heading("1", text = "Name")
+        self.selectAnimalTree.heading("2", text = "Species")
+        self.selectAnimalTree.heading("3", text = "Exhibit")
+        self.selectAnimalTree.heading("4", text = "Age")
+        self.selectAnimalTree.heading("5", text = "Type")
+
+        self.selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
 
 
-        print(typeDefault.get())
+
+        findAnimalsButton = Button(searchAnimalWindow, text="Find Animals", command=self.searchAnimalWindowFindAnimalsButtonClicked)
+        findAnimalsButton.grid(row=6,column=3)
+
+        backButton = Button(searchAnimalWindow, text="Back", command=self.searchAnimalWindowBackButtonClicked)
+        backButton.grid(row=6,column=1)
+
+
+    def searchAnimalWindowFindAnimalsButtonClicked(self):
 
         # Table is a list of table names"
         attributes = ["Name", "Species", "Type", "E_Name", "Age"]
 
         # Entry is a list of the filter inputs
         entry = []
-
         entry.append(str(self.animalNameSV.get()))
         entry.append(str(self.speciesNameSV.get()))
-        entry.append(typeDefault.get())
-        entry.append(exhibitDefault.get())
+        entry.append(self.typeDefault.get())
+        entry.append(self.exhibitDefault.get())
         
-
-
         sql = "SELECT * FROM Animal WHERE "
 
         for i in range(len(entry)):
@@ -124,26 +132,33 @@ class ATLzooStaffSearchAnimals:
         #end of statement
         sql = sql + ";"
 
-
-        print(sql)
+        # print(sql)
         self.cursor.execute(sql)
 
         self.animalResults = self.cursor.fetchall()
         print(self.animalResults)
 
+        self.animalName = []
+        self.species = []
+        self.type = []
+        self.ename = []
+        self.age = []
 
+        for i in self.animalResults:
+            self.age.append(i[0])
+            self.type.append(i[1])
+            self.animalName.append(i[2])
+            self.species.append(i[3])
+            self.ename.append(i[4])
+            
 
-        findAnimalsButton = Button(searchAnimalWindow, text="Find Animals", command=self.searchAnimalWindowFindAnimalsButtonClicked)
-        findAnimalsButton.grid(row=6,column=3)
+        for i in range(len(self.animalResults)):
+            self.selectAnimalTree.insert('', i , values=(self.animalName[i], self.species[i], self.ename[i], self.age[i], self.type[i]))
 
-        backButton = Button(searchAnimalWindow, text="Back", command=self.searchAnimalWindowBackButtonClicked)
-        backButton.grid(row=6,column=1)
-
-
-    def searchAnimalWindowFindAnimalsButtonClicked(self):
-
-        self.searchAnimalWindow.destroy()
-        self.createAnimalDetailWindow()
+        self.createSearchAnimalWindow()
+        self.buildSearchAnimalWindow(searchAnimalWindow)
+        # self.searchAnimalWindow.destroy()
+        # self.createAnimalDetailWindow()
 
     def  searchAnimalWindowBackButtonClicked(self):
         self.searchAnimalWindow.withdraw()
