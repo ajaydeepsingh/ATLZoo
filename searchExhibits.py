@@ -48,15 +48,11 @@ class ATLzooSearchExhibits():
         numAnimalsLabel = Label(searchExhibitWindow,text = "Number of Animals:")
         numAnimalsLabel.grid(row=3,column=3)
 
-        minDefault = StringVar()
-        minDefault.set("3")
-        minMenu = OptionMenu(searchExhibitWindow, minDefault, "0","1","2","3","4","5")
-        minMenu.grid(row=3, column=4,pady=10,sticky=W)
+        minSpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000)
+        minSpinBox.grid(row=3, column=4,pady=10,sticky=W)
 
-        maxDefault = StringVar()
-        maxDefault.set("3")
-        maxMenu = OptionMenu(searchExhibitWindow, maxDefault, "0", "1","2","3","4","5")
-        maxMenu.grid(row=3, column=5,pady=10, sticky=W)
+        maxSpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000)
+        maxSpinBox.grid(row=3, column=5,pady=10,sticky=W)
 
 
         waterLabel = Label(searchExhibitWindow,text = "Water Feature:")
@@ -69,23 +65,20 @@ class ATLzooSearchExhibits():
 
 
         min2Label=Label(searchExhibitWindow,text="Min:")
-        min2Label.grid(row=3,column=0, sticky=E)
+        min2Label.grid(row=3,column=1)
 
         max2Label=Label(searchExhibitWindow,text="Max:")
-        max2Label.grid(row=3,column=1, sticky=E)
+        max2Label.grid(row=3,column=2)
 
         sizeLabel = Label(searchExhibitWindow,text = "Size:")
         sizeLabel.grid(row=4,column=0)
 
-        min2Default = StringVar()
-        min2Default.set("3")
-        min2Menu = OptionMenu(searchExhibitWindow, min2Default, "0","1","2","3","4","5")
-        min2Menu.grid(row=4, column=1,pady=5,sticky=E)
 
-        max2Default = StringVar()
-        max2Default.set("3")
-        max2Menu = OptionMenu(searchExhibitWindow, max2Default, "0", "1","2","3","4","5")
-        max2Menu.grid(row=4, column=2,pady=5, sticky=E)
+        min2SpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000)
+        min2SpinBox.grid(row=4, column=1,pady=5,sticky=W)
+
+        max2SpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000)
+        max2SpinBox.grid(row=4, column=2,pady=5,sticky=W)
 
         # Button
         findExhibitsButton = Button(searchExhibitWindow, text="Find Exhibits", command=self.searchExhibitWindowFindExhibitsButtonClicked)

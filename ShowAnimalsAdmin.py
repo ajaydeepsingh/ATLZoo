@@ -30,30 +30,53 @@ class ATLzooAnimalsAdmin:
         # Title Label
         titleLabel= Label(showAnimalWindowAdmin,text = "Search Animals", font = "Verdana 16 bold ")
         titleLabel.grid(row=1,column=2,sticky=W+E)
-
-        # Labels
-        exhibitLabel = Label(showAnimalWindowAdmin,text = "Exhibit")
-        exhibitLabel.grid(row=2,column=1)
-        ageLabel = Label(showAnimalWindowAdmin,text = "Age")
-        ageLabel.grid(row=3,column=1)
-        typeLabel = Label(showAnimalWindowAdmin,text = "Type")
-        typeLabel.grid(row=4,column=1)
-
+        
         nameLabel = Label(showAnimalWindowAdmin,text = "Name")
-        nameLabel.grid(row=2, column=2)
-        # Name Entry
+        nameLabel.grid(row=2, column=0)
+
+
         self.animalNameSV = StringVar()
         animalNameEntry = Entry(showAnimalWindowAdmin, textvariable=self.animalNameSV, width=20)
-        animalNameEntry.grid(row=2, column=3)
+        animalNameEntry.grid(row=2, column=1)
 
         speciesLabel = Label(showAnimalWindowAdmin,text = "Species")
-        speciesLabel.grid(row=3, column=2)
-        # Species Entry
-        self.animalSpeciesSV = StringVar()
-        animalSpeciesEntry = Entry(showAnimalWindowAdmin, textvariable=self.animalSpeciesSV, width=20)
-        animalSpeciesEntry.grid(row=2, column=3)
+        speciesLabel.grid(row=3,column=0)
+        self.speciesNameSV = StringVar()
+        speciesNameEntry = Entry(showAnimalWindowAdmin, textvariable=self.speciesNameSV, width=20)
+        speciesNameEntry.grid(row=3, column=1)
 
-        # Display Table for Results
+
+
+        exhibitLabel = Label(showAnimalWindowAdmin,text = "Exhibit")
+        exhibitLabel.grid(row=4,column=0)
+        exhibitDefault = StringVar()
+        exhibitDefault.set("")
+        exhibitMenu = OptionMenu(showAnimalWindowAdmin, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
+        exhibitMenu.grid(row=4, column=1)
+
+        minLabel=Label(showAnimalWindowAdmin,text="Min")
+        minLabel.grid(row=2,column=3, sticky=W)
+
+        maxLabel=Label(showAnimalWindowAdmin,text="Max")
+        maxLabel.grid(row=2,column=4, sticky=W)
+
+        ageLabel = Label(showAnimalWindowAdmin,text = "Age")
+        ageLabel.grid(row=3,column=2)
+
+        minSpinBox = Spinbox(showAnimalWindowAdmin, from_=0, to=10000)
+        minSpinBox.grid(row=3, column=3,pady=10,sticky=W)
+
+        maxSpinBox = Spinbox(showAnimalWindowAdmin, from_=0, to=10000)
+        maxSpinBox.grid(row=3, column=4,pady=10,sticky=W)
+
+        typeLabel = Label(showAnimalWindowAdmin,text = "Type")
+        typeLabel.grid(row=4, column=2)
+        # Name Entry
+        typeDefault = StringVar()
+        typeDefault.set("mammal")
+        typeMenu = OptionMenu(showAnimalWindowAdmin, typeDefault, "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
+        typeMenu.grid(row=4, column=3, sticky=W)
+       
         selectAnimalTree = ttk.Treeview(showAnimalWindowAdmin, columns=("Name", "Size", "Exhibit", "Age"))
         selectAnimalTree.heading('#0', text = "Name")
         selectAnimalTree.heading('#1', text = "Species")

@@ -38,16 +38,11 @@ class ATLzooExhibitHistory:
         numVisitsLabel = Label(exhibitHistoryWindow,text = "Number of Visits")
         numVisitsLabel.grid(row=3,column=2,pady=10)
 
+        minSpinBox = Spinbox(exhibitHistoryWindow, from_=0, to=10000)
+        minSpinBox.grid(row=3, column=3,pady=10)
 
-        minDefault = StringVar()
-        minDefault.set("0")
-        minMenu = OptionMenu(exhibitHistoryWindow, minDefault, "0","1","2","3","4","5")
-        minMenu.grid(row=3, column=3,pady=10)
-
-        maxDefault = StringVar()
-        maxDefault.set("2")
-        maxMenu = OptionMenu(exhibitHistoryWindow, maxDefault, "0", "1","2","3","4","5")
-        maxMenu.grid(row=3, column=4,pady=10)
+        maxSpinBox = Spinbox(exhibitHistoryWindow, from_=0, to=10000)
+        maxSpinBox.grid(row=3, column=4,pady=10)
 
 
         dateLabel = Label(exhibitHistoryWindow,text = "Date")
