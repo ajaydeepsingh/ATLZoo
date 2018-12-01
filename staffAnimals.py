@@ -64,16 +64,12 @@ class ATLzooStaffSearchAnimals:
         ageLabel = Label(searchAnimalWindow,text = "Age")
         ageLabel.grid(row=3,column=2)
 
-        minDefault = StringVar()
-        minDefault.set("3")
-        minMenu = OptionMenu(searchAnimalWindow, minDefault, "0","1","2","3","4","5")
-        minMenu.grid(row=3, column=3,pady=10,sticky=W)
+        minSpinBox = Spinbox(searchAnimalWindow, from_=0, to=10000)
+        minSpinBox.grid(row=3, column=3,pady=10,sticky=W)
 
-        maxDefault = StringVar()
-        maxDefault.set("3")
-        maxMenu = OptionMenu(searchAnimalWindow, maxDefault, "0", "1","2","3","4","5")
-        maxMenu.grid(row=3, column=4,pady=10, sticky=W)
-
+        maxSpinBox = Spinbox(searchAnimalWindow, from_=0, to=10000)
+        maxSpinBox.grid(row=3, column=4,pady=10,sticky=W)
+        
         typeLabel = Label(searchAnimalWindow,text = "Type")
         typeLabel.grid(row=4, column=2)
         # Name Entry
