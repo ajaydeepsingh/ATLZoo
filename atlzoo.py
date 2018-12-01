@@ -1037,15 +1037,15 @@ class ATLzoo:
         titleLabel.place(x=350, y=25)
 
         # Table of all the visitors
-        visitorsTree = ttk.Treeview(viewVisitorsWindow, columns=( "1", "2"), selectmode="extended")
-        visitorsTree['show'] = "headings"
-        visitorsTree.column("1", width = 300, anchor = "center")
-        visitorsTree.column("2", width = 300, anchor = "center")
+        self.visitorsTree = ttk.Treeview(viewVisitorsWindow, columns=( "1", "2"), selectmode="extended")
+        self.visitorsTree['show'] = "headings"
+        self.visitorsTree.column("1", width = 300, anchor = "center")
+        self.visitorsTree.column("2", width = 300, anchor = "center")
         
-        visitorsTree.heading("1", text = "UserName")
-        visitorsTree.heading("2", text = "Email")
+        self.visitorsTree.heading("1", text = "UserName")
+        self.visitorsTree.heading("2", text = "Email")
 
-        visitorsTree.place(x=400, y=200, anchor="center")
+        self.visitorsTree.place(x=400, y=200, anchor="center")
 
 
         self.cursor.execute("SELECT Username, Email FROM User WHERE Type = 'visitor'")
@@ -1063,11 +1063,37 @@ class ATLzoo:
 
         # Insert data into the treeview
         for i in range(len(self.viewVisitorsTuple)):
-            visitorsTree.insert('', i , values=(self.usernameList[i], self.emailList[i]))
+            self.visitorsTree.insert('', i , values=(self.usernameList[i], self.emailList[i]))
 
         # Back Button
         backButton = Button(viewVisitorsWindow, text="Back", command=self.viewVisitorsBackButtonClicked)
         backButton.place(x=10,y=570)
+
+        removeVisitorsButton = Button(viewVisitorsWindow, text="Remove Staff", command=self.showVisitorsWindowAdminRemoveVisitorButtonClicked)
+        removeVisitorsButton.place(x=670,y=570)
+
+
+    def showVisitorsWindowAdminRemoveVisitorButtonClicked(self):
+
+        if not self.visitorsTree.focus():
+            messagebox.showwarning("Error","You haven't selected any Visitor.")
+            return False
+
+        treeIndexString = self.visitorsTree.focus()
+        valueRemoved = self.visitorsTree.item(treeIndexString)
+
+
+        messagebox.showwarning('Remove Visitor', 'Are you sure?')
+        valueslist = list(valueRemoved.values())
+        valueslist = valueslist[2]
+        uname = valueslist[0]
+        eml = valueslist[1]
+
+        self.cursor.execute("DELETE FROM User WHERE Username= %s OR Email = %s AND Type = 'visitor'",(uname, eml))
+
+        self.viewVisitorsWindow.destroy()
+        self.createViewVisitorsWindow()
+        self.buildViewVisitorsWindow(self.viewVisitorsWindow)
 
 
     def viewVisitorsBackButtonClicked(self):
@@ -1172,6 +1198,80 @@ class ATLzoo:
         self.showAnimalWindowAdmin.destroy()
         self.chooseAdminFunctionalityWindow.deiconify()
 
+
+    def createViewStaffWindow(self):
+        self.viewStaffWindow = Toplevel()
+        self.viewStaffWindow.title("Zoo Atlanta")
+        self.viewStaffWindow.geometry("800x600")
+        self.viewStaffWindow.resizable(0,0)
+
+    def buildViewStaffWindow(self, viewStaffWindow):
+
+        # Title Label
+        titleLabel = Label(viewStaffWindow, text = "View Staff", font = "Verdana 16 bold ")
+        titleLabel.place(x=350, y=25)
+
+        # Table of all the staff members
+        self.staffTree = ttk.Treeview(viewStaffWindow, columns=("1", "2"), selectmode="extended")
+        self.staffTree['show'] = "headings"
+        self.staffTree.column("1", width = 300, anchor = "center")
+        self.staffTree.column("2", width = 300, anchor = "center")
+
+        self.staffTree.heading("1", text = "Name")
+        self.staffTree.heading("2", text = "Email")
+
+        self.staffTree.place(x=400, y=200, anchor="center")
+
+
+        self.cursor.execute("SELECT Username, Email FROM User WHERE Type = 'staff'")
+
+        self.viewStaffTuple = self.cursor.fetchall()
+        self.usernameList = []
+        self.emailList = []
+
+
+        for i in self.viewStaffTuple:
+            self.usernameList.append(i[0])
+            self.emailList.append(i[1])
+
+        # Insert data into the treeview
+        for i in range(len(self.viewStaffTuple)):
+            self.staffTree.insert('', i , values=(self.usernameList[i], self.emailList[i]))
+
+        
+        # Back Button
+        backButton = Button(viewStaffWindow, text="Back", command=self.viewStaffBackButtonClicked)
+        backButton.place(x=10,y=570)
+
+        removeStaffButton = Button(viewStaffWindow, text="Remove Staff", command=self.showStaffWindowAdminRemoveStaffButtonClicked)
+        removeStaffButton.place(x=670,y=570)
+
+
+    def showStaffWindowAdminRemoveStaffButtonClicked(self):
+
+        if not self.staffTree.focus():
+            messagebox.showwarning("Error","You haven't selected any Staff.")
+            return False
+
+        treeIndexString = self.staffTree.focus()
+        valueRemoved = self.staffTree.item(treeIndexString)
+
+
+        messagebox.showwarning('Remove Staff Member', 'Are you sure?')
+        valueslist = list(valueRemoved.values())
+        valueslist = valueslist[2]
+        uname = valueslist[0]
+        eml = valueslist[1]
+
+        self.cursor.execute("DELETE FROM User WHERE Username= %s OR Email = %s AND Type = 'staff'",(uname, eml))
+
+        self.viewStaffWindow.destroy()
+        self.createViewStaffWindow()
+        self.buildViewStaffWindow(self.viewStaffWindow)
+
+    def viewStaffBackButtonClicked(self):
+        self.viewStaffWindow.destroy()
+        self.chooseAdminFunctionalityWindow.deiconify()
 
 
 #-------------------VISITOR PAGES-----------------------------
