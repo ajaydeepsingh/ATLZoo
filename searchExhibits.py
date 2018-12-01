@@ -30,30 +30,69 @@ class ATLzooSearchExhibits():
 
         # Title Label
         titleLabel= Label(searchExhibitWindow,text = "Search Exhibits", font = "Verdana 16 bold ")
-        titleLabel.grid(row=0, column=1)
+        titleLabel.grid(row=1,column=2,sticky=W+E)
 
-        # Labels
-        numAnimalsLabel= Label(searchExhibitWindow,text = "Number of Animals")
-        numAnimalsLabel.grid(row=2,column=2)
-        nameLabel= Label(searchExhibitWindow,text = "Name")
-        nameLabel.grid(row=2,column=0)
+        nameLabel = Label(searchExhibitWindow,text = "Name:")
+        nameLabel.grid(row=2, column=0)
 
-        # Name Entry
         self.exhibitNameSV = StringVar()
-        exhibitNameEntry = Entry(searchExhibitWindow, textvariable=self.exhibitNameSV, width=20)
-        exhibitNameEntry.grid(row=2, column=1)
+        animalNameEntry = Entry(searchExhibitWindow, textvariable=self.exhibitNameSV, width=20)
+        animalNameEntry.grid(row=2, column=1)
 
-        waterFeatureLabel= Label(searchExhibitWindow,text = "Water Feature")
-        waterFeatureLabel.grid(row=3,column=2)
-        sizeLabel= Label(searchExhibitWindow,text = "Size")
-        sizeLabel.grid(row=3,column=0)
+        minLabel=Label(searchExhibitWindow,text="Min:")
+        minLabel.grid(row=2,column=4, sticky=W)
+
+        maxLabel=Label(searchExhibitWindow,text="Max:")
+        maxLabel.grid(row=2,column=5, sticky=W)
+
+        numAnimalsLabel = Label(searchExhibitWindow,text = "Number of Animals:")
+        numAnimalsLabel.grid(row=3,column=3)
+
+        minDefault = StringVar()
+        minDefault.set("3")
+        minMenu = OptionMenu(searchExhibitWindow, minDefault, "0","1","2","3","4","5")
+        minMenu.grid(row=3, column=4,pady=10,sticky=W)
+
+        maxDefault = StringVar()
+        maxDefault.set("3")
+        maxMenu = OptionMenu(searchExhibitWindow, maxDefault, "0", "1","2","3","4","5")
+        maxMenu.grid(row=3, column=5,pady=10, sticky=W)
+
+
+        waterLabel = Label(searchExhibitWindow,text = "Water Feature:")
+        waterLabel.grid(row=4, column=3)
+        # Name Entry
+        typeDefault = StringVar()
+        typeDefault.set("No")
+        typeMenu = OptionMenu(searchExhibitWindow, typeDefault, "Yes", "No")
+        typeMenu.grid(row=4, column=4, sticky=W)
+
+
+        min2Label=Label(searchExhibitWindow,text="Min:")
+        min2Label.grid(row=3,column=0, sticky=E)
+
+        max2Label=Label(searchExhibitWindow,text="Max:")
+        max2Label.grid(row=3,column=1, sticky=E)
+
+        sizeLabel = Label(searchExhibitWindow,text = "Size:")
+        sizeLabel.grid(row=4,column=0)
+
+        min2Default = StringVar()
+        min2Default.set("3")
+        min2Menu = OptionMenu(searchExhibitWindow, min2Default, "0","1","2","3","4","5")
+        min2Menu.grid(row=4, column=1,pady=5,sticky=E)
+
+        max2Default = StringVar()
+        max2Default.set("3")
+        max2Menu = OptionMenu(searchExhibitWindow, max2Default, "0", "1","2","3","4","5")
+        max2Menu.grid(row=4, column=2,pady=5, sticky=E)
 
         # Button
         findExhibitsButton = Button(searchExhibitWindow, text="Find Exhibits", command=self.searchExhibitWindowFindExhibitsButtonClicked)
-        findExhibitsButton.grid(row=6,column=3)
+        findExhibitsButton.grid(row=7,column=3)
 
         backButton = Button(searchExhibitWindow, text="Back", command=self.searchExhibitWindowBackButtonClicked)
-        backButton.grid(row=6,column=1)
+        backButton.grid(row=7,column=1)
 
         selectExhibitTree = ttk.Treeview(searchExhibitWindow, columns=("Name", "Size", "NumAnimals"))
         # self.selectExhibitTree['show'] = "headings"
@@ -65,7 +104,7 @@ class ATLzooSearchExhibits():
         selectExhibitTree.column('#1', width = 150, anchor = "center")
         selectExhibitTree.column('#2', width = 150, anchor = "center")
         selectExhibitTree.column('#3', width = 150, anchor = "center")
-        selectExhibitTree.grid(row=5, columnspan=4, sticky = 'nsew')
+        selectExhibitTree.grid(row=6, columnspan=4, sticky = 'nsew')
         
 
     def searchExhibitWindowFindExhibitsButtonClicked(self):
@@ -84,7 +123,7 @@ class ATLzooSearchExhibits():
 
     def  searchExhibitWindowBackButtonClicked(self):
         self.searchExhibitWindow.destroy()
-        self.chooseFunctionalityWindow.deiconify()
+        self.chooseVisitorFunctionalityWindow.deiconify()
 
 
 

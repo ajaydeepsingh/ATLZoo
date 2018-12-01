@@ -353,8 +353,8 @@ class ATLzoo:
         self.chooseAdminFunctionalityWindow.withdraw()
 
     def chooseAdminFunctionalityWindowViewAnimalsLabelClicked(self,event):
-        self.createViewAnimalsWindow()
-        self.buildViewAnimalsWindow(self.viewAnimalsWindow)
+        self.createShowAnimalWindowAdmin()
+        self.buildShowAnimalWindowAdmin(self.showAnimalWindowAdmin)
         self.chooseAdminFunctionalityWindow.withdraw()
 
     def chooseAdminFunctionalityWindowViewStaffLabelClicked(self,event):
@@ -409,36 +409,18 @@ class ATLzoo:
         logOutButton.grid(row=8, column=2,sticky=E)
         logOutButton.place(x = 720, y = 570)
 
-        # # Search Shows 
-        # searchShowsLabel = Label(chooseFunctionalityWindow, text="Search Shows", font = "Verdana 13")
-        # # searchShowsLabel.grid(row=3, column=1)
-        # searchShowsLabel.bind("<ButtonPress-1>", self.chooseFunctionalityWindowSearchShowsLabelClicked)
-        # searchShowsLabel.place(x=400, y = 200, anchor="center")
-
-
-        # # Search for Animals Label
-        # searchAnimalsLabel = Label(chooseFunctionalityWindow, text="Search for Animals", font = "Verdana 13")
-        # # searchAnimalsLabel.grid(row=4,column=1)
-        # searchAnimalsLabel.bind("<ButtonPress-1>", self.chooseFunctionalityWindowSearchAnimalsLabelClicked)
-        # searchAnimalsLabel.place(x=400, y = 300, anchor="center")
-
-        # # View Exhibit History
-        # viewExhibitHistoryLabel = Label(chooseFunctionalityWindow, text="View Exhibit History", font = "Verdana 13")
-        # # viewExhibitHistoryLabel.grid(row=5,column=1)
-        # viewExhibitHistoryLabel.bind("<ButtonPress-1>", self.chooseFunctionalityWindowViewExhibitHistoryLabelClicked)
-        # viewExhibitHistoryLabel.place(x=400, y = 400, anchor="center")
 
     def chooseStaffFunctionalityWindowSearchAnimalsLabelClicked(self,event):
         # Hide Choose Functionality Window.
-        self.createSearchAnimalsWindow()
-        self.buildSearchAnimalsWindow(self.viewSearchAnimalsWindow)
+        self.createStaffSearchAnimalsWindow()
+        self.buildStaffSearchAnimalsWindow(self.searchStaffAnimalsWindow)
         self.chooseStaffFunctionalityWindow.withdraw()
 
 
 
     def chooseStaffFunctionalityWindowViewAssignedShowsLabelClicked(self,event):
-        self.createViewAssignedShowsWindow()
-        self.buildViewAssignedShowsWindow(self.viewAssignedShowsWindow)
+        self.createStaffShowHistoryWindow()
+        self.buildStaffShowHistoryWindow(self.staffShowHistoryWindow)
         self.chooseStaffFunctionalityWindow.withdraw()
 
     def chooseStaffFunctionalityWindowLogOutButtonClicked(self):
@@ -448,6 +430,195 @@ class ATLzoo:
         self.chooseStaffFunctionalityWindow.destroy()
         self.loginWindow.deiconify()
 
+
+#-------------------STAFF PAGES------------------------------
+
+    def createStaffSearchAnimalsWindow(self):
+        # Create blank Search Animal Window
+        self.searchStaffAnimalsWindow=Toplevel()
+        self.searchStaffAnimalsWindow.title("Zoo Atlanta")
+
+    def buildStaffSearchAnimalsWindow(self,searchStaffAnimalsWindow):
+
+        # Title Label
+        titleLabel= Label(searchStaffAnimalsWindow,text = "Search Animals", font = "Verdana 16 bold ")
+        titleLabel.grid(row=1,column=2,sticky=W+E)
+
+        nameLabel = Label(searchStaffAnimalsWindow,text = "Name")
+        nameLabel.grid(row=2, column=0)
+
+        self.animalNameSV = StringVar()
+        animalNameEntry = Entry(searchStaffAnimalsWindow, textvariable=self.animalNameSV, width=20)
+        animalNameEntry.grid(row=2, column=1)
+
+        speciesLabel = Label(searchStaffAnimalsWindow,text = "Species")
+        speciesLabel.grid(row=3,column=0)
+        self.speciesNameSV = StringVar()
+        speciesNameEntry = Entry(searchStaffAnimalsWindow, textvariable=self.speciesNameSV, width=20)
+        speciesNameEntry.grid(row=3, column=1)
+
+
+        exhibitLabel = Label(searchStaffAnimalsWindow,text = "Exhibit")
+        exhibitLabel.grid(row=4,column=0)
+        exhibitDefault = StringVar()
+        exhibitDefault.set("options")
+        exhibitMenu = OptionMenu(searchStaffAnimalsWindow, exhibitDefault, "this","will","have","options","later")
+        exhibitMenu.grid(row=4, column=1)
+
+        minLabel=Label(searchStaffAnimalsWindow,text="Min")
+        minLabel.grid(row=2,column=3, sticky=W)
+
+        maxLabel=Label(searchStaffAnimalsWindow,text="Max")
+        maxLabel.grid(row=2,column=4, sticky=W)
+
+        ageLabel = Label(searchStaffAnimalsWindow,text = "Age")
+        ageLabel.grid(row=3,column=2)
+
+        minDefault = StringVar()
+        minDefault.set("3")
+        minMenu = OptionMenu(searchStaffAnimalsWindow, minDefault, "0","1","2","3","4","5")
+        minMenu.grid(row=3, column=3,pady=10,sticky=W)
+
+        maxDefault = StringVar()
+        maxDefault.set("3")
+        maxMenu = OptionMenu(searchStaffAnimalsWindow, maxDefault, "0", "1","2","3","4","5")
+        maxMenu.grid(row=3, column=4,pady=10, sticky=W)
+
+
+        typeLabel = Label(searchStaffAnimalsWindow,text = "Type")
+        typeLabel.grid(row=4, column=2)
+        # Name Entry
+        typeDefault = StringVar()
+        typeDefault.set("mammal")
+        typeMenu = OptionMenu(searchStaffAnimalsWindow, typeDefault, "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
+        typeMenu.grid(row=4, column=3, sticky=W)
+       
+        selectAnimalTree = ttk.Treeview(searchStaffAnimalsWindow, columns=("Name", "Size", "Exhibit", "Age"))
+        selectAnimalTree.heading('#0', text = "Name")
+        selectAnimalTree.heading('#1', text = "Species")
+        selectAnimalTree.heading('#2', text = "Exhibit")
+        selectAnimalTree.heading('#3', text = "Age")
+        selectAnimalTree.heading('#4', text = "Type")
+        selectAnimalTree.column('#0', width = 150, anchor = "center")
+        selectAnimalTree.column('#1', width = 150, anchor = "center")
+        selectAnimalTree.column('#2', width = 150, anchor = "center")
+        selectAnimalTree.column('#3', width = 150, anchor = "center")
+        selectAnimalTree.column('#4', width = 150, anchor = "center")
+        selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
+
+        findAnimalsButton = Button(searchStaffAnimalsWindow, text="Find Animals", command=self.searchStaffAnimalsWindowFindAnimalsButtonClicked)
+        findAnimalsButton.grid(row=6,column=3)
+
+        backButton = Button(searchStaffAnimalsWindow, text="Back", command=self.searchStaffAnimalsWindowBackButtonClicked)
+        backButton.grid(row=6,column=1)
+
+
+    def searchStaffAnimalsWindowFindAnimalsButtonClicked(self):
+
+        self.searchStaffAnimalsWindow.destroy()
+        self.createAnimalDetailWindow()
+
+    def  searchStaffAnimalsWindowBackButtonClicked(self):
+        self.searchStaffAnimalsWindow.withdraw()
+        self.chooseStaffFunctionalityWindow.deiconify()
+        # import staffFunctionality
+
+
+    def createSearchAnimalWindow(self):
+        # Create blank Search Animal Window
+        self.searchAnimalWindow=Toplevel()
+        self.searchAnimalWindow.title("Zoo Atlanta")
+        self.searchAnimalWindow.geometry("600x600")
+
+    def buildSearchAnimalWindow(self,searchAnimalWindow):
+
+ 
+        titleLabel= Label(searchAnimalWindow,text = "Animal Detail", font = "Verdana 16 bold ")
+        titleLabel.grid(row=1,column=1,sticky=W+E,pady=10)
+
+        nameLabel = Label(searchAnimalWindow,text = "Name:")
+        nameLabel.grid(row=2, column=0,pady=10)
+
+        speciesLabel = Label(searchAnimalWindow, text="Species:")
+        speciesLabel.grid(row=2, column=1,pady=10)
+        
+        ageLabel = Label(searchAnimalWindow,text = "Age:")
+        ageLabel.grid(row=2,column=2,pady=10)
+
+        exhibitLabel = Label(searchAnimalWindow,text = "Exhibit:")
+        exhibitLabel.grid(row=3,column=0,pady=10)
+
+        typeLabel = Label(searchAnimalWindow,text = "Type:")
+        typeLabel.grid(row=3,column=1,pady=10)
+
+
+
+        self.animalCareNotes = StringVar()
+        animalCareEntry = Entry(searchAnimalWindow, textvariable=self.animalCareNotes, width=20)
+        animalCareEntry.grid(row=4, column=0,pady=10, padx=10)
+
+        logCareButton = Button(searchAnimalWindow, text="Log Notes", command=self.logAnimalNotesButtonClicked)
+        logCareButton.grid(row=4,column=1,pady=10)
+        
+        selectAnimalTree = ttk.Treeview(searchAnimalWindow, columns=("Staff Member", "Note", "Time"))
+        selectAnimalTree.heading('#0', text = "Staff Member")
+        selectAnimalTree.heading('#1', text = "Note")
+        selectAnimalTree.heading('#2', text = "Time")
+        selectAnimalTree.column('#0', width = 150, anchor = "center")
+        selectAnimalTree.column('#1', width = 150, anchor = "center")
+        selectAnimalTree.column('#2', width = 150, anchor = "center")
+        selectAnimalTree.place(x=20, y=200,width=450)
+
+        backButton = Button(searchAnimalWindow, text="Back", command=self.searchAnimalWindowBackButtonClicked)
+        backButton.place(x=240,y=440)
+
+
+    def logAnimalNotesButtonClicked(self):
+
+        self.searchAnimalWindow.destroy()
+        self.createAnimalDetailWindow()
+
+    def  searchAnimalWindowBackButtonClicked(self):
+        self.searchAnimalWindow.destroy()
+
+
+    def createStaffShowHistoryWindow(self):
+        # Create blank Search Animal Window
+        self.staffShowHistoryWindow=Toplevel()
+        self.staffShowHistoryWindow.title("Zoo Atlanta")
+        self.staffShowHistoryWindow.geometry("800x600")
+
+    def buildStaffShowHistoryWindow(self, staffShowHistoryWindow):
+        '''
+        frame = Frame(staffShowHistoryWindow)
+        frame.pack()
+        treeFrame = Frame(staffShowHistoryWindow)
+        treeFrame.pack()
+        buttonFrame = Frame(staffShowHistoryWindow)
+        buttonFrame.pack(side=BOTTOM)
+        '''
+
+        titleLabel= Label(staffShowHistoryWindow,text = "Staff - Show History", font = "Verdana 16 bold ")
+        titleLabel.grid(row=1,column=2, sticky=W+E, padx=200)
+
+
+        staffShowTree = ttk.Treeview(staffShowHistoryWindow, columns=("Name", "Exhibit", "Date"))
+        staffShowTree.column("#0", width=200, anchor="center")
+        staffShowTree.column("#1", width= 200, anchor="center")
+        staffShowTree.column("#2", width=200, anchor="center")
+        staffShowTree.heading("#0", text="Name")
+        staffShowTree.heading("#1", text="Time")
+        staffShowTree.heading("#2", text="Exhibit")
+        staffShowTree.place(x=20,y=60,width=600)
+
+
+        backButton = Button(staffShowHistoryWindow, text="Back", command=self.staffShowHistoryWindowBackButtonClicked)
+        backButton.place(x=290, y=300)
+
+
+    def staffShowHistoryWindowBackButtonClicked(self):
+        self.staffShowHistoryWindow.destroy()
+        self.chooseStaffFunctionalityWindow.deiconify()
 
 
 #--------------------Visitor Functionality Window-----------------
@@ -508,13 +679,13 @@ class ATLzoo:
     def chooseFunctionalityWindowSearchExhibitLabelClicked(self,event):
         # Hide Choose Functionality Window.
         self.createSearchExhibitWindow()
-        self.buildSearchExhibitWindow(self.viewSearchExhibitWindow)
+        self.buildSearchExhibitWindow(self.searchExhibitWindow)
         self.chooseVisitorFunctionalityWindow.withdraw()
 
     def chooseFunctionalityWindowSearchShowsLabelClicked(self,event):
         # Hide Choose Functionality Window
-        self.createSearchShowWindow()
-        self.buildSearchShowWindow(self.searchShowWindow)
+        self.createVisitorSearchShowsWindow()
+        self.buildVisitorSearchShowsWindow(self.searchVisitorShowsWindow)
         self.chooseVisitorFunctionalityWindow.withdraw()
 
     def chooseFunctionalityWindowSearchAnimalsLabelClicked(self,event):
@@ -523,13 +694,13 @@ class ATLzoo:
         self.chooseVisitorFunctionalityWindow.withdraw()
 
     def chooseFunctionalityWindowViewExhibitHistoryLabelClicked(self,event):
-        self.createViewExhibitHistoryWindow()
-        self.buildViewExhibitHistoryWindow(self.viewExhibitHistoryWindow)
+        self.createExhibitHistoryWindow()
+        self.buildExhibitHistoryWindow(self.exhibitHistoryWindow)
         self.chooseVisitorFunctionalityWindow.withdraw()
 
     def chooseFunctionalityWindowViewShowHistoryLabelClicked(self,event):
-        self.createViewShowHistoryWindow()
-        self.buildViewShowHistoryWindow(self.viewShowHistoryWindow)
+        self.createShowHistoryWindow()
+        self.buildShowHistoryWindow(self.showHistoryWindow)
         self.chooseVisitorFunctionalityWindow.withdraw()
 
     def chooseFunctionalityWindowLogOutButtonClicked(self):
@@ -539,6 +710,311 @@ class ATLzoo:
         self.chooseVisitorFunctionalityWindow.destroy()
         self.loginWindow.deiconify()
 
+#-------------------VISITOR PAGES------------------------------
+
+
+    def createVisitorSearchShowsWindow(self):
+        self.searchVisitorShowsWindow=Toplevel()
+        self.searchVisitorShowsWindow.title("Zoo Atlanta")
+        self.searchVisitorShowsWindow.geometry("800x600")
+
+    def buildVisitorSearchShowsWindow(self, searchVisitorShowsWindow):
+        titleLabel= Label(searchVisitorShowsWindow,text = "Search Shows", font = "Verdana 16 bold ")
+        titleLabel.grid(row=1,column=2,sticky=W+E,pady=10)
+
+        # Labels
+        showLabel = Label(searchVisitorShowsWindow,text = "Name")
+        showLabel.grid(row=2,column=0,pady=10)
+
+        self.showNameString = StringVar()
+        showNameEntry = Entry(searchVisitorShowsWindow, textvariable=self.showNameString, width=20)
+        showNameEntry.grid(row=2, column=1,pady=10)
+
+        exhibitLabel = Label(searchVisitorShowsWindow,text = "Exhibit")
+        exhibitLabel.grid(row=3,column=0,pady=10)
+        exhibitDefault = StringVar()
+        exhibitDefault.set("options")
+        exhibitMenu = OptionMenu(searchVisitorShowsWindow, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
+        exhibitMenu.grid(row=3, column=1,pady=10)
+
+        dateLabel = Label(searchVisitorShowsWindow,text = "Date")
+        dateLabel.grid(row=2, column=2,pady=10)
+
+        #showDateEntry = CalendarDialog.main()
+        showDateEntry= Entry(searchVisitorShowsWindow)
+        showDateEntry.grid(row=2, column=3,pady=10)
+
+        # Button
+        findShowsButton = Button(searchVisitorShowsWindow, text="Search", command=self.searchVisitorShowsWindowFindShowsButtonClicked)
+        findShowsButton.grid(row=3,column=2,pady=10)
+
+        
+        # self.selectExhibitTree['show'] = "headings"
+        selectShowTree = ttk.Treeview(searchVisitorShowsWindow, columns=("Name", "Exhibit", "Date"))
+        selectShowTree.heading('#0', text = "Name")
+        selectShowTree.heading('#1', text = "Exhibit")
+        selectShowTree.heading('#2', text = "Date")
+        selectShowTree.column('#0', width = 175, anchor = "center")
+        selectShowTree.column('#1', width = 175, anchor = "center")
+        selectShowTree.column('#2', width = 175, anchor = "center")
+        selectShowTree.place(x=280, y=280, anchor="center", width=525)
+
+        logVisitButton = Button(searchVisitorShowsWindow, text="Log Visit", command = self.logVisitButtonClicked)  
+        logVisitButton.place(x=220, y=415)  
+
+        backButton = Button(searchVisitorShowsWindow, text="Back", command=self.searchVisitorShowsWindowBackButtonClicked)
+        backButton.place(x=320, y=415)
+
+    def searchVisitorShowsWindowFindShowsButtonClicked(self):
+        self.searchVisitorShowsWindow.destroy()
+        self.createShowsDetailWindow()
+
+    def logVisitButtonClicked(self):
+        self.searchVisitorShowsWindow.withdraw()
+        import searchShows
+
+    def searchVisitorShowsWindowBackButtonClicked(self):
+        self.searchVisitorShowsWindow.withdraw()
+        self.chooseVisitorFunctionalityWindow.deiconify()
+
+
+    def createSearchExhibitWindow(self):
+        # Create blank Search Exhibit Window
+        self.searchExhibitWindow=Toplevel()
+        self.searchExhibitWindow.title("Zoo Atlanta")
+
+    def buildSearchExhibitWindow(self, searchExhibitWindow):
+
+        # Title Label
+        titleLabel= Label(searchExhibitWindow,text = "Search Exhibits", font = "Verdana 16 bold ")
+        titleLabel.grid(row=1,column=2,sticky=W+E)
+
+        nameLabel = Label(searchExhibitWindow,text = "Name:")
+        nameLabel.grid(row=2, column=0)
+
+        self.exhibitNameSV = StringVar()
+        animalNameEntry = Entry(searchExhibitWindow, textvariable=self.exhibitNameSV, width=20)
+        animalNameEntry.grid(row=2, column=1)
+
+        minLabel=Label(searchExhibitWindow,text="Min:")
+        minLabel.grid(row=2,column=4, sticky=W)
+
+        maxLabel=Label(searchExhibitWindow,text="Max:")
+        maxLabel.grid(row=2,column=5, sticky=W)
+
+        numAnimalsLabel = Label(searchExhibitWindow,text = "Number of Animals:")
+        numAnimalsLabel.grid(row=3,column=3)
+
+        minDefault = StringVar()
+        minDefault.set("3")
+        minMenu = OptionMenu(searchExhibitWindow, minDefault, "0","1","2","3","4","5")
+        minMenu.grid(row=3, column=4,pady=10,sticky=W)
+
+        maxDefault = StringVar()
+        maxDefault.set("3")
+        maxMenu = OptionMenu(searchExhibitWindow, maxDefault, "0", "1","2","3","4","5")
+        maxMenu.grid(row=3, column=5,pady=10, sticky=W)
+
+
+        waterLabel = Label(searchExhibitWindow,text = "Water Feature:")
+        waterLabel.grid(row=4, column=3)
+        # Name Entry
+        typeDefault = StringVar()
+        typeDefault.set("No")
+        typeMenu = OptionMenu(searchExhibitWindow, typeDefault, "Yes", "No")
+        typeMenu.grid(row=4, column=4, sticky=W)
+
+
+        min2Label=Label(searchExhibitWindow,text="Min:")
+        min2Label.grid(row=3,column=0, sticky=E)
+
+        max2Label=Label(searchExhibitWindow,text="Max:")
+        max2Label.grid(row=3,column=1, sticky=E)
+
+        sizeLabel = Label(searchExhibitWindow,text = "Size:")
+        sizeLabel.grid(row=4,column=0)
+
+        min2Default = StringVar()
+        min2Default.set("3")
+        min2Menu = OptionMenu(searchExhibitWindow, min2Default, "0","1","2","3","4","5")
+        min2Menu.grid(row=4, column=1,pady=5,sticky=E)
+
+        max2Default = StringVar()
+        max2Default.set("3")
+        max2Menu = OptionMenu(searchExhibitWindow, max2Default, "0", "1","2","3","4","5")
+        max2Menu.grid(row=4, column=2,pady=5, sticky=E)
+
+        # Button
+        findExhibitsButton = Button(searchExhibitWindow, text="Find Exhibits", command=self.searchExhibitWindowFindExhibitsButtonClicked)
+        findExhibitsButton.grid(row=7,column=3)
+
+        backButton = Button(searchExhibitWindow, text="Back", command=self.searchExhibitWindowBackButtonClicked)
+        backButton.grid(row=7,column=1)
+
+        selectExhibitTree = ttk.Treeview(searchExhibitWindow, columns=("Name", "Size", "NumAnimals"))
+        # self.selectExhibitTree['show'] = "headings"
+        selectExhibitTree.heading('#0', text = "Name")
+        selectExhibitTree.heading('#1', text = "Size")
+        selectExhibitTree.heading('#2', text = "NumAnimals")
+        selectExhibitTree.heading('#3', text = "Water")
+        selectExhibitTree.column('#0', width = 150, anchor = "center")
+        selectExhibitTree.column('#1', width = 150, anchor = "center")
+        selectExhibitTree.column('#2', width = 150, anchor = "center")
+        selectExhibitTree.column('#3', width = 150, anchor = "center")
+        selectExhibitTree.grid(row=6, columnspan=4, sticky = 'nsew')
+        
+
+    def searchExhibitWindowFindExhibitsButtonClicked(self):
+
+        self.min = self.minSV.get()
+        self.max = self.maxSV.get()
+        self.name = self.nameSV.get()
+
+        if self.min == self.max:
+            return False
+
+        self.searchExhibitWindow.destroy()
+        self.createExhibitDetailWindow()
+        self.buildExhibitDetailWindow(self.exhibitDetailWindow)
+
+    def searchExhibitWindowBackButtonClicked(self):
+        self.searchExhibitWindow.destroy()
+        self.chooseVisitorFunctionalityWindow.deiconify()
+
+
+    def createExhibitHistoryWindow(self):
+
+        self.exhibitHistoryWindow=Toplevel()
+        self.exhibitHistoryWindow.title("Zoo Atlanta")
+        self.exhibitHistoryWindow.geometry("800x600")
+
+    def buildExhibitHistoryWindow(self, exhibitHistoryWindow):
+        titleLabel= Label(exhibitHistoryWindow,text = "Exhibit History", font = "Verdana 16 bold ")
+        titleLabel.grid(row=1,column=2,sticky=W+E)
+
+        minLabel = Label(exhibitHistoryWindow, text="Min")
+        minLabel.grid(row=2, column=3,pady=10)
+
+        maxLabel = Label(exhibitHistoryWindow, text="Max")
+        maxLabel.grid(row=2, column=4,pady=10)
+
+        exhibitLabel = Label(exhibitHistoryWindow,text = "Name")
+        exhibitLabel.grid(row=3,column=0,pady=10)
+        self.exhibitNameString = StringVar()
+        exhibitNameEntry = Entry(exhibitHistoryWindow, textvariable=self.exhibitNameString, width=20)
+        exhibitNameEntry.grid(row=3,column=1,pady=10)
+
+        numVisitsLabel = Label(exhibitHistoryWindow,text = "Number of Visits")
+        numVisitsLabel.grid(row=3,column=2,pady=10)
+
+
+        minDefault = StringVar()
+        minDefault.set("0")
+        minMenu = OptionMenu(exhibitHistoryWindow, minDefault, "0","1","2","3","4","5")
+        minMenu.grid(row=3, column=3,pady=10)
+
+        maxDefault = StringVar()
+        maxDefault.set("2")
+        maxMenu = OptionMenu(exhibitHistoryWindow, maxDefault, "0", "1","2","3","4","5")
+        maxMenu.grid(row=3, column=4,pady=10)
+
+
+        dateLabel = Label(exhibitHistoryWindow,text = "Date")
+        dateLabel.grid(row=4, column=0,pady=10)
+
+        #showDateEntry = CalendarDialog.main()
+        exhibitDateEntry= Entry(exhibitHistoryWindow)
+        exhibitDateEntry.grid(row=4, column=1,pady=10)
+
+        # Button
+        findShowsButton = Button(exhibitHistoryWindow, text="Search", command=self.exhibitHistoryWindowFindShowsButtonClicked)
+        findShowsButton.grid(row=4,column=2,pady=10)
+
+        
+        # self.selectExhibitTree['show'] = "headings"
+        selectExhibitTree = ttk.Treeview(exhibitHistoryWindow, columns=("Name", "Time", "Number of Visits"))
+        selectExhibitTree.heading('#0', text = "Name")
+        selectExhibitTree.heading('#1', text = "Time")
+        selectExhibitTree.heading('#2', text = "Number of Visits")
+        selectExhibitTree.column('#0', width = 200, anchor = "center")
+        selectExhibitTree.column('#1', width = 200, anchor = "center")
+        selectExhibitTree.column('#2', width = 200, anchor = "center")
+        selectExhibitTree.place(x=20, y=200,width=600)
+
+        
+
+        backButton = Button(exhibitHistoryWindow, text="Back", command=self.exhibitHistoryWindowBackButtonClicked)
+        backButton.place(x=310, y=440)
+
+    def exhibitHistoryWindowFindShowsButtonClicked(self):
+        self.exhibitHistoryWindow.destroy()
+
+    
+    def exhibitHistoryWindowBackButtonClicked(self):
+        self.exhibitHistoryWindow.withdraw()
+        self.chooseVisitorFunctionalityWindow.deiconify()
+
+
+    def createShowHistoryWindow(self):
+
+        self.showHistoryWindow=Toplevel()
+        self.showHistoryWindow.title("Zoo Atlanta")
+        self.showHistoryWindow.geometry("800x600")
+
+
+    def buildShowHistoryWindow(self, showHistoryWindow):
+        titleLabel= Label(showHistoryWindow,text = "Show History", font = "Verdana 16 bold ")
+        titleLabel.grid(row=1,column=2,sticky=W+E)
+
+        # Labels
+        showLabel = Label(showHistoryWindow,text = "Name")
+        showLabel.grid(row=2,column=0,pady=10)
+        self.showNameString = StringVar()
+        showNameEntry = Entry(showHistoryWindow, textvariable=self.showNameString, width=20)
+        showNameEntry.grid(row=2,column=1,pady=10)
+
+        exhibitLabel = Label(showHistoryWindow,text = "Exhibit")
+        exhibitLabel.grid(row=2,column=2,pady=10)
+        exhibitDefault = StringVar()
+        exhibitDefault.set("options")
+        exhibitMenu = OptionMenu(showHistoryWindow, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
+        exhibitMenu.grid(row=2, column=3,pady=10)
+
+        dateLabel = Label(showHistoryWindow,text = "Date")
+        dateLabel.grid(row=3, column=0,pady=10)
+
+
+
+        #showDateEntry = CalendarDialog.main()
+        showDateEntry= Entry(showHistoryWindow)
+        showDateEntry.grid(row=3, column=1,pady=10)
+
+        # Button
+        findShowsButton = Button(showHistoryWindow, text="Search", command=self.showHistoryWindowFindShowsButtonClicked)
+        findShowsButton.grid(row=3,column=2,pady=10)
+
+        
+        selectShowTree = ttk.Treeview(showHistoryWindow, columns=("Name", "Exhibit", "Date"))
+        selectShowTree.heading('#0', text = "Name")
+        selectShowTree.heading('#1', text = "Exhibit")
+        selectShowTree.heading('#2', text = "Date")
+        selectShowTree.column('#0', width = 200, anchor = "center")
+        selectShowTree.column('#1', width = 200, anchor = "center")
+        selectShowTree.column('#2', width = 200, anchor = "center")
+        selectShowTree.place(x=20, y=130,width=600)
+
+        
+
+        backButton = Button(showHistoryWindow, text="Back", command=self.showHistoryWindowBackButtonClicked)
+        backButton.place(x=310,y=370)
+
+    def showHistoryWindowFindShowsButtonClicked(self):
+        self.showHistoryWindow.destroy()
+        self.createShowsDetailWindow()
+
+    def showHistoryWindowBackButtonClicked(self):
+        self.showHistoryWindow.withdraw()
+        import visitorFunctionality
 
 #-------------------ADMIN PAGES------------------------------
 
@@ -568,12 +1044,110 @@ class ATLzoo:
         backButton.place(x=10,y=570)
 
 
-
     def viewVisitorsBackButtonClicked(self):
         self.viewVisitorsWindow.destroy()
         self.chooseAdminFunctionalityWindow.deiconify()
 
-#-------------------STAFF PAGES------------------------------
+#-------------------SHOW ANIMAL ADMIN PAGE------------------------------
+
+    def createShowAnimalWindowAdmin(self):
+        # Create blank Search Animal Window
+        self.showAnimalWindowAdmin=Toplevel()
+        self.showAnimalWindowAdmin.title("Zoo Atlanta")
+
+    def buildShowAnimalWindowAdmin(self,showAnimalWindowAdmin):
+
+        # Title Label
+        titleLabel= Label(showAnimalWindowAdmin,text = "Search Animals", font = "Verdana 16 bold ")
+        titleLabel.grid(row=1,column=2,sticky=W+E)
+
+        nameLabel = Label(showAnimalWindowAdmin,text = "Name")
+        nameLabel.grid(row=2, column=0)
+
+
+        self.animalNameSV = StringVar()
+        animalNameEntry = Entry(showAnimalWindowAdmin, textvariable=self.animalNameSV, width=20)
+        animalNameEntry.grid(row=2, column=1)
+
+        speciesLabel = Label(showAnimalWindowAdmin,text = "Species")
+        speciesLabel.grid(row=3,column=0)
+        self.speciesNameSV = StringVar()
+        speciesNameEntry = Entry(showAnimalWindowAdmin, textvariable=self.speciesNameSV, width=20)
+        speciesNameEntry.grid(row=3, column=1)
+
+        exhibitLabel = Label(showAnimalWindowAdmin,text = "Exhibit")
+        exhibitLabel.grid(row=4,column=0)
+        exhibitDefault = StringVar()
+        exhibitDefault.set("options")
+        exhibitMenu = OptionMenu(showAnimalWindowAdmin, exhibitDefault, "this","will","have","options","later")
+        exhibitMenu.grid(row=4, column=1)
+
+        minLabel=Label(showAnimalWindowAdmin,text="Min")
+        minLabel.grid(row=2,column=3, sticky=W)
+
+        maxLabel=Label(showAnimalWindowAdmin,text="Max")
+        maxLabel.grid(row=2,column=4, sticky=W)
+
+        ageLabel = Label(showAnimalWindowAdmin,text = "Age")
+        ageLabel.grid(row=3,column=2)
+
+        minDefault = StringVar()
+        minDefault.set("3")
+        minMenu = OptionMenu(showAnimalWindowAdmin, minDefault, "0","1","2","3","4","5")
+        minMenu.grid(row=3, column=3,pady=10,sticky=W)
+
+        maxDefault = StringVar()
+        maxDefault.set("3")
+        maxMenu = OptionMenu(showAnimalWindowAdmin, maxDefault, "0", "1","2","3","4","5")
+        maxMenu.grid(row=3, column=4,pady=10, sticky=W)
+
+
+        typeLabel = Label(showAnimalWindowAdmin,text = "Type")
+        typeLabel.grid(row=4, column=2)
+        # Name Entry
+        typeDefault = StringVar()
+        typeDefault.set("mammal")
+        typeMenu = OptionMenu(showAnimalWindowAdmin, typeDefault, "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
+        typeMenu.grid(row=4, column=3, sticky=W)
+
+        # Display Table for Results
+        selectAnimalTree = ttk.Treeview(showAnimalWindowAdmin, columns=("Name", "Size", "Exhibit", "Age"))
+        selectAnimalTree.heading('#0', text = "Name")
+        selectAnimalTree.heading('#1', text = "Species")
+        selectAnimalTree.heading('#2', text = "Exhibit")
+        selectAnimalTree.heading('#3', text = "Age")
+        selectAnimalTree.heading('#4', text = "Type")
+        selectAnimalTree.column('#0', width = 150, anchor = "center")
+        selectAnimalTree.column('#1', width = 150, anchor = "center")
+        selectAnimalTree.column('#2', width = 150, anchor = "center")
+        selectAnimalTree.column('#3', width = 150, anchor = "center")
+        selectAnimalTree.column('#4', width = 150, anchor = "center")
+        selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
+
+        # Button
+        findAnimalsButton = Button(showAnimalWindowAdmin, text="Find Animals", command=self.showAnimalWindowAdminFindAnimalsButtonClicked)
+        findAnimalsButton.grid(row=6,column=2)
+
+        removeAnimalsButton = Button(showAnimalWindowAdmin, text="Remove Animal", command=self.showAnimalWindowAdminRemoveAnimalWindowButtonClicked)
+        removeAnimalsButton.grid(row=6,column=3)
+
+        backButton = Button(showAnimalWindowAdmin, text="Back", command=self.showAnimalWindowAdminBackButtonClicked)
+        backButton.grid(row=6,column=1)
+
+
+    def showAnimalWindowAdminFindAnimalsButtonClicked(self):
+        self.showAnimalWindowAdmin.destroy()
+        self.createAnimalDetailWindow()
+
+    def showAnimalWindowAdminRemoveAnimalWindowButtonClicked(self):
+        self.showAnimalWindowAdmin.destroy()
+        self.chooseAdminFunctionalityWindow.deiconify()
+
+    def showAnimalWindowAdminBackButtonClicked(self):
+        self.showAnimalWindowAdmin.destroy()
+        self.chooseAdminFunctionalityWindow.deiconify()
+
+
 
 #-------------------VISITOR PAGES-----------------------------
 

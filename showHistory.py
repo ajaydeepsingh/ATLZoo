@@ -41,8 +41,6 @@ class ATLzooShowHistory:
         dateLabel = Label(showHistoryWindow,text = "Date")
         dateLabel.grid(row=3, column=0,pady=10)
 
-
-
         #showDateEntry = CalendarDialog.main()
         showDateEntry= Entry(showHistoryWindow)
         showDateEntry.grid(row=3, column=1,pady=10)
@@ -60,8 +58,6 @@ class ATLzooShowHistory:
         selectShowTree.column('#1', width = 200, anchor = "center")
         selectShowTree.column('#2', width = 200, anchor = "center")
         selectShowTree.place(x=20, y=130,width=600)
-
-        
 
         backButton = Button(showHistoryWindow, text="Back", command=self.showHistoryWindowBackButtonClicked)
         backButton.place(x=310,y=370)
