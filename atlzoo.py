@@ -7,6 +7,8 @@ from datetime import datetime, timedelta
 import decimal
 
 
+
+
 class ATLzoo:
     def __init__(self):
         # Invoke createLoginWindow; Invoke buildLoginWindow, Set loginWindow as mainloop
@@ -14,7 +16,7 @@ class ATLzoo:
 
         self.db = self.connect()
         self.cursor = self.db.cursor()
-
+        self.currentUser = ""
         # Login Window
         self.createLoginWindow()
         self.buildLoginWindow(self.loginWindow)
@@ -114,14 +116,17 @@ class ATLzoo:
         # isVisitorName = self.cursor.execute("SELECT * FROM User WHERE Username = %s a AND Type = %s", (self.username, 'visitor'))
         if isStaffName:
             self.loginWindow.withdraw()
+            self.currentUser = self.username
             self.createStaffChooseFunctionalityWindow()
             self.buildStaffChooseFunctionalityWindow(self.chooseStaffFunctionalityWindow)
         elif isAdminName:
             self.loginWindow.withdraw()
+            self.currentUser = self.username
             self.createAdminChooseFunctionalityWindow()
             self.buildAdminChooseFunctionalityWindow(self.chooseAdminFunctionalityWindow)
         else:
             self.loginWindow.withdraw()
+            self.currentUser = self.username
             self.createVisitorChooseFunctionalityWindow()
             self.buildVisitorChooseFunctionalityWindow(self.chooseVisitorFunctionalityWindow)
         return True
@@ -237,6 +242,7 @@ class ATLzoo:
         messagebox.showinfo("info","Registered successfully!")
         self.cursor.execute("INSERT INTO User VALUES (%s, %s, %s, %s)", (self.username, self.password, self.emailAddress, "visitor"))
         # self.cursor.execute("INSERT INTO User VALUES (%s, %s)", (self.username, self.password))
+        self.currentUser = self.username
         self.createChooseFunctionalityWindow()
         self.buildChooseFunctionalityWindow(self.visitorFunctionalityWindow)
         self.newUserRegistrationWindow.destroy()
@@ -281,6 +287,7 @@ class ATLzoo:
         messagebox.showinfo("info","Registered successfully!")
         self.cursor.execute("INSERT INTO User VALUES (%s, %s, %s, %s)", (self.username, self.password, self.emailAddress, "staff"))
         # self.cursor.execute("INSERT INTO User VALUES (%s, %s)", (self.username, self.password))
+        self.currentUser = self.username
         self.createChooseFunctionalityWindow()
         self.buildChooseFunctionalityWindow(self.staffFunctionalityWindow)
         self.newUserRegistrationWindow.destroy()
@@ -507,9 +514,7 @@ class ATLzoo:
         selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
 
 
-
-
-        self.cursor.execute( "SELECT * FROM Animal WHERE (Name = %s or %b) AND (Species = %s or %b) AND (Type = %s or %b)” ," (Name, Species,Type))
+        # self.cursor.execute( "SELECT * FROM Animal WHERE (Name = %s or %b) AND (Species = %s or %b) AND (Type = %s or %b)” ," (Name, Species,Type))
 
         findAnimalsButton = Button(searchStaffAnimalsWindow, text="Find Animals", command=self.searchStaffAnimalsWindowFindAnimalsButtonClicked)
         findAnimalsButton.grid(row=6,column=3)
@@ -594,28 +599,38 @@ class ATLzoo:
         self.staffShowHistoryWindow.geometry("800x600")
 
     def buildStaffShowHistoryWindow(self, staffShowHistoryWindow):
-        '''
-        frame = Frame(staffShowHistoryWindow)
-        frame.pack()
-        treeFrame = Frame(staffShowHistoryWindow)
-        treeFrame.pack()
-        buttonFrame = Frame(staffShowHistoryWindow)
-        buttonFrame.pack(side=BOTTOM)
-        '''
-
+  
         titleLabel= Label(staffShowHistoryWindow,text = "Staff - Show History", font = "Verdana 16 bold ")
         titleLabel.grid(row=1,column=2, sticky=W+E, padx=200)
 
 
-        staffShowTree = ttk.Treeview(staffShowHistoryWindow, columns=("Name", "Exhibit", "Date"))
-        staffShowTree.column("#0", width=200, anchor="center")
-        staffShowTree.column("#1", width= 200, anchor="center")
-        staffShowTree.column("#2", width=200, anchor="center")
-        staffShowTree.heading("#0", text="Name")
-        staffShowTree.heading("#1", text="Time")
-        staffShowTree.heading("#2", text="Exhibit")
+        staffShowTree = ttk.Treeview(staffShowHistoryWindow, columns=("1", "2", "3"))
+        staffShowTree['show'] = "headings"
+        staffShowTree.heading("1", text="Name")
+        staffShowTree.heading("2", text="Time")
+        staffShowTree.heading("3", text="Exhibit")
+        staffShowTree.column("1", width=200, anchor="center")
+        staffShowTree.column("2", width= 200, anchor="center")
+        staffShowTree.column("3", width=200, anchor="center")
+
         staffShowTree.place(x=20,y=60,width=600)
 
+        self.cursor.execute("SELECT Name, Time, E_Name FROM Performance WHERE Host = %s", (self.currentUser))
+
+        self.viewShowsTuple = self.cursor.fetchall()
+
+        self.performanceName = []
+        self.showTimes = []
+        self.showExhibit = []
+
+
+        for i in self.viewShowsTuple:
+            self.performanceName.append(i[0])
+            self.showTimes.append(i[1])
+            self.showExhibit.append(i[2])
+
+        for i in range(len(self.viewShowsTuple)):
+            staffShowTree.insert('', i , values=(self.performanceName[i], self.showTimes[i], self.showExhibit[i]))
 
         backButton = Button(staffShowHistoryWindow, text="Back", command=self.staffShowHistoryWindowBackButtonClicked)
         backButton.place(x=290, y=300)
@@ -877,6 +892,12 @@ class ATLzoo:
 
         if self.min == self.max:
             return False
+
+        # cur.execute("SELECT COUNT(Animal.Name AND Species), Exhibit.Name, Size, Has_Water FROM\
+        #  Exhibit JOIN ON Animal.E_Name = Exhibit.Name ANIMAL \
+        #  WHERE (Exhibit.Name = %) AND (Has_Water = %s OR %b) \
+        #  AND (Size = %s OR %b)"\
+        #  , [exhibit_name, has_water, size, boolean] GROUP BY Exhibit.Name)
 
         self.searchExhibitWindow.destroy()
         self.createExhibitDetailWindow()
