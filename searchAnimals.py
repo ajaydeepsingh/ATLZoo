@@ -12,8 +12,8 @@ class ATLzooSearchAnimals:
     def __init__(self):
         # Invoke createLoginWindow; Invoke buildLoginWindow, Set loginWindow as mainloop
         #Connect to the database
-        self.db = self.connect()
-        self.cursor = self.db.cursor()
+        # self.db = self.connect()
+        # self.cursor = self.db.cursor()
         # Login Window
         self.createSearchAnimalWindow()
         self.buildSearchAnimalWindow(self.searchAnimalWindow)
@@ -31,27 +31,56 @@ class ATLzooSearchAnimals:
         titleLabel= Label(searchAnimalWindow,text = "Search Animals", font = "Verdana 16 bold ")
         titleLabel.grid(row=1,column=2,sticky=W+E)
 
-        # Labels
-        exhibitLabel = Label(searchAnimalWindow,text = "Exhibit")
-        exhibitLabel.grid(row=2,column=1)
-        ageLabel = Label(searchAnimalWindow,text = "Age")
-        ageLabel.grid(row=3,column=1)
-        typeLabel = Label(searchAnimalWindow,text = "Type")
-        typeLabel.grid(row=4,column=1)
-
         nameLabel = Label(searchAnimalWindow,text = "Name")
-        nameLabel.grid(row=2, column=2)
-        # Name Entry
+        nameLabel.grid(row=2, column=0)
+
+
         self.animalNameSV = StringVar()
         animalNameEntry = Entry(searchAnimalWindow, textvariable=self.animalNameSV, width=20)
-        animalNameEntry.grid(row=2, column=3)
+        animalNameEntry.grid(row=2, column=1)
 
         speciesLabel = Label(searchAnimalWindow,text = "Species")
-        speciesLabel.grid(row=3, column=2)
+        speciesLabel.grid(row=3,column=0)
+        self.speciesNameSV = StringVar()
+        speciesNameEntry = Entry(searchAnimalWindow, textvariable=self.speciesNameSV, width=20)
+        speciesNameEntry.grid(row=3, column=1)
+
+
+
+        exhibitLabel = Label(searchAnimalWindow,text = "Exhibit")
+        exhibitLabel.grid(row=4,column=0)
+        exhibitDefault = StringVar()
+        exhibitDefault.set("options")
+        exhibitMenu = OptionMenu(searchAnimalWindow, exhibitDefault, "this","will","have","options","later")
+        exhibitMenu.grid(row=4, column=1)
+
+        minLabel=Label(searchAnimalWindow,text="Min")
+        minLabel.grid(row=2,column=3, sticky=W)
+
+        maxLabel=Label(searchAnimalWindow,text="Max")
+        maxLabel.grid(row=2,column=4, sticky=W)
+
+        ageLabel = Label(searchAnimalWindow,text = "Age")
+        ageLabel.grid(row=3,column=2)
+
+        minDefault = StringVar()
+        minDefault.set("3")
+        minMenu = OptionMenu(searchAnimalWindow, minDefault, "0","1","2","3","4","5")
+        minMenu.grid(row=3, column=3,pady=10,sticky=W)
+
+        maxDefault = StringVar()
+        maxDefault.set("3")
+        maxMenu = OptionMenu(searchAnimalWindow, maxDefault, "0", "1","2","3","4","5")
+        maxMenu.grid(row=3, column=4,pady=10, sticky=W)
+
+
+        typeLabel = Label(searchAnimalWindow,text = "Type")
+        typeLabel.grid(row=4, column=2)
         # Name Entry
-        self.animalSpeciesSV = StringVar()
-        animalSpeciesEntry = Entry(searchAnimalWindow, textvariable=self.animalSpeciesSV, width=20)
-        animalSpeciesEntry.grid(row=2, column=3)
+        typeDefault = StringVar()
+        typeDefault.set("mammal")
+        typeMenu = OptionMenu(searchAnimalWindow, typeDefault, "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
+        typeMenu.grid(row=4, column=3, sticky=W)
 
         
         # self.selectExhibitTree['show'] = "headings"
@@ -78,6 +107,7 @@ class ATLzooSearchAnimals:
 
     def searchAnimalWindowFindAnimalsButtonClicked(self):
 
+
         self.searchAnimalWindow.destroy()
         self.createAnimalDetailWindow()
 
@@ -86,17 +116,4 @@ class ATLzooSearchAnimals:
         self.chooseFunctionalityWindow.deiconify()
 
 
-    #--------------------Database Connection-----------------
-    def connect(self):
-        try:
-            db = pymysql.connect(host = 'academic-mysql.cc.gatech.edu',
-                                 db = 'cs4400_group33', user = 'cs4400_group33', passwd = '9dpzV4ce')
-            return db
-        except:
-            messagebox.showwarning('Error!','Cannot connect. Please check your internet connection.')
-            return False
-
-
-
 a=ATLzooSearchAnimals()
-a.db.close()
