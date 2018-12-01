@@ -462,7 +462,7 @@ class ATLzoo:
         exhibitLabel.grid(row=4,column=0)
         exhibitDefault = StringVar()
         exhibitDefault.set("options")
-        exhibitMenu = OptionMenu(searchStaffAnimalsWindow, exhibitDefault, "this","will","have","options","later")
+        exhibitMenu = OptionMenu(searchStaffAnimalsWindow, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
         exhibitMenu.grid(row=4, column=1)
 
         minLabel=Label(searchStaffAnimalsWindow,text="Min")
@@ -505,6 +505,11 @@ class ATLzoo:
         selectAnimalTree.column('#3', width = 150, anchor = "center")
         selectAnimalTree.column('#4', width = 150, anchor = "center")
         selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
+
+
+
+
+        self.cursor.execute( "SELECT * FROM Animal WHERE (Name = %s or %b) AND (Species = %s or %b) AND (Type = %s or %b)” ," (Name, Species,Type))
 
         findAnimalsButton = Button(searchStaffAnimalsWindow, text="Find Animals", command=self.searchStaffAnimalsWindowFindAnimalsButtonClicked)
         findAnimalsButton.grid(row=6,column=3)
@@ -1032,12 +1037,33 @@ class ATLzoo:
         titleLabel.place(x=350, y=25)
 
         # Table of all the visitors
-        visitorsTree = ttk.Treeview(viewVisitorsWindow, columns=("Name"))
-        visitorsTree.heading('#0', text = "Name")
-        visitorsTree.heading('#1', text = "Email")
-        visitorsTree.column('#0', width = 300, anchor = "center")
-        visitorsTree.column('#1', width = 300, anchor = "center")
+        visitorsTree = ttk.Treeview(viewVisitorsWindow, columns=( "1", "2"), selectmode="extended")
+        visitorsTree['show'] = "headings"
+        visitorsTree.column("1", width = 300, anchor = "center")
+        visitorsTree.column("2", width = 300, anchor = "center")
+        
+        visitorsTree.heading("1", text = "UserName")
+        visitorsTree.heading("2", text = "Email")
+
         visitorsTree.place(x=400, y=200, anchor="center")
+
+
+        self.cursor.execute("SELECT Username, Email FROM User WHERE Type = 'visitor'")
+
+        self.viewVisitorsTuple = self.cursor.fetchall()
+        self.usernameList = []
+        self.emailList = []
+
+        for i in self.viewVisitorsTuple:
+            self.usernameList.append(i[0])
+            self.emailList.append(i[1])
+
+        # print(self.usernameList)
+        # print(self.emailList)
+
+        # Insert data into the treeview
+        for i in range(len(self.viewVisitorsTuple)):
+            visitorsTree.insert('', i , values=(self.usernameList[i], self.emailList[i]))
 
         # Back Button
         backButton = Button(viewVisitorsWindow, text="Back", command=self.viewVisitorsBackButtonClicked)
@@ -1059,7 +1085,7 @@ class ATLzoo:
 
         # Title Label
         titleLabel= Label(showAnimalWindowAdmin,text = "Search Animals", font = "Verdana 16 bold ")
-        titleLabel.grid(row=1,column=2,sticky=W+E)
+        titleLabel.grid(row=1,column=2,sticky=W +E)
 
         nameLabel = Label(showAnimalWindowAdmin,text = "Name")
         nameLabel.grid(row=2, column=0)
@@ -1079,7 +1105,7 @@ class ATLzoo:
         exhibitLabel.grid(row=4,column=0)
         exhibitDefault = StringVar()
         exhibitDefault.set("options")
-        exhibitMenu = OptionMenu(showAnimalWindowAdmin, exhibitDefault, "this","will","have","options","later")
+        exhibitMenu = OptionMenu(showAnimalWindowAdmin, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
         exhibitMenu.grid(row=4, column=1)
 
         minLabel=Label(showAnimalWindowAdmin,text="Min")
@@ -1100,7 +1126,6 @@ class ATLzoo:
         maxDefault.set("3")
         maxMenu = OptionMenu(showAnimalWindowAdmin, maxDefault, "0", "1","2","3","4","5")
         maxMenu.grid(row=3, column=4,pady=10, sticky=W)
-
 
         typeLabel = Label(showAnimalWindowAdmin,text = "Type")
         typeLabel.grid(row=4, column=2)
