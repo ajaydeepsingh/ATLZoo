@@ -26,6 +26,7 @@ Pages that the final application should have:
   - View Visitors :heavy_check_mark:
   - View Shows
   - Add Show
+  - Add Animal
   - View Staff :heavy_check_mark:
   - View Animals :heavy_check_mark:
 
