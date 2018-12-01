@@ -12,8 +12,8 @@ class ATLzooSearchAnimals:
     def __init__(self):
         # Invoke createLoginWindow; Invoke buildLoginWindow, Set loginWindow as mainloop
         #Connect to the database
-        # self.db = self.connect()
-        # self.cursor = self.db.cursor()
+        self.db = self.connect()
+        self.cursor = self.db.cursor()
         # Login Window
         self.createSearchAnimalWindow()
         self.buildSearchAnimalWindow(self.searchAnimalWindow)
@@ -78,7 +78,6 @@ class ATLzooSearchAnimals:
 
     def searchAnimalWindowFindAnimalsButtonClicked(self):
 
-
         self.searchAnimalWindow.destroy()
         self.createAnimalDetailWindow()
 
@@ -87,4 +86,17 @@ class ATLzooSearchAnimals:
         self.chooseFunctionalityWindow.deiconify()
 
 
+    #--------------------Database Connection-----------------
+    def connect(self):
+        try:
+            db = pymysql.connect(host = 'academic-mysql.cc.gatech.edu',
+                                 db = 'cs4400_group33', user = 'cs4400_group33', passwd = '9dpzV4ce')
+            return db
+        except:
+            messagebox.showwarning('Error!','Cannot connect. Please check your internet connection.')
+            return False
+
+
+
 a=ATLzooSearchAnimals()
+a.db.close()

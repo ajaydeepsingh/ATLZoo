@@ -12,8 +12,8 @@ class ATLzooStaffSearchAnimals:
     def __init__(self):
         # Invoke createLoginWindow; Invoke buildLoginWindow, Set loginWindow as mainloop
         #Connect to the database
-        # self.db = self.connect()
-        # self.cursor = self.db.cursor()
+        self.db = self.connect()
+        self.cursor = self.db.cursor()
         # Login Window
         self.createSearchAnimalWindow()
         self.buildSearchAnimalWindow(self.searchAnimalWindow)
@@ -51,8 +51,8 @@ class ATLzooStaffSearchAnimals:
         exhibitLabel = Label(searchAnimalWindow,text = "Exhibit")
         exhibitLabel.grid(row=4,column=0)
         exhibitDefault = StringVar()
-        exhibitDefault.set("options")
-        exhibitMenu = OptionMenu(searchAnimalWindow, exhibitDefault, "this","will","have","options","later")
+        exhibitDefault.set("")
+        exhibitMenu = OptionMenu(searchAnimalWindow, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
         exhibitMenu.grid(row=4, column=1)
 
         minLabel=Label(searchAnimalWindow,text="Min")
@@ -73,7 +73,6 @@ class ATLzooStaffSearchAnimals:
         maxDefault.set("3")
         maxMenu = OptionMenu(searchAnimalWindow, maxDefault, "0", "1","2","3","4","5")
         maxMenu.grid(row=3, column=4,pady=10, sticky=W)
-
 
         typeLabel = Label(searchAnimalWindow,text = "Type")
         typeLabel.grid(row=4, column=2)
@@ -96,6 +95,44 @@ class ATLzooStaffSearchAnimals:
         selectAnimalTree.column('#4', width = 150, anchor = "center")
         selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
 
+
+        print(typeDefault.get())
+
+        # Table is a list of table names"
+        attributes = ["Name", "Species", "Type", "E_Name", "Age"]
+
+        # Entry is a list of the filter inputs
+        entry = []
+
+        entry.append(str(self.animalNameSV.get()))
+        entry.append(str(self.speciesNameSV.get()))
+        entry.append(typeDefault.get())
+        entry.append(exhibitDefault.get())
+        
+
+
+        sql = "SELECT * FROM Animal WHERE "
+
+        for i in range(len(entry)):
+            if entry[i] != "":
+                sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+            else:
+                sql = sql + attributes[i] + " LIKE '%'"
+        #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+            if i < len(entry)-1:
+                sql = sql + " AND "
+        #end of statement
+        sql = sql + ";"
+
+
+        print(sql)
+        self.cursor.execute(sql)
+
+        self.animalResults = self.cursor.fetchall()
+        print(self.animalResults)
+
+
+
         findAnimalsButton = Button(searchAnimalWindow, text="Find Animals", command=self.searchAnimalWindowFindAnimalsButtonClicked)
         findAnimalsButton.grid(row=6,column=3)
 
@@ -111,6 +148,16 @@ class ATLzooStaffSearchAnimals:
     def  searchAnimalWindowBackButtonClicked(self):
         self.searchAnimalWindow.withdraw()
         import staffFunctionality
+
+
+    def connect(self):
+        try:
+            db = pymysql.connect(host = 'academic-mysql.cc.gatech.edu',
+                                 db = 'cs4400_group33', user = 'cs4400_group33', passwd = '9dpzV4ce')
+            return db
+        except:
+            messagebox.showwarning('Error!','Cannot connect. Please check your internet connection.')
+            return False
 
 
 a=ATLzooStaffSearchAnimals()

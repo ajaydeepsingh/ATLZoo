@@ -506,6 +506,7 @@ class ATLzoo:
         selectAnimalTree.heading('#2', text = "Exhibit")
         selectAnimalTree.heading('#3', text = "Age")
         selectAnimalTree.heading('#4', text = "Type")
+        
         selectAnimalTree.column('#0', width = 150, anchor = "center")
         selectAnimalTree.column('#1', width = 150, anchor = "center")
         selectAnimalTree.column('#2', width = 150, anchor = "center")
