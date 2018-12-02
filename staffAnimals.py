@@ -74,7 +74,7 @@ class ATLzooStaffSearchAnimals:
         typeLabel.grid(row=4, column=2)
         # Name Entry
         self.typeDefault = StringVar()
-        self.typeDefault.set("mammal")
+        self.typeDefault.set("")
         typeMenu = OptionMenu(searchAnimalWindow, self.typeDefault, "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
         typeMenu.grid(row=4, column=3, sticky=W)
        
@@ -151,8 +151,8 @@ class ATLzooStaffSearchAnimals:
         for i in range(len(self.animalResults)):
             self.selectAnimalTree.insert('', i , values=(self.animalName[i], self.species[i], self.ename[i], self.age[i], self.type[i]))
 
-        self.createSearchAnimalWindow()
-        self.buildSearchAnimalWindow(searchAnimalWindow)
+        # self.createSearchAnimalWindow()
+        # self.buildSearchAnimalWindow(searchAnimalWindow)
         # self.searchAnimalWindow.destroy()
         # self.createAnimalDetailWindow()
 

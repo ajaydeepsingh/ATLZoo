@@ -7,8 +7,6 @@ from datetime import datetime, timedelta
 import decimal
 
 
-
-
 class ATLzoo:
     def __init__(self):
         # Invoke createLoginWindow; Invoke buildLoginWindow, Set loginWindow as mainloop
@@ -391,8 +389,11 @@ class ATLzoo:
         self.loginWindow.deiconify()
 
 
-#-------------------ADMIN PAGES------------------------------
+#-------------------ADMIN PAGES--------------------------------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+#-------------------ADMIN VIEW VISITORS PAGE------------------------------
 
     def createViewVisitorsWindow(self):
         self.viewVisitorsWindow = Toplevel()
@@ -439,14 +440,12 @@ class ATLzoo:
 
 
     def showVisitorsWindowAdminRemoveVisitorButtonClicked(self):
-
         if not self.visitorsTree.focus():
             messagebox.showwarning("Error","You haven't selected any Visitor.")
             return False
 
         treeIndexString = self.visitorsTree.focus()
         valueRemoved = self.visitorsTree.item(treeIndexString)
-
 
         messagebox.showwarning('Remove Visitor', 'Are you sure?')
         valueslist = list(valueRemoved.values())
@@ -489,16 +488,16 @@ class ATLzoo:
         exhibitLabel = Label(adminAddAnimalWindow,text = "Exhibit")
         exhibitLabel.grid(row=3,column=1,pady=15)
         exhibitDefault = StringVar()
-        exhibitDefault.set("options")
-        exhibitMenu = OptionMenu(adminAddAnimalWindow, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
+        exhibitDefault.set("")
+        exhibitMenu = OptionMenu(adminAddAnimalWindow, exhibitDefault, "","Pacific","Jungle","Sahara","Mountainous","Birds")
         exhibitMenu.grid(row=3, column=2,pady=15)
 
         typeLabel = Label(adminAddAnimalWindow,text = "Type")
         typeLabel.grid(row=4, column=1,pady=15)
         # Name Entry
         typeDefault = StringVar()
-        typeDefault.set("mammal")
-        typeMenu = OptionMenu(adminAddAnimalWindow, typeDefault, "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
+        typeDefault.set("")
+        typeMenu = OptionMenu(adminAddAnimalWindow, typeDefault, "","mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
         typeMenu.grid(row=4, column=2,pady=15)
 
         speciesLabel = Label(adminAddAnimalWindow,text = "Species")
@@ -542,14 +541,12 @@ class ATLzoo:
         titleLabel= Label(adminAddShowWindow,text = "Add Show", font = "Verdana 16 bold ")
         titleLabel.grid(row=1,column=2, sticky=W+E, padx=200,pady=20)
 
-
         nameLabel = Label(adminAddShowWindow,text = "Show Name")
         nameLabel.grid(row=2, column=1,pady=15)
 
         showName = StringVar()
         showName = Entry(adminAddShowWindow, textvariable = showName, width=20)
         showName.grid(row=2, column=2,pady=15)
-
 
         exhibitLabel = Label(adminAddShowWindow,text = "Exhibit")
         exhibitLabel.grid(row=3,column=1,pady=15)
@@ -579,11 +576,8 @@ class ATLzoo:
         timeEntry = Entry(adminAddShowWindow, textvariable=self.timeNameSV, width=20)
         timeEntry.grid(row=6, column=2, pady=15)
 
-
-
         addShowButton = Button(adminAddShowWindow, text="Add Show", command=self.adminAddShowWindowAddButtonClicked)
         addShowButton.grid(row=4, column =3, pady=15)
-
 
         backButton = Button(adminAddShowWindow, text="Back", command=self.adminViewShowWindowBackButtonClicked)
         backButton.place(x=360, y=400)
@@ -598,7 +592,7 @@ class ATLzoo:
         self.adminAddShowWindow.destroy()
         self.chooseAdminFunctionalityWindow.deiconify()
 
-#-------------------SHOW ANIMAL ADMIN PAGE------------------------------
+#-------------------SHOW ANIMALS ADMIN PAGE------------------------------
 
     def createShowAnimalWindowAdmin(self):
         # Create blank Search Animal Window
@@ -691,7 +685,7 @@ class ATLzoo:
         self.showAnimalWindowAdmin.destroy()
         self.chooseAdminFunctionalityWindow.deiconify()
 
-
+#-------------------ADMIN VIEW STAFF PAGE------------------------------
     def createViewStaffWindow(self):
         self.viewStaffWindow = Toplevel()
         self.viewStaffWindow.title("Zoo Atlanta")
@@ -766,7 +760,8 @@ class ATLzoo:
         self.viewStaffWindow.destroy()
         self.chooseAdminFunctionalityWindow.deiconify()
 
-#--------------------Staff Functionality Window-----------------
+#--------------------Staff Functionality Window--------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def createStaffChooseFunctionalityWindow(self):
             # Create blank chooseFunctionalityWindow
@@ -825,6 +820,9 @@ class ATLzoo:
 
 #-------------------STAFF PAGES------------------------------
 
+
+
+#-------------------STAFF SEARCH ANIMALS------------------------------
     def createStaffSearchAnimalsWindow(self):
         # Create blank Search Animal Window
         self.searchStaffAnimalsWindow=Toplevel()
@@ -977,6 +975,7 @@ class ATLzoo:
     def  searchAnimalWindowBackButtonClicked(self):
         self.searchAnimalWindow.destroy()
 
+#------------------- STAFF SHOW PERFORMANCES ------------------------------
 
     def createStaffShowHistoryWindow(self):
         # Create blank Search Animal Window
@@ -1110,9 +1109,6 @@ class ATLzoo:
         self.chooseVisitorFunctionalityWindow.withdraw()
 
     def chooseFunctionalityWindowLogOutButtonClicked(self):
-        # Click Log Out Buttion on Choose Functionality Window:
-        # Destroy Choose Functionality Window
-        # Display Login Window
         self.chooseVisitorFunctionalityWindow.destroy()
         self.loginWindow.deiconify()
 
