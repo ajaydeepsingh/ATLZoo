@@ -1516,7 +1516,8 @@ class ATLzoo:
 
         
         # self.selectExhibitTree['show'] = "headings"
-        selectShowTree = ttk.Treeview(searchVisitorShowsWindow, columns=("Name", "Exhibit", "Date"))
+        selectShowTree = ttk.Treeview(searchVisitorShowsWindow, columns=("1", "2", "3"), selectmode = 'extended')
+        selectShowTree['show'] = "headings"
         selectShowTree.heading("1", text = "Name")
         selectShowTree.heading("2", text = "Exhibit")
         selectShowTree.heading("3", text = "Date")
@@ -1526,10 +1527,13 @@ class ATLzoo:
         selectShowTree.place(x=280, y=280, anchor="center", width=525)
 
         logVisitButton = Button(searchVisitorShowsWindow, text="Log Visit", command = self.logVisitButtonClicked)  
-        logVisitButton.place(x=220, y=415)  
+        logVisitButton.place(x=320, y=415)
+
+        exhibitDetailButton = Button(searchVisitorShowsWindow, text="View Exhibit Details", command = self.exhibitDetailsButtonClicked)  
+        exhibitDetailButton.place(x=500, y=415)  
 
         backButton = Button(searchVisitorShowsWindow, text="Back", command=self.searchVisitorShowsWindowBackButtonClicked)
-        backButton.place(x=320, y=415)
+        backButton.place(x=120, y=415)
 
     def searchVisitorShowsWindowFindShowsButtonClicked(self):
         self.searchVisitorShowsWindow.destroy()
@@ -1703,18 +1707,19 @@ class ATLzoo:
         numVisitsLabel = Label(exhibitHistoryWindow,text = "Number of Visits")
         numVisitsLabel.grid(row=3,column=2,pady=10)
 
-        minSpinBox = Spinbox(exhibitHistoryWindow, from_=0, to=10000, width=5)
-        minSpinBox.grid(row=3, column=3,pady=10,sticky=W)
+        self.minSpinBox = Spinbox(exhibitHistoryWindow, from_=0, to=10000, width=5)
+        self.minSpinBox.grid(row=3, column=3,pady=10,sticky=W)
 
-        maxSpinBox = Spinbox(exhibitHistoryWindow, from_=0, to=10000, width=5)
-        maxSpinBox.grid(row=3, column=4,pady=10,sticky=W)
+        self.maxSpinBox = Spinbox(exhibitHistoryWindow, from_=0, to=10000, width=5)
+        self.maxSpinBox.grid(row=3, column=4,pady=10,sticky=W)
 
 
         dateLabel = Label(exhibitHistoryWindow,text = "Date:")
         dateLabel.grid(row=4, column=0,pady=10)
 
         #showDateEntry = CalendarDialog.main()
-        exhibitDateEntry= Entry(exhibitHistoryWindow)
+        self.exhibitDateSV = StringVar()
+        exhibitDateEntry = Entry(exhibitHistoryWindow, textvariable = self.exhibitDateSV, width=20)
         exhibitDateEntry.grid(row=4, column=1,pady=10)
 
         # Buttons
@@ -1762,7 +1767,7 @@ class ATLzoo:
 
     def searchExhibitHistoryWindowGetDetailsButtonClicked(self):    
         if not self.exhibitHistoryTree.focus():
-            messagebox.showwarning("Error","You haven't selected an Exhibit.")
+            messagebox.showwarning("Error","You have not selected an Exhibit.")
             return False
 
         treeIndexString = self.exhibitHistoryTree.focus()
@@ -1778,10 +1783,49 @@ class ATLzoo:
 
 
     def exhibitHistoryWindowFindHistoryButtonClicked(self):
-        print("lol not here yet")
-        
 
-    
+        for i in self.exhibitHistoryTree.get_children():
+            self.exhibitHistoryTree.delete(i)
+
+        self.exhibitDateTime = self.exhibitDateSV.get()
+
+        if self.exhibitDateTime is not "":
+            try:
+                datetime.strptime(self.exhibitDateTime, '%Y-%m-%d %I:%M%p')
+            except ValueError:
+                messagebox.showwarning("Error!, Date needs to be in format yyyy-mm-dd and time needs to be in format hh:mmAM/PM")
+                return False
+
+
+        #attributes is a list of attribute names
+        attributes = ['E_name', 'Time', 'NumVisits']
+
+        #Entry is a list of the filter inputs
+        entry = []
+
+        entry.append(str(self.exhibitNameString.get()))
+        entry.append(self.exhibitDateTime)
+        entry.append([self.minSpinBox.get(),self.maxSpinBox.get()])
+
+        sql = "SELECT * FROM Exhibit_History WHERE "
+
+        for i in range(len(entry)):
+            #min and max will never be empty
+            if i == 2:
+                sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get()
+            elif entry[i] != "":
+                sql = sql + attributes[i] + " = " + entry[i]
+            else:
+                sql = sql + attributes[i] + " LIKE '%'"
+        #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+            if i < len(entry)-1:
+                sql = sql + " AND "
+        #end of statement
+        sql = sql + ";"
+
+        print(sql)
+
+
     def exhibitHistoryWindowBackButtonClicked(self):
         self.exhibitHistoryWindow.withdraw()
         self.chooseVisitorFunctionalityWindow.deiconify()
