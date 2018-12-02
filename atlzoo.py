@@ -1212,6 +1212,8 @@ class ATLzoo:
         self.selectAnimalTree.heading("4", text = "Age")
         self.selectAnimalTree.heading("5", text = "Type")
 
+        self.selectAnimalTree.bind("<Double-1>", self.searchStaffAnimalsWindowAnimalClicked)
+
         self.selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
 
 
@@ -1222,6 +1224,21 @@ class ATLzoo:
         backButton = Button(searchStaffAnimalsWindow, text="Back", command=self.searchStaffAnimalsWindowBackButtonClicked)
         backButton.grid(row=6,column=1)
 
+    def searchStaffAnimalsWindowAnimalClicked(self, event):
+    
+        self.searchStaffAnimalsWindow.withdraw()
+        self.createSearchAnimalCareWindow()
+        self.selectedRow = self.selectAnimalTree.selection()[0]
+    
+        self.selectedRowItems = self.selectAnimalTree.item(self.selectedRow)['values']
+
+        self.animalName = self.selectedRowItems[0]
+        self.animalSpecies = self.selectedRowItems[1]
+        self.animalExhibit = self.selectedRowItems[2]
+        self.animalAge = self.selectedRowItems[3]
+        self.animalType = self.selectedRowItems[4]
+
+        self.buildSearchAnimalCareWindow(self.searchAnimalCareWindow, self.animalName, self.animalSpecies, self.animalExhibit, self.animalAge, self.animalType)
 
 
     def searchStaffAnimalsWindowFindAnimalsButtonClicked(self):
@@ -1281,63 +1298,94 @@ class ATLzoo:
         self.chooseStaffFunctionalityWindow.deiconify()
         # import staffFunctionality
 
+#-------------------STAFF ANIMAL CARE------------------------------
 
-    def createSearchAnimalWindow(self):
+    def createSearchAnimalCareWindow(self):
         # Create blank Search Animal Window
-        self.searchAnimalWindow=Toplevel()
-        self.searchAnimalWindow.title("Zoo Atlanta")
-        self.searchAnimalWindow.geometry("600x600")
+        self.searchAnimalCareWindow=Toplevel()
+        self.searchAnimalCareWindow.title("Zoo Atlanta")
+        self.searchAnimalCareWindow.geometry("600x600")
 
-    def buildSearchAnimalWindow(self,searchAnimalWindow):
+    def buildSearchAnimalCareWindow(self,searchAnimalCareWindow, name, species, exhibit, age, animalType):
 
  
-        titleLabel= Label(searchAnimalWindow,text = "Animal Detail", font = "Verdana 16 bold ")
+        titleLabel= Label(searchAnimalCareWindow,text = "Animal Detail", font = "Verdana 16 bold ")
         titleLabel.grid(row=1,column=1,sticky=W+E,pady=10)
 
-        nameLabel = Label(searchAnimalWindow,text = "Name:")
+        self.animalCareName = name
+
+        nameLabel = Label(searchAnimalCareWindow,text = "Name:" + self.animalCareName)
         nameLabel.grid(row=2, column=0,pady=10)
 
-        speciesLabel = Label(searchAnimalWindow, text="Species:")
+        self.animalCareSpecies = species
+
+        speciesLabel = Label(searchAnimalCareWindow, text="Species:" + self.animalCareSpecies)
         speciesLabel.grid(row=2, column=1,pady=10)
+
+        self.animalCareAge = str(age)
         
-        ageLabel = Label(searchAnimalWindow,text = "Age:")
+        ageLabel = Label(searchAnimalCareWindow,text = "Age:" + self.animalCareAge)
         ageLabel.grid(row=2,column=2,pady=10)
 
-        exhibitLabel = Label(searchAnimalWindow,text = "Exhibit:")
+        self.animalCareExhibit = exhibit
+
+        exhibitLabel = Label(searchAnimalCareWindow,text = "Exhibit:" + self.animalCareExhibit)
         exhibitLabel.grid(row=3,column=0,pady=10)
 
-        typeLabel = Label(searchAnimalWindow,text = "Type:")
+        self.animalCareType = animalType
+
+        typeLabel = Label(searchAnimalCareWindow,text = "Type:" + self.animalCareType)
         typeLabel.grid(row=3,column=1,pady=10)
 
 
-
         self.animalCareNotes = StringVar()
-        animalCareEntry = Entry(searchAnimalWindow, textvariable=self.animalCareNotes, width=20)
+        animalCareEntry = Entry(searchAnimalCareWindow, textvariable=self.animalCareNotes, width=20)
         animalCareEntry.grid(row=4, column=0,pady=10, padx=10)
 
-        logCareButton = Button(searchAnimalWindow, text="Log Notes", command=self.logAnimalNotesButtonClicked)
+        logCareButton = Button(searchAnimalCareWindow, text="Log Notes", command=self.logAnimalNotesButtonClicked)
         logCareButton.grid(row=4,column=1,pady=10)
         
-        selectAnimalTree = ttk.Treeview(searchAnimalWindow, columns=("Staff Member", "Note", "Time"))
-        selectAnimalTree.heading('#0', text = "Staff Member")
-        selectAnimalTree.heading('#1', text = "Note")
-        selectAnimalTree.heading('#2', text = "Time")
-        selectAnimalTree.column('#0', width = 150, anchor = "center")
-        selectAnimalTree.column('#1', width = 150, anchor = "center")
-        selectAnimalTree.column('#2', width = 150, anchor = "center")
-        selectAnimalTree.place(x=20, y=200,width=450)
+        self.selectAnimalTree = ttk.Treeview(searchAnimalCareWindow, columns=("1", "2", "3"), selectmode = "extended")
+        self.selectAnimalTree['show'] = "headings"
+        self.selectAnimalTree.heading('1', text = "Staff Member")
+        self.selectAnimalTree.heading('2', text = "Note")
+        self.selectAnimalTree.heading('3', text = "Time")
+        self.selectAnimalTree.column('1', width = 150, anchor = "center")
+        self.selectAnimalTree.column('2', width = 150, anchor = "center")
+        self.selectAnimalTree.column('3', width = 150, anchor = "center")
+        self.selectAnimalTree.place(x=20, y=200,width=450)
 
-        backButton = Button(searchAnimalWindow, text="Back", command=self.searchAnimalWindowBackButtonClicked)
+        self.cursor.execute("SELECT U_Name, Notes, Time FROM Care_Log JOIN Animal ON Care_Log.Anim_Name = Animal.Name WHERE Care_Log.Anim_Name = %s AND Care_Log.Species = %s", (self.animalName, self.animalSpecies))
+        self.animalCareTuple = self.cursor.fetchall()
+
+        self.staffMemberList = []
+        self.noteList = []
+        self.dateTimeList = []
+
+        for i in self.animalCareTuple:
+            self.staffMemberList.append(i[0])
+            self.noteList.append(i[1])
+            self.dateTimeList.append(i[2])
+
+        for i in range(len(self.animalCareTuple)):
+            self.selectAnimalTree.insert('', i, values=(self.staffMemberList[i], self.noteList[i], self.dateTimeList[i]))
+
+        backButton = Button(searchAnimalCareWindow, text="Back", command=self.searchAnimalCareWindowBackButtonClicked)
         backButton.place(x=240,y=440)
 
 
     def logAnimalNotesButtonClicked(self):
+        self.staffName = self.loginUsername.get()
+        self.animalCareLogNotes = self.animalCareNotes.get()
+        self.animalCareDateNow = f"{datetime.now():%Y-%m-%d %H:%M:%S}"
+        self.selectAnimalTree.insert("", 0, values=(self.staffName, self.animalCareLogNotes, self.animalCareDateNow))
+        self.cursor.execute("INSERT INTO Care_Log(U_Name, Anim_Name, Species, Time, Notes) VALUES(%s, %s, %s, CURRENT_TIMESTAMP, %s)",(self.staffName,self.animalCareName,self.animalCareSpecies,self.animalCareLogNotes))
 
-        self.searchAnimalWindow.destroy()
-        self.createAnimalDetailWindow()
 
-    def  searchAnimalWindowBackButtonClicked(self):
-        self.searchAnimalWindow.destroy()
+    def searchAnimalCareWindowBackButtonClicked(self):
+        self.searchAnimalCareWindow.withdraw()
+        self.createStaffSearchAnimalsWindow()
+        self.buildStaffSearchAnimalsWindow(self.searchStaffAnimalsWindow)
 
 #------------------- STAFF SHOW PERFORMANCES ------------------------------
 
