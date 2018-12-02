@@ -827,14 +827,6 @@ class ATLzoo:
         self.adminViewShowWindow.geometry("800x600")
 
     def buildAdminViewShowWindow(self, adminViewShowWindow):
-        '''
-        frame = Frame(staffShowHistoryWindow)
-        frame.pack()
-        treeFrame = Frame(staffShowHistoryWindow)
-        treeFrame.pack()
-        buttonFrame = Frame(staffShowHistoryWindow)
-        buttonFrame.pack(side=BOTTOM)
-        '''
 
         titleLabel= Label(adminViewShowWindow,text = "Shows", font = "Verdana 16 bold ")
         titleLabel.grid(row=1,column=2, sticky=W+E, padx=200)
@@ -852,8 +844,8 @@ class ATLzoo:
         exhibitLabel = Label(adminViewShowWindow,text = "Exhibit")
         exhibitLabel.grid(row=3,column=0,pady=10)
         exhibitDefault = StringVar()
-        exhibitDefault.set("options")
-        exhibitMenu = OptionMenu(adminViewShowWindow, exhibitDefault, "this","will","have","options","later")
+        exhibitDefault.set("")
+        exhibitMenu = OptionMenu(adminViewShowWindow, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
         exhibitMenu.grid(row=3, column=1,pady=10)
 
         dateLabel=Label(adminViewShowWindow,text="Date")
