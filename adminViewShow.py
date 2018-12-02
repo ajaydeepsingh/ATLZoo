@@ -85,7 +85,6 @@ class ATLzooAdminViewShow:
 
     def adminViewShowWindowBackButtonClicked(self):
         self.adminViewShowWindow.destroy()
-        import adminFunctionality
 
 a = ATLzooAdminViewShow()
 
