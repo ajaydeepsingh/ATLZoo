@@ -1123,8 +1123,6 @@ class ATLzoo:
         self.buildStaffSearchAnimalsWindow(self.searchStaffAnimalsWindow)
         self.chooseStaffFunctionalityWindow.withdraw()
 
-
-
     def chooseStaffFunctionalityWindowViewAssignedShowsLabelClicked(self,event):
         self.createStaffShowHistoryWindow()
         self.buildStaffShowHistoryWindow(self.staffShowHistoryWindow)
@@ -1671,42 +1669,83 @@ class ATLzoo:
         numVisitsLabel = Label(exhibitHistoryWindow,text = "Number of Visits")
         numVisitsLabel.grid(row=3,column=2,pady=10)
 
-        minSpinBox = Spinbox(exhibitHistoryWindow, from_=0, to=10000)
+        minSpinBox = Spinbox(exhibitHistoryWindow, from_=0, to=10000, width=5)
         minSpinBox.grid(row=3, column=3,pady=10,sticky=W)
 
-        maxSpinBox = Spinbox(exhibitHistoryWindow, from_=0, to=10000)
+        maxSpinBox = Spinbox(exhibitHistoryWindow, from_=0, to=10000, width=5)
         maxSpinBox.grid(row=3, column=4,pady=10,sticky=W)
 
 
-        dateLabel = Label(exhibitHistoryWindow,text = "Date")
+        dateLabel = Label(exhibitHistoryWindow,text = "Date:")
         dateLabel.grid(row=4, column=0,pady=10)
 
         #showDateEntry = CalendarDialog.main()
         exhibitDateEntry= Entry(exhibitHistoryWindow)
         exhibitDateEntry.grid(row=4, column=1,pady=10)
 
-        # Button
-        findShowsButton = Button(exhibitHistoryWindow, text="Search", command=self.exhibitHistoryWindowFindShowsButtonClicked)
-        findShowsButton.grid(row=4,column=2,pady=10)
+        # Buttons
+        findExhibitsButton = Button(exhibitHistoryWindow, text="Search", command=self.exhibitHistoryWindowFindHistoryButtonClicked)
+        findExhibitsButton.grid(row=4,column=2,pady=10)
 
-        
-        # self.selectExhibitTree['show'] = "headings"
-        selectExhibitTree = ttk.Treeview(exhibitHistoryWindow, columns=("Name", "Time", "Number of Visits"))
-        selectExhibitTree.heading('#0', text = "Name")
-        selectExhibitTree.heading('#1', text = "Time")
-        selectExhibitTree.heading('#2', text = "Number of Visits")
-        selectExhibitTree.column('#0', width = 200, anchor = "center")
-        selectExhibitTree.column('#1', width = 200, anchor = "center")
-        selectExhibitTree.column('#2', width = 200, anchor = "center")
-        selectExhibitTree.place(x=20, y=200,width=600)
-
-        
+        getExhibitDetailsButton = Button(exhibitHistoryWindow, text="Get Exhibit Details", command=self.searchExhibitHistoryWindowGetDetailsButtonClicked)
+        getExhibitDetailsButton.grid(row=6,column=2)
 
         backButton = Button(exhibitHistoryWindow, text="Back", command=self.exhibitHistoryWindowBackButtonClicked)
         backButton.place(x=310, y=440)
 
-    def exhibitHistoryWindowFindShowsButtonClicked(self):
+        
+        # self.selectExhibitTree['show'] = "headings"
+        self.exhibitHistoryTree = ttk.Treeview(exhibitHistoryWindow, columns=("1", "2", "3"), selectmode="extended")
+        self.exhibitHistoryTree['show'] = "headings"
+        self.exhibitHistoryTree.column("1", width = 200, anchor = "center")
+        self.exhibitHistoryTree.column("2", width = 200, anchor = "center")
+        self.exhibitHistoryTree.column("3", width = 200, anchor = "center")
+        self.exhibitHistoryTree.heading("1", text = "Name")
+        self.exhibitHistoryTree.heading("2", text = "Time")
+        self.exhibitHistoryTree.heading("3", text = "Number of Visits")
+
+        exhibitHistoryTree.place(x=20, y=200,width=600)
+
+
+        self.cursor.execute("SELECT t2.Count, t1.E_Name, t1.Time  FROM (SELECT E_Name, Time FROM Exhibit_History WHERE U_Name = %s) AS t1 LEFT JOIN (SELECT COUNT(U_Name AND E_Name AND Time) as Count, E_Name as Name FROM Exhibit_History WHERE U_Name = %s GROUP BY E_Name) AS t2 on (t2.Name = t1.E_Name)",(self.currentUser ,self.currentUser))
+        self.historyResults = self.cursor.fetchall()
+        # print(self.historyResults)
+        # (1, 'Pacific', datetime.datetime(2018, 12, 2, 14, 59, 4))
+
+        self.timesVisited = []
+        self.exhibitTime = []
+        self.exhibitVisited = []
+
+        for i in self.historyResults:
+            self.timesVisited.append(i[0])
+            self.exhibitVisited.append(i[1])
+            self.exhibitTime.append(i[2])
+            
+
+        for i in range(len(self.historyResults)):
+            self.exhibitHistoryTree.insert('', i , values=(self.exhibitVisited[i], self.exhibitTime[i], self.timesVisited[i]))
+
+
+    def searchExhibitHistoryWindowGetDetailsButtonClicked(self):    
+        if not self.exhibitHistoryTree.focus():
+            messagebox.showwarning("Error","You haven't selected an Exhibit.")
+            return False
+
+        treeIndexString = self.exhibitHistoryTree.focus()
+        valueDetail = self.exhibitHistoryTree.item(treeIndexString)
+
+        valueslist = list(valueDetail.values())
+        valueslist = valueslist[2]
+        print(valueslist)
+        # self.exhibitOfInterest = valueslist[2]
         self.exhibitHistoryWindow.destroy()
+        self.createExhibitDetailWindow()
+        self.buildExhibitDetailWindow(self.exhibitDetailWindow)
+
+
+    def exhibitHistoryWindowFindHistoryButtonClicked(self):
+        print("lol not here yet")
+        
 
     
     def exhibitHistoryWindowBackButtonClicked(self):
