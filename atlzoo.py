@@ -1580,7 +1580,7 @@ class ATLzoo:
         selectShowTree.column("1", width = 175, anchor = "center")
         selectShowTree.column("2", width = 175, anchor = "center")
         selectShowTree.column("3", width = 175, anchor = "center")
-        selectShowTree.place(x=280, y=280, anchor="center", width=525)
+        selectShowTree.place(x=350, y=280, anchor="center", width=525)
 
         logVisitButton = Button(searchVisitorShowsWindow, text="Log Visit", command = self.logVisitButtonClicked)  
         logVisitButton.place(x=320, y=415)
@@ -1592,8 +1592,32 @@ class ATLzoo:
         backButton.place(x=120, y=415)
 
     def searchVisitorShowsWindowFindShowsButtonClicked(self):
-        self.searchVisitorShowsWindow.destroy()
-        self.createShowsDetailWindow()
+        
+        attributes = [a_name, a_date, a_Ename]
+
+        #Entry is a list of the filter inputs
+        entry = []
+
+        entry.append(value_for_name)
+        entry.append(value_for_date)
+        entry.append(value_for_exhibit)
+
+        sql = "SELECT * FROM Performance WHERE "
+
+        for i in range(len(entry)):
+            elif entry[i] != "":
+                sql = sql + attributes[i] + " = " + entry[i]
+            else:
+                sql = sql + attributes[i] + " LIKE %"
+        #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+            if i<len(entry)-1:
+                sql = sql + " AND "
+        #end of statement
+        sql = sql + ";"
+
+
+    def exhibitDetailsButtonClicked(self):
+        print("go to exhibit")
 
     def logVisitButtonClicked(self):
         self.searchVisitorShowsWindow.withdraw()
