@@ -15,6 +15,7 @@ class ATLzoo:
         self.db = self.connect()
         self.cursor = self.db.cursor()
         self.currentUser = ""
+        self.exhibitOfInterest = ""
         # Login Window
         self.createLoginWindow()
         self.buildLoginWindow(self.loginWindow)
@@ -435,7 +436,7 @@ class ATLzoo:
         backButton = Button(viewVisitorsWindow, text="Back", command=self.viewVisitorsBackButtonClicked)
         backButton.place(x=10,y=570)
 
-        removeVisitorsButton = Button(viewVisitorsWindow, text="Remove Staff", command=self.showVisitorsWindowAdminRemoveVisitorButtonClicked)
+        removeVisitorsButton = Button(viewVisitorsWindow, text="Remove Visitors", command=self.showVisitorsWindowAdminRemoveVisitorButtonClicked)
         removeVisitorsButton.place(x=670,y=570)
 
 
@@ -1428,8 +1429,6 @@ class ATLzoo:
         dateLabel = Label(showHistoryWindow,text = "Date")
         dateLabel.grid(row=3, column=0,pady=10)
 
-
-
         #showDateEntry = CalendarDialog.main()
         showDateEntry= Entry(showHistoryWindow)
         showDateEntry.grid(row=3, column=1,pady=10)
@@ -1438,7 +1437,6 @@ class ATLzoo:
         findShowsButton = Button(showHistoryWindow, text="Search", command=self.showHistoryWindowFindShowsButtonClicked)
         findShowsButton.grid(row=3,column=2,pady=10)
 
-        
         selectShowTree = ttk.Treeview(showHistoryWindow, columns=("Name", "Exhibit", "Date"))
         selectShowTree.heading('#0', text = "Name")
         selectShowTree.heading('#1', text = "Exhibit")
@@ -1475,58 +1473,219 @@ class ATLzoo:
         titleLabel= Label(searchAnimalWindow,text = "Search Animals", font = "Verdana 16 bold ")
         titleLabel.grid(row=1,column=2,sticky=W+E)
 
-        # Labels
-        exhibitLabel = Label(searchAnimalWindow,text = "Exhibit")
-        exhibitLabel.grid(row=2,column=1)
-        ageLabel = Label(searchAnimalWindow,text = "Age")
-        ageLabel.grid(row=3,column=1)
-        typeLabel = Label(searchAnimalWindow,text = "Type")
-        typeLabel.grid(row=4,column=1)
-
+        
         nameLabel = Label(searchAnimalWindow,text = "Name")
-        nameLabel.grid(row=2, column=2)
-        # Name Entry
+        nameLabel.grid(row=2, column=0)
+
         self.animalNameSV = StringVar()
         animalNameEntry = Entry(searchAnimalWindow, textvariable=self.animalNameSV, width=20)
-        animalNameEntry.grid(row=2, column=3)
+        animalNameEntry.grid(row=2, column=1)
 
         speciesLabel = Label(searchAnimalWindow,text = "Species")
-        speciesLabel.grid(row=3, column=2)
-        # Name Entry
-        self.animalSpeciesSV = StringVar()
-        animalSpeciesEntry = Entry(searchAnimalWindow, textvariable=self.animalSpeciesSV, width=20)
-        animalSpeciesEntry.grid(row=2, column=3)
+        speciesLabel.grid(row=3,column=0)
+        self.speciesNameSV = StringVar()
+        speciesNameEntry = Entry(searchAnimalWindow, textvariable=self.speciesNameSV, width=20)
+        speciesNameEntry.grid(row=3, column=1)
 
+        exhibitLabel = Label(searchAnimalWindow,text = "Exhibit")
+        exhibitLabel.grid(row=4,column=0)
+        self.exhibitDefault = StringVar()
+        self.exhibitDefault.set("")
+        exhibitMenu = OptionMenu(searchAnimalWindow, self.exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
+        exhibitMenu.grid(row=4, column=1)
+
+        minLabel=Label(searchAnimalWindow,text="Min")
+        minLabel.grid(row=2,column=3, sticky=W)
+
+        maxLabel=Label(searchAnimalWindow,text="Max")
+        maxLabel.grid(row=2,column=4, sticky=W)
+
+        ageLabel = Label(searchAnimalWindow,text = "Age")
+        ageLabel.grid(row=3,column=2)
+
+        self.minSpinBox = Spinbox(searchAnimalWindow, from_=0, to=10000, width=5)
+        self.minSpinBox.grid(row=3, column=3,pady=10,sticky=W)
+
+        self.maxSpinBox = Spinbox(searchAnimalWindow, from_=0, to=10000, width=5)
+        self.maxSpinBox.grid(row=3, column=4,pady=10,sticky=W)
         
-        # self.selectExhibitTree['show'] = "headings"
-        selectAnimalTree = ttk.Treeview(searchAnimalWindow, columns=("Name", "Size", "Exhibit", "Age"))
-        selectAnimalTree.heading('#0', text = "Name")
-        selectAnimalTree.heading('#1', text = "Species")
-        selectAnimalTree.heading('#2', text = "Exhibit")
-        selectAnimalTree.heading('#3', text = "Age")
-        selectAnimalTree.heading('#4', text = "Type")
-        selectAnimalTree.column('#0', width = 150, anchor = "center")
-        selectAnimalTree.column('#1', width = 150, anchor = "center")
-        selectAnimalTree.column('#2', width = 150, anchor = "center")
-        selectAnimalTree.column('#3', width = 150, anchor = "center")
-        selectAnimalTree.column('#4', width = 150, anchor = "center")
-        selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
+        typeLabel = Label(searchAnimalWindow,text = "Type")
+        typeLabel.grid(row=4, column=2)
+        # Name Entry
+        self.typeDefault = StringVar()
+        self.typeDefault.set("")
+        typeMenu = OptionMenu(searchAnimalWindow, self.typeDefault, "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
+        typeMenu.grid(row=4, column=3, sticky=W)
+       
+        self.selectAnimalTree = ttk.Treeview(searchAnimalWindow, columns=("1", "2", "3", "4","5"), selectmode="extended")
+        self.selectAnimalTree['show'] = "headings"
+        self.selectAnimalTree.column("1", width = 150, anchor = "center")
+        self.selectAnimalTree.column("2", width = 150, anchor = "center")
+        self.selectAnimalTree.column("3", width = 150, anchor = "center")
+        self.selectAnimalTree.column("4", width = 150, anchor = "center")
+        self.selectAnimalTree.column("5", width = 150, anchor = "center")
 
-        # Button
+        self.selectAnimalTree.heading("1", text = "Name")
+        self.selectAnimalTree.heading("2", text = "Species")
+        self.selectAnimalTree.heading("3", text = "Exhibit")
+        self.selectAnimalTree.heading("4", text = "Age")
+        self.selectAnimalTree.heading("5", text = "Type")
+
+        self.selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
+
+
+
         findAnimalsButton = Button(searchAnimalWindow, text="Find Animals", command=self.searchAnimalWindowFindAnimalsButtonClicked)
         findAnimalsButton.grid(row=6,column=3)
+
+        getDetailsButton = Button(searchAnimalWindow, text="Get Details", command=self.searchAnimalWindowGetDetailsButtonClicked)
+        getDetailsButton.grid(row=6,column=2)
 
         backButton = Button(searchAnimalWindow, text="Back", command=self.searchAnimalWindowBackButtonClicked)
         backButton.grid(row=6,column=1)
 
 
     def searchAnimalWindowFindAnimalsButtonClicked(self):
-        self.searchAnimalWindow.destroy()
-        self.createAnimalDetailWindow()
+        
+        for i in self.selectAnimalTree.get_children():
+            self.selectAnimalTree.delete(i)  
 
-    def  searchAnimalWindowBackButtonClicked(self):
+        # Table is a list of table names"
+        attributes = ["Name", "Species", "Type", "Age", "E_Name",]
+
+        # Entry is a list of the filter inputs
+        entry = []
+        entry.append(str(self.animalNameSV.get()))
+        entry.append(str(self.speciesNameSV.get()))
+        entry.append(self.typeDefault.get())
+        entry.append(self.exhibitDefault.get())
+
+        sql = "SELECT * FROM Animal WHERE "
+
+        for i in range(len(entry)):
+            if i == 3:
+                sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+            elif entry[i] != "":
+                sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+            else:
+                sql = sql + attributes[i] + " LIKE '%'"
+        #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+            if i < len(entry)-1:
+                sql = sql + " AND "
+        #end of statement
+        sql = sql + ";"
+
+        # print(sql)
+        self.cursor.execute(sql)
+        self.animalResults = self.cursor.fetchall()
+        # print(self.animalResults)
+
+        self.animalName = []
+        self.species = []
+        self.type = []
+        self.ename = []
+        self.age = []
+
+        for i in self.animalResults:
+            self.age.append(i[0])
+            self.type.append(i[1])
+            self.animalName.append(i[2])
+            self.species.append(i[3])
+            self.ename.append(i[4])
+        
+        for i in range(len(self.animalResults)):
+            self.selectAnimalTree.insert('', i , values=(self.animalName[i], self.species[i], self.ename[i], self.age[i], self.type[i]))
+
+    def searchAnimalWindowGetDetailsButtonClicked(self):
+        if not self.selectAnimalTree.focus():
+            messagebox.showwarning("Error","You haven't selected any Staff.")
+            return False
+
+        treeIndexString = self.selectAnimalTree.focus()
+        valueDetail = self.selectAnimalTree.item(treeIndexString)
+
+        valueslist = list(valueDetail.values())
+        valueslist = valueslist[2]
+        # print(valueslist)
+        # ['Goldy', 'Goldfish', 'Pacific', 1, 'fish']
+        self.exhibitOfInterest = valueslist[2]
+        self.searchAnimalWindow.destroy()
+        self.createExhibitDetailWindow()
+        self.buildExhibitDetailWindow(self.exhibitDetailWindow)
+
+
+    def searchAnimalWindowBackButtonClicked(self):
         self.searchAnimalWindow.destroy()
         self.chooseVisitorFunctionalityWindow.deiconify()
+
+
+    def createExhibitDetailWindow(self):
+            # Create blank chooseFunctionalityWindow
+            self.exhibitDetailWindow = Toplevel()
+            self.exhibitDetailWindow.title("Zoo Atlanta")
+            self.exhibitDetailWindow.geometry("800x600")
+            self.exhibitDetailWindow.resizable(0,0)
+
+    def buildExhibitDetailWindow(self, exhibitDetailWindow):
+        # Add component to chooseFunctionalityWindow
+
+        self.cursor.execute("SELECT Exhibit.Name , COUNT (Animal.Name AND Species), Size, Has_Water, Animal.Name, Species FROM Animal NATURAL JOIN Exhibit WHERE Exhibit.Name = Animal.E_Name AND Exhibit.Name = %s", (self.exhibitOfInterest))
+        self.exhibitFacts = self.cursor.fetchall()
+        print(self.exhibitFacts)
+
+        # Title Label
+        exhibitDetailLabel = Label(exhibitDetailWindow, text="Exhibit Details",font = "Verdana 16 bold ")
+        # chooseFunctionalityLabel.grid(row=1, column=1, sticky=W+E)
+        exhibitDetailLabel.place(x=400, y = 25, anchor="center")
+
+
+        ## Name , Num Animals, Water Feature, List of Animals in the exhibit
+        nameLabel= Label(exhibitDetailWindow, text = "Name:")
+        nameLabel.place(x=400, y=150, anchor="center")
+        
+        numAnimalsLabel= Label(exhibitDetailWindow, text = "Number of Animals")
+        numAnimalsLabel.place(x=400, y=175, anchor="center")
+
+        sizeLabel= Label(exhibitDetailWindow, text = "Size:")
+        sizeLabel.place(x=400, y=200, anchor="center")
+
+        waterFeatureLabel= Label(exhibitDetailWindow, text = "Water Feature")
+        waterFeatureLabel.place(x=400, y=225, anchor="center")
+
+
+        # Buttons
+
+        logVisitButton = Button(exhibitDetailWindow, text="Log Visit", command=self.exhibitDetailWindowLogVisitButtonClicked)
+        # logVisitButton.grid(row=8, column=2,sticky=E)
+        logVisitButton.grid(row=4)
+        logVisitButton.place(x = 400, y=300, anchor="center")
+
+        # Table of Animals
+
+        detailExhibitTree = ttk.Treeview(exhibitDetailWindow, columns=("Name"))
+        detailExhibitTree.heading('#0', text = "Name")
+        detailExhibitTree.heading('#1', text = "Species")
+        detailExhibitTree.column('#0', width = 150, anchor = "center")
+        detailExhibitTree.column('#1', width = 150, anchor = "center")
+        # detailExhibitTree.grid(row=5, columnspan=4, sticky = 'nsew')
+        detailExhibitTree.place(x=400, y=450, anchor="center")
+
+
+    def exhibitDetailWindowBackButtonClicked(self):
+        self.searchAnimalWindow.destroy()
+        self.chooseVisitorFunctionalityWindow.deiconify()
+
+    # Log Visit Button
+
+    def exhibitDetailWindowLogVisitButtonClicked(self):
+            # Click Log Out Buttion on Choose Functionality Window:
+            # Destroy Choose Functionality Window
+            # Display Login Window
+            self.exhibitDetailWindow.destroy()
+            self.loginWindow.deiconify()
+
+
+
 
 #--------------------Database Connection-----------------
     def connect(self):
