@@ -1605,7 +1605,7 @@ class ATLzoo:
         sql = "SELECT * FROM Performance WHERE "
 
         for i in range(len(entry)):
-            elif entry[i] != "":
+            if entry[i] != "":
                 sql = sql + attributes[i] + " = " + entry[i]
             else:
                 sql = sql + attributes[i] + " LIKE %"
