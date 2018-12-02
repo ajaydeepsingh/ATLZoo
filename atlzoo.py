@@ -374,8 +374,8 @@ class ATLzoo:
         self.chooseAdminFunctionalityWindow.withdraw()
 
     def chooseAdminFunctionalityWindowViewShowAddLabelClicked(self,event):
-        self.createViewShowAddWindow()
-        self.buildViewShowAddWindow(self.viewShowAddWindow)
+        self.createAdminAddShowWindow()
+        self.buildAdminAddShowWindow(self.adminAddShowWindow)
         self.chooseAdminFunctionalityWindow.withdraw()
 
     def chooseAdminFunctionalityWindowAddAnimalLabelClicked(self,event):
@@ -416,8 +416,6 @@ class ATLzoo:
         self.visitorsTree.heading("2", text = "Email")
 
         self.visitorsTree.place(x=400, y=200, anchor="center")
-
-
         self.cursor.execute("SELECT Username, Email FROM User WHERE Type = 'visitor'")
 
         self.viewVisitorsTuple = self.cursor.fetchall()
@@ -467,6 +465,7 @@ class ATLzoo:
         self.viewVisitorsWindow.destroy()
         self.chooseAdminFunctionalityWindow.deiconify()
 
+#-------------------ADMIN ADD ANIMAL PAGE------------------------------
 
     def createAdminAddAnimalWindow(self):
         # Create blank Search Animal Window
@@ -475,15 +474,6 @@ class ATLzoo:
         self.adminAddAnimalWindow.geometry("800x600")
 
     def buildAdminAddAnimalWindow(self, adminAddAnimalWindow):
-        '''
-        frame = Frame(staffShowHistoryWindow)
-        frame.pack()
-        treeFrame = Frame(staffShowHistoryWindow)
-        treeFrame.pack()
-        buttonFrame = Frame(staffShowHistoryWindow)
-        buttonFrame.pack(side=BOTTOM)
-        '''
-
         titleLabel= Label(adminAddAnimalWindow,text = "Add Animal", font = "Verdana 16 bold ")
         titleLabel.grid(row=1,column=2, sticky=W+E, padx=200,pady=20)
 
@@ -500,7 +490,7 @@ class ATLzoo:
         exhibitLabel.grid(row=3,column=1,pady=15)
         exhibitDefault = StringVar()
         exhibitDefault.set("options")
-        exhibitMenu = OptionMenu(adminAddAnimalWindow, exhibitDefault, "this","will","have","options","later")
+        exhibitMenu = OptionMenu(adminAddAnimalWindow, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
         exhibitMenu.grid(row=3, column=2,pady=15)
 
         typeLabel = Label(adminAddAnimalWindow,text = "Type")
@@ -537,6 +527,76 @@ class ATLzoo:
 
     def adminAddAnimalWindowBackButtonClicked(self):
         self.adminAddAnimalWindow.destroy()
+        self.chooseAdminFunctionalityWindow.deiconify()
+
+#-------------------ADMIN ADD SHOW------------------------------
+
+    def createAdminAddShowWindow(self):
+        # Create blank Search Animal Window
+        self.adminAddShowWindow=Toplevel()
+        self.adminAddShowWindow.title("Zoo Atlanta")
+        self.adminAddShowWindow.geometry("800x600")
+
+    def buildAdminAddShowWindow(self, adminAddShowWindow):
+
+        titleLabel= Label(adminAddShowWindow,text = "Add Show", font = "Verdana 16 bold ")
+        titleLabel.grid(row=1,column=2, sticky=W+E, padx=200,pady=20)
+
+
+        nameLabel = Label(adminAddShowWindow,text = "Show Name")
+        nameLabel.grid(row=2, column=1,pady=15)
+
+        showName = StringVar()
+        showName = Entry(adminAddShowWindow, textvariable = showName, width=20)
+        showName.grid(row=2, column=2,pady=15)
+
+
+        exhibitLabel = Label(adminAddShowWindow,text = "Exhibit")
+        exhibitLabel.grid(row=3,column=1,pady=15)
+        exhibitDefault = StringVar()
+        exhibitDefault.set("")
+        exhibitMenu = OptionMenu(adminAddShowWindow, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
+        exhibitMenu.grid(row=3, column=2,pady=15)
+
+        staffLabel = Label(adminAddShowWindow,text = "Staff")
+        staffLabel.grid(row=4, column=1,pady=15)
+        
+        # Name Entry
+        staffDefault = StringVar()
+        staffDefault.set("")
+        staffMenu = OptionMenu(adminAddShowWindow, staffDefault, "this","will","have","options","later")
+        staffMenu.grid(row=4, column=2,pady=15)
+
+        dateLabel = Label(adminAddShowWindow,text = "Date")
+        dateLabel.grid(row=5,column=1,pady=15)
+        self.dateNameSV = StringVar()
+        dateEntry = Entry(adminAddShowWindow, textvariable=self.dateNameSV, width=20)
+        dateEntry.grid(row=5, column=2,pady=15)
+
+        timeLabel = Label(adminAddShowWindow,text = "Time")
+        timeLabel.grid(row=6,column=1, pady=15)
+        self.timeNameSV = StringVar()
+        timeEntry = Entry(adminAddShowWindow, textvariable=self.timeNameSV, width=20)
+        timeEntry.grid(row=6, column=2, pady=15)
+
+
+
+        addShowButton = Button(adminAddShowWindow, text="Add Show", command=self.adminAddShowWindowAddButtonClicked)
+        addShowButton.grid(row=4, column =3, pady=15)
+
+
+        backButton = Button(adminAddShowWindow, text="Back", command=self.adminViewShowWindowBackButtonClicked)
+        backButton.place(x=360, y=400)
+
+    def adminAddShowWindowAddButtonClicked(self):
+        self.adminAddShowWindow.destroy()
+
+    def adminViewShowWindowRemoveButtonClicked(self):
+        self.adminAddShowWindow.destroy()
+
+    def adminViewShowWindowBackButtonClicked(self):
+        self.adminAddShowWindow.destroy()
+        self.chooseAdminFunctionalityWindow.deiconify()
 
 #-------------------SHOW ANIMAL ADMIN PAGE------------------------------
 
