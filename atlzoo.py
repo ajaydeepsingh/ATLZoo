@@ -489,17 +489,17 @@ class ATLzoo:
 
         exhibitLabel = Label(adminAddAnimalWindow,text = "Exhibit")
         exhibitLabel.grid(row=3,column=1,pady=15)
-        exhibitDefault = StringVar()
-        exhibitDefault.set("")
-        exhibitMenu = OptionMenu(adminAddAnimalWindow, exhibitDefault, "","Pacific","Jungle","Sahara","Mountainous","Birds")
+        self.exhibitDefault = StringVar()
+        self.exhibitDefault.set("")
+        exhibitMenu = OptionMenu(adminAddAnimalWindow, self.exhibitDefault,"Pacific","Jungle","Sahara","Mountainous","Birds")
         exhibitMenu.grid(row=3, column=2,pady=15)
 
         typeLabel = Label(adminAddAnimalWindow,text = "Type")
         typeLabel.grid(row=4, column=1,pady=15)
         # Name Entry
-        typeDefault = StringVar()
-        typeDefault.set("")
-        typeMenu = OptionMenu(adminAddAnimalWindow, typeDefault, "","mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
+        self.typeDefault = StringVar()
+        self.typeDefault.set("")
+        typeMenu = OptionMenu(adminAddAnimalWindow, self.typeDefault, "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
         typeMenu.grid(row=4, column=2,pady=15)
 
         speciesLabel = Label(adminAddAnimalWindow,text = "Species")
@@ -510,8 +510,8 @@ class ATLzoo:
 
         ageLabel=Label(adminAddAnimalWindow,text="Age")
         ageLabel.grid(row=6,column=1,pady=15)
-        ageSpinBox = Spinbox(adminAddAnimalWindow, from_=0, to=100)
-        ageSpinBox.grid(row=6, column=2,pady=15)
+        self.ageSpinBox = Spinbox(adminAddAnimalWindow, from_=0, to=100)
+        self.ageSpinBox.grid(row=6, column=2,pady=15)
 
 
         addAnimalButton = Button(adminAddAnimalWindow, text="Add Animal", command=self.adminAddAnimalWindowAddButtonClicked)
@@ -521,9 +521,18 @@ class ATLzoo:
         backButton.place(x=360, y=400)
 
     def adminAddAnimalWindowAddButtonClicked(self):
-        self.adminAddAnimalWindow.destroy()
+        self.animalAge = self.ageSpinBox.get()
+        self.animalType = self.typeDefault.get()
+        self.animalName = self.animalNameSV.get()
+        self.animalSpecies = self.speciesNameSV.get()
+        self.animalExhibit = self.exhibitDefault.get()
 
-    def adminViewShowWindowRemoveButtonClicked(self):
+        if self.animalAge =="" or self.animalType =="" or self.animalName =="" or self.animalSpecies =="" or self.animalExhibit =="":
+            messagebox.showwarning("every field needs to be filled out")
+            return False
+
+
+        self.cursor.execute("INSERT INTO Animal(Age, Type, Name, Species, E_Name)VALUES(%s, %s, %s, %s, %s)",(self.animalAge, self.animalType, self.animalName, self.animalSpecies, self.animalExhibit))
         self.adminAddAnimalWindow.destroy()
 
     def adminAddAnimalWindowBackButtonClicked(self):
@@ -546,24 +555,31 @@ class ATLzoo:
         nameLabel = Label(adminAddShowWindow,text = "Show Name")
         nameLabel.grid(row=2, column=1,pady=15)
 
-        showName = StringVar()
-        showName = Entry(adminAddShowWindow, textvariable = showName, width=20)
+        self.showNameSV = StringVar()
+        showName = Entry(adminAddShowWindow, textvariable = self.showNameSV, width=20)
         showName.grid(row=2, column=2,pady=15)
 
         exhibitLabel = Label(adminAddShowWindow,text = "Exhibit")
         exhibitLabel.grid(row=3,column=1,pady=15)
-        exhibitDefault = StringVar()
-        exhibitDefault.set("")
-        exhibitMenu = OptionMenu(adminAddShowWindow, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
+        self.exhibitDefault = StringVar()
+        self.exhibitDefault.set("")
+        exhibitMenu = OptionMenu(adminAddShowWindow, self.exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
         exhibitMenu.grid(row=3, column=2,pady=15)
 
         staffLabel = Label(adminAddShowWindow,text = "Staff")
         staffLabel.grid(row=4, column=1,pady=15)
         
-        # Name Entry
-        staffDefault = StringVar()
-        staffDefault.set("")
-        staffMenu = OptionMenu(adminAddShowWindow, staffDefault, "this","will","have","options","later")
+        # staff sql population
+
+        self.cursor.execute("SELECT Username FROM User WHERE Type = 'staff'")
+        self.staffTuple = self.cursor.fetchall()
+        self.staffList = []
+        for i in self.staffTuple:
+            self.staffList.append(i[0])
+
+        self.staffDefault = StringVar()
+        self.staffDefault.set("")
+        staffMenu = OptionMenu(adminAddShowWindow, self.staffDefault, *self.staffList)
         staffMenu.grid(row=4, column=2,pady=15)
 
         dateLabel = Label(adminAddShowWindow,text = "Date")
@@ -581,16 +597,33 @@ class ATLzoo:
         addShowButton = Button(adminAddShowWindow, text="Add Show", command=self.adminAddShowWindowAddButtonClicked)
         addShowButton.grid(row=4, column =3, pady=15)
 
-        backButton = Button(adminAddShowWindow, text="Back", command=self.adminViewShowWindowBackButtonClicked)
+        backButton = Button(adminAddShowWindow, text="Back", command=self.adminAddShowWindowBackButtonClicked)
         backButton.place(x=360, y=400)
 
     def adminAddShowWindowAddButtonClicked(self):
+        self.showName = self.showNameSV.get()
+        self.dateTime = self.dateNameSV.get() + " " + self.timeNameSV.get()
+        self.hostName = self.staffDefault.get()
+        self.exhibitName = self.exhibitDefault.get()
+
+        try:
+            datetime.strptime(self.dateTime, '%Y-%m-%d %I:%M%p')
+        except ValueError:
+            messagebox.showwarning("date needs to be in formate mm/dd/yy and time needs to be in format hh:mm:ss")
+            return False
+
+        self.dateTimeObject = datetime.strptime(self.dateTime, '%Y-%m-%d %I:%M%p')
+
+        if self.showName =="" or self.dateTime =="" or self.hostName =="" or self.exhibitName =="":
+            messagebox.showwarning("every field needs to be filled out")
+            return False
+
+        #date validation
+        self.cursor.execute("INSERT INTO Performance(Name, Time, Host, E_Name) VALUES(%s, %s, %s, %s)",(self.showName, self.dateTime, self.hostName, self.exhibitName))
         self.adminAddShowWindow.destroy()
 
-    def adminViewShowWindowRemoveButtonClicked(self):
-        self.adminAddShowWindow.destroy()
 
-    def adminViewShowWindowBackButtonClicked(self):
+    def adminAddShowWindowBackButtonClicked(self):
         self.adminAddShowWindow.destroy()
         self.chooseAdminFunctionalityWindow.deiconify()
 
@@ -783,74 +816,7 @@ class ATLzoo:
         self.viewStaffWindow.destroy()
         self.chooseAdminFunctionalityWindow.deiconify()
 
-#-------------------ADMIN ADD SHOW STAFF PAGE------------------------------
 
-    def createAdminAddShowWindow(self):
-        # Create blank Search Animal Window
-        self.adminAddShowWindow=Toplevel()
-        self.adminAddShowWindow.title("Zoo Atlanta")
-        self.adminAddShowWindow.geometry("800x600")
-
-    def buildAdminAddShowWindow(self, adminAddShowWindow):
-
-        titleLabel= Label(adminAddShowWindow,text = "Add Show", font = "Verdana 16 bold ")
-        titleLabel.grid(row=1,column=2, sticky=W+E, padx=200,pady=20)
-
-
-        nameLabel = Label(adminAddShowWindow,text = "Show Name")
-        nameLabel.grid(row=2, column=1,pady=15)
-
-        self.showName = StringVar()
-        showNameEntry = Entry(adminAddShowWindow, textvariable=self.showName, width=20)
-        showNameEntry.grid(row=2, column=2,pady=15)
-
-
-        exhibitLabel = Label(adminAddShowWindow,text = "Exhibit")
-        exhibitLabel.grid(row=3,column=1,pady=15)
-        exhibitDefault = StringVar()
-        exhibitDefault.set("")
-        exhibitMenu = OptionMenu(adminAddShowWindow, exhibitDefault, "this","will","have","options","later")
-        exhibitMenu.grid(row=3, column=2,pady=15)
-
-        staffLabel = Label(adminAddShowWindow,text = "Staff")
-        staffLabel.grid(row=4, column=1,pady=15)
-        
-        # Name Entry
-        staffDefault = StringVar()
-        staffDefault.set("")
-        staffMenu = OptionMenu(adminAddShowWindow, staffDefault, "this","will","have","options","later")
-        staffMenu.grid(row=4, column=2,pady=15)
-
-        dateLabel = Label(adminAddShowWindow,text = "Date")
-        dateLabel.grid(row=5,column=1,pady=15)
-        self.dateNameSV = StringVar()
-        dateEntry = Entry(adminAddShowWindow, textvariable=self.dateNameSV, width=20)
-        dateEntry.grid(row=5, column=2,pady=15)
-
-        timeLabel = Label(adminAddShowWindow,text = "Time")
-        timeLabel.grid(row=6,column=1, pady=15)
-        self.timeNameSV = StringVar()
-        timeEntry = Entry(adminAddShowWindow, textvariable=self.timeNameSV, width=20)
-        timeEntry.grid(row=6, column=2, pady=15)
-
-
-
-        addShowButton = Button(adminAddShowWindow, text="Add Show", command=self.adminAddShowWindowAddButtonClicked)
-        addShowButton.grid(row=4, column =3, pady=15)
-
-
-        backButton = Button(adminAddShowWindow, text="Back", command=self.adminAddShowWindowBackButtonClicked)
-        backButton.place(x=360, y=400)
-
-    def adminAddShowWindowAddButtonClicked(self):
-        self.adminAddShowWindow.destroy()
-
-    def adminViewShowWindowRemoveButtonClicked(self):
-        self.adminAddShowWindow.destroy()
-
-    def adminAddShowWindowBackButtonClicked(self):
-        self.adminAddShowWindow.destroy()
-        self.chooseAdminFunctionalityWindow.deiconify()
 
 #-------------------ADMIN VIEW SHOW PAGE------------------------------
 

@@ -37,7 +37,7 @@ class ATLzooAdminAddShow:
         exhibitLabel.grid(row=3,column=1,pady=15)
         exhibitDefault = StringVar()
         exhibitDefault.set("")
-        exhibitMenu = OptionMenu(adminAddShowWindow, exhibitDefault, "this","will","have","options","later")
+        exhibitMenu = OptionMenu(adminAddShowWindow, exhibitDefault, "this","blob","have","options","later")
         exhibitMenu.grid(row=3, column=2,pady=15)
 
         staffLabel = Label(adminAddShowWindow,text = "Staff")
@@ -78,7 +78,6 @@ class ATLzooAdminAddShow:
 
     def adminViewShowWindowBackButtonClicked(self):
         self.adminViewShowWindow.destroy()
-        import adminFunctionality
 
 a = ATLzooAdminAddShow()
 
