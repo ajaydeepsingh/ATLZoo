@@ -1612,20 +1612,53 @@ class ATLzoo:
         backButton = Button(searchExhibitWindow, text="Back", command=self.searchExhibitWindowBackButtonClicked)
         backButton.grid(row=7,column=1)
 
-        selectExhibitTree = ttk.Treeview(searchExhibitWindow, columns=("Name", "Size", "NumAnimals"))
-        # self.selectExhibitTree['show'] = "headings"
-        selectExhibitTree.heading('#0', text = "Name")
-        selectExhibitTree.heading('#1', text = "Size")
-        selectExhibitTree.heading('#2', text = "NumAnimals")
-        selectExhibitTree.heading('#3', text = "Water")
-        selectExhibitTree.column('#0', width = 150, anchor = "center")
-        selectExhibitTree.column('#1', width = 150, anchor = "center")
-        selectExhibitTree.column('#2', width = 150, anchor = "center")
-        selectExhibitTree.column('#3', width = 150, anchor = "center")
-        selectExhibitTree.grid(row=6, columnspan=4, sticky = 'nsew')
+        searchExhibitTree = ttk.Treeview(searchExhibitWindow, columns=("1", "2", "3", "4"), selectmode='extended')
+        searchExhibitTree['show'] = "headings"
+        searchExhibitTree.column("1", width = 150, anchor = "center")
+        searchExhibitTree.column("2", width = 150, anchor = "center")
+        searchExhibitTree.column("3", width = 150, anchor = "center")
+        searchExhibitTree.column("4", width = 150, anchor = "center")
+        searchExhibitTree.heading("1", text = "Name")
+        searchExhibitTree.heading("2", text = "Size")
+        searchExhibitTree.heading("3", text = "NumAnimals")
+        searchExhibitTree.heading("4", text = "Water")
+
+        searchExhibitTree.grid(row=6, columnspan=4, sticky = 'nsew')
         
 
     def searchExhibitWindowFindExhibitsButtonClicked(self):
+
+        # Table is a list of table names"
+        attributes = ["Name", "Species", "Type", "Age", "E_Name",]
+
+        # Entry is a list of the filter inputs
+        entry = []
+        entry.append(str(self.exhibitNameSV.get()))
+        entry.append(str(self.speciesNameSV.get()))
+        entry.append(self.typeDefault.get())
+        entry.append(self.exhibitDefault.get())
+
+        sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
+
+        for i in range(len(entry)):
+            #min and max will never be empty
+            if i = 1:
+                sql = sql + attributes[i] + " BETWEEN " + entry[i[0]] + “AND” + entry[i[1]]
+            if i = 3:
+                sql = sql + ") t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name HAVING COUNT(Name)>" + entry[i[0]] + "AND COUNT(Name)<" + entry[i[1]] + ")t2 ON t2.E_Name = t1.Name;"
+
+        elif entry[i] != "":
+                sql = sql + attributes[i] + " = " + entry[i]
+            else:
+                sql = sql + attributes[i] + " LIKE %"
+        #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+            if i<len(entry)-2:
+                sql = sql + " AND "
+
+
+        # print(sql)
+        self.cursor.execute(sql)
+        self.animalResults = self.cursor.fetchall()
 
         self.min = self.minSV.get()
         self.max = self.maxSV.get()
