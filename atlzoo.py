@@ -487,11 +487,18 @@ class ATLzoo:
         animalNameEntry = Entry(adminAddAnimalWindow, textvariable=self.animalNameSV, width=20)
         animalNameEntry.grid(row=2, column=2,pady=15)
 
+        #populate exhibit menu with sql
+        self.cursor.execute("SELECT Name FROM Exhibit")
+        self.exhibitTuple = self.cursor.fetchall()
+        self.exhibitList = []
+        for i in self.exhibitTuple:
+            self.exhibitList.append(i[0])
+
         exhibitLabel = Label(adminAddAnimalWindow,text = "Exhibit")
         exhibitLabel.grid(row=3,column=1,pady=15)
         self.exhibitDefault = StringVar()
         self.exhibitDefault.set("")
-        exhibitMenu = OptionMenu(adminAddAnimalWindow, self.exhibitDefault,"Pacific","Jungle","Sahara","Mountainous","Birds")
+        exhibitMenu = OptionMenu(adminAddAnimalWindow, self.exhibitDefault, *self.exhibitList)
         exhibitMenu.grid(row=3, column=2,pady=15)
 
         typeLabel = Label(adminAddAnimalWindow,text = "Type")
@@ -531,9 +538,10 @@ class ATLzoo:
             messagebox.showwarning("every field needs to be filled out")
             return False
 
-
         self.cursor.execute("INSERT INTO Animal(Age, Type, Name, Species, E_Name)VALUES(%s, %s, %s, %s, %s)",(self.animalAge, self.animalType, self.animalName, self.animalSpecies, self.animalExhibit))
+        
         self.adminAddAnimalWindow.destroy()
+        self.chooseAdminFunctionalityWindow.deiconify()
 
     def adminAddAnimalWindowBackButtonClicked(self):
         self.adminAddAnimalWindow.destroy()
@@ -559,18 +567,24 @@ class ATLzoo:
         showName = Entry(adminAddShowWindow, textvariable = self.showNameSV, width=20)
         showName.grid(row=2, column=2,pady=15)
 
+        #populate exhibit menu with sql
+        self.cursor.execute("SELECT Name FROM Exhibit")
+        self.exhibitTuple = self.cursor.fetchall()
+        self.exhibitList = []
+        for i in self.exhibitTuple:
+            self.exhibitList.append(i[0])
+
         exhibitLabel = Label(adminAddShowWindow,text = "Exhibit")
         exhibitLabel.grid(row=3,column=1,pady=15)
         self.exhibitDefault = StringVar()
         self.exhibitDefault.set("")
-        exhibitMenu = OptionMenu(adminAddShowWindow, self.exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
+        exhibitMenu = OptionMenu(adminAddShowWindow, self.exhibitDefault, *self.exhibitList)
         exhibitMenu.grid(row=3, column=2,pady=15)
 
         staffLabel = Label(adminAddShowWindow,text = "Staff")
         staffLabel.grid(row=4, column=1,pady=15)
         
-        # staff sql population
-
+        #populate staff menu with sql
         self.cursor.execute("SELECT Username FROM User WHERE Type = 'staff'")
         self.staffTuple = self.cursor.fetchall()
         self.staffList = []
@@ -609,7 +623,7 @@ class ATLzoo:
         try:
             datetime.strptime(self.dateTime, '%Y-%m-%d %I:%M%p')
         except ValueError:
-            messagebox.showwarning("date needs to be in formate mm/dd/yy and time needs to be in format hh:mm:ss")
+            messagebox.showwarning("date needs to be in format mm/dd/yy and time needs to be in format hh:mm:ss")
             return False
 
         self.dateTimeObject = datetime.strptime(self.dateTime, '%Y-%m-%d %I:%M%p')
@@ -622,6 +636,7 @@ class ATLzoo:
         self.cursor.execute("INSERT INTO Performance(Name, Time, Host, E_Name) VALUES(%s, %s, %s, %s)",(self.showName, self.dateTime, self.hostName, self.exhibitName))
         self.adminAddShowWindow.destroy()
 
+        self.chooseAdminFunctionalityWindow.deiconify()
 
     def adminAddShowWindowBackButtonClicked(self):
         self.adminAddShowWindow.destroy()
@@ -653,11 +668,18 @@ class ATLzoo:
         speciesNameEntry = Entry(showAnimalWindowAdmin, textvariable=self.speciesNameSV, width=20)
         speciesNameEntry.grid(row=3, column=1)
 
+        #populate exhibit menu with sql
+        self.cursor.execute("SELECT Name FROM Exhibit")
+        self.exhibitTuple = self.cursor.fetchall()
+        self.exhibitList = []
+        for i in self.exhibitTuple:
+            self.exhibitList.append(i[0])
+
         exhibitLabel = Label(showAnimalWindowAdmin,text = "Exhibit")
         exhibitLabel.grid(row=4,column=0)
-        exhibitDefault = StringVar()
-        exhibitDefault.set("")
-        exhibitMenu = OptionMenu(showAnimalWindowAdmin, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
+        self.exhibitDefault = StringVar()
+        self.exhibitDefault.set("")
+        exhibitMenu = OptionMenu(showAnimalWindowAdmin, self.exhibitDefault,"", *self.exhibitList)
         exhibitMenu.grid(row=4, column=1)
 
         minLabel=Label(showAnimalWindowAdmin,text="Min")
@@ -669,18 +691,18 @@ class ATLzoo:
         ageLabel = Label(showAnimalWindowAdmin,text = "Age")
         ageLabel.grid(row=3,column=2)
 
-        minSpinBox = Spinbox(showAnimalWindowAdmin, from_=0, to=10000)
-        minSpinBox.grid(row=3, column=3,pady=10,sticky=W)
+        self.minSpinBox = Spinbox(showAnimalWindowAdmin, from_=0, to=10000)
+        self.minSpinBox.grid(row=3, column=3,pady=10,sticky=W)
 
-        maxSpinBox = Spinbox(showAnimalWindowAdmin, from_=0, to=10000)
-        maxSpinBox.grid(row=3, column=4,pady=10,sticky=W)
+        self.maxSpinBox = Spinbox(showAnimalWindowAdmin, from_=0, to=10000)
+        self.maxSpinBox.grid(row=3, column=4,pady=10,sticky=W)
 
         typeLabel = Label(showAnimalWindowAdmin,text = "Type")
         typeLabel.grid(row=4, column=2)
         # Name Entry
-        typeDefault = StringVar()
-        typeDefault.set("")
-        typeMenu = OptionMenu(showAnimalWindowAdmin, typeDefault, "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
+        self.typeDefault = StringVar()
+        self.typeDefault.set("")
+        typeMenu = OptionMenu(showAnimalWindowAdmin, self.typeDefault,"", "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
         typeMenu.grid(row=4, column=3, sticky=W)
 
         # Display Table for Results
@@ -730,12 +752,74 @@ class ATLzoo:
 
 
     def showAnimalWindowAdminFindAnimalsButtonClicked(self):
-        self.showAnimalWindowAdmin.destroy()
-        self.createAnimalDetailWindow()
+        for i in self.selectAnimalTree.get_children():
+            self.selectAnimalTree.delete(i)
+
+        # Table is a list of table names"
+        attributes = ["Name", "Species", "Type", "Age", "E_Name",]
+
+        # Entry is a list of the filter inputs
+        entry = []
+        entry.append(str(self.animalNameSV.get()))
+        entry.append(str(self.speciesNameSV.get()))
+        entry.append(self.typeDefault.get())
+        entry.append("")
+        entry.append(self.exhibitDefault.get())
+
+        #print(entry)
+
+        sql = "SELECT * FROM Animal WHERE "
+
+        for i in range(len(entry)):
+            if i == 3:
+                sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+            elif entry[i] != "":
+                sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+            else:
+                sql = sql + attributes[i] + " LIKE '%'"
+        #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+            if i < len(entry)-1:
+                sql = sql + " AND "
+        #end of statement
+        sql = sql + ";"
+
+        # print(sql)
+        self.cursor.execute(sql)
+        self.animalResults = self.cursor.fetchall()
+        # print(self.animalResults)
+
+        self.animalName = []
+        self.species = []
+        self.type = []
+        self.ename = []
+        self.age = []
+
+        for i in self.animalResults:
+            self.age.append(i[0])
+            self.type.append(i[1])
+            self.animalName.append(i[2])
+            self.species.append(i[3])
+            self.ename.append(i[4])
+        
+        for i in range(len(self.animalResults)):
+            self.selectAnimalTree.insert('', i , values=(self.animalName[i], self.species[i], self.ename[i], self.age[i], self.type[i]))
+
+
+        
 
     def showAnimalWindowAdminRemoveAnimalWindowButtonClicked(self):
-        self.showAnimalWindowAdmin.destroy()
-        self.chooseAdminFunctionalityWindow.deiconify()
+        self.selectedRow = self.selectAnimalTree.selection()[0]
+        self.selectedRowItems = self.selectAnimalTree.item(self.selectedRow)['values']
+
+        print(self.selectedRowItems)
+
+        self.animalName = self.selectedRowItems[0]
+        self.animalSpecies = self.selectedRowItems[1]
+        
+
+        self.cursor.execute("DELETE FROM Animal WHERE Name= %s AND Species= %s",(self.animalName,self.animalSpecies))
+
+        self.selectAnimalTree.delete(self.selectedRow)
 
     def showAnimalWindowAdminBackButtonClicked(self):
         self.showAnimalWindowAdmin.destroy()
@@ -827,6 +911,14 @@ class ATLzoo:
         self.adminViewShowWindow.geometry("800x600")
 
     def buildAdminViewShowWindow(self, adminViewShowWindow):
+        '''
+        frame = Frame(staffShowHistoryWindow)
+        frame.pack()
+        treeFrame = Frame(staffShowHistoryWindow)
+        treeFrame.pack()
+        buttonFrame = Frame(staffShowHistoryWindow)
+        buttonFrame.pack(side=BOTTOM)
+        '''
 
         titleLabel= Label(adminViewShowWindow,text = "Shows", font = "Verdana 16 bold ")
         titleLabel.grid(row=1,column=2, sticky=W+E, padx=200)
@@ -836,16 +928,22 @@ class ATLzoo:
         nameLabel.grid(row=2, column=0,pady=10)
 
 
-        self.animalNameSV = StringVar()
-        animalNameEntry = Entry(adminViewShowWindow, textvariable=self.animalNameSV, width=20)
-        animalNameEntry.grid(row=2, column=1, pady=10)
+        self.showNameSV = StringVar()
+        showNameEntry = Entry(adminViewShowWindow, textvariable=self.showNameSV, width=20)
+        showNameEntry.grid(row=2, column=1, pady=10)
 
+        #populate exhibit menu with sql
+        self.cursor.execute("SELECT Name FROM Exhibit")
+        self.exhibitTuple = self.cursor.fetchall()
+        self.exhibitList = []
+        for i in self.exhibitTuple:
+            self.exhibitList.append(i[0])
 
         exhibitLabel = Label(adminViewShowWindow,text = "Exhibit")
         exhibitLabel.grid(row=3,column=0,pady=10)
-        exhibitDefault = StringVar()
-        exhibitDefault.set("")
-        exhibitMenu = OptionMenu(adminViewShowWindow, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
+        self.exhibitDefault = StringVar()
+        self.exhibitDefault.set("")
+        exhibitMenu = OptionMenu(adminViewShowWindow, self.exhibitDefault, "", *self.exhibitList)
         exhibitMenu.grid(row=3, column=1,pady=10)
 
         dateLabel=Label(adminViewShowWindow,text="Date")
@@ -893,10 +991,80 @@ class ATLzoo:
         backButton.place(x=360, y=400)
 
     def adminViewShowWindowSearchButtonClicked(self):
-        self.adminViewShowWindow.destroy()
+        for i in self.viewShowTree.get_children():
+            self.viewShowTree.delete(i)
+
+        # Table is a list of table names"
+        attributes = ["Name", "Time", "Host", "E_Name"]
+
+        #date validation
+        self.dateTime = self.dateSV.get()
+
+        if self.dateTime != "":
+            try:
+                datetime.strptime(self.dateTime, '%Y-%m-%d %I:%M%p')
+            except ValueError:
+                messagebox.showwarning("date needs to be in format mm/dd/yy and time needs to be in format hh:mmAM/PM")
+                return False
+        if self.dateTime != "":
+            self.dateTimeObject = datetime.strptime(self.dateTime, '%Y-%m-%d %I:%M%p')
+            self.dateTimeObject = str(self.dateTimeObject)
+        else:
+            self.dateTimeObject = ""
+
+        # Entry is a list of the filter inputs
+        entry = []
+        entry.append(str(self.showNameSV.get()))
+        entry.append(self.dateTimeObject)
+        entry.append("")
+        entry.append(self.exhibitDefault.get())
+
+        #print(entry)
+
+        sql = "SELECT * FROM Performance WHERE "
+
+        for i in range(len(entry)):
+            if entry[i] != "":
+                sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+            else:
+                sql = sql + attributes[i] + " LIKE '%'"
+        #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+            if i < len(entry)-1:
+                sql = sql + " AND "
+        #end of statement
+        sql = sql + ";"
+
+        #print(sql)
+
+        # print(sql)
+        self.cursor.execute(sql)
+        self.showResults = self.cursor.fetchall()
+        # print(self.animalResults)
+
+        self.showNameList = []
+        self.dateList = []
+        self.exhibitNameList = []
+
+        for i in self.showResults:
+            self.showNameList.append(i[0])
+            self.dateList.append(i[1])
+            self.exhibitNameList.append(i[3])
+        
+        for i in range(len(self.showResults)):
+            self.viewShowTree.insert('', i , values=(self.showNameList[i], self.exhibitNameList[i], self.dateList[i]))
+
+
 
     def adminViewShowWindowRemoveButtonClicked(self):
-        self.adminViewShowWindow.destroy()
+        self.selectedRow = self.viewShowTree.selection()[0]
+        self.selectedRowItems = self.viewShowTree.item(self.selectedRow)['values']
+
+        self.showName = self.selectedRowItems[0]
+        self.dateTime = self.selectedRowItems[2]
+        self.cursor.execute("DELETE FROM Performance WHERE Name= %s AND Time= %s",(self.showName,self.dateTime))
+
+        self.viewShowTree.delete(self.selectedRow)
+
 
     def adminViewShowWindowBackButtonClicked(self):
         self.adminViewShowWindow.destroy()
@@ -995,7 +1163,7 @@ class ATLzoo:
         exhibitLabel.grid(row=4,column=0)
         self.exhibitDefault = StringVar()
         self.exhibitDefault.set("")
-        exhibitMenu = OptionMenu(searchStaffAnimalsWindow, self.exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
+        exhibitMenu = OptionMenu(searchStaffAnimalsWindow, self.exhibitDefault,"", "Pacific","Jungle","Sahara","Mountainous","Birds")
         exhibitMenu.grid(row=4, column=1)
 
         minLabel=Label(searchStaffAnimalsWindow,text="Min")
@@ -1018,7 +1186,7 @@ class ATLzoo:
         # Name Entry
         self.typeDefault = StringVar()
         self.typeDefault.set("")
-        typeMenu = OptionMenu(searchStaffAnimalsWindow, self.typeDefault, "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
+        typeMenu = OptionMenu(searchStaffAnimalsWindow, self.typeDefault,"", "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
         typeMenu.grid(row=4, column=3, sticky=W)
        
         self.selectAnimalTree = ttk.Treeview(searchStaffAnimalsWindow, columns=("1", "2", "3", "4","5"))
@@ -1059,6 +1227,7 @@ class ATLzoo:
         entry.append(str(self.animalNameSV.get()))
         entry.append(str(self.speciesNameSV.get()))
         entry.append(self.typeDefault.get())
+        entry.append("")
         entry.append(self.exhibitDefault.get())
 
 
