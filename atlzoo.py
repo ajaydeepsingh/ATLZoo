@@ -1314,27 +1314,27 @@ class ATLzoo:
 
         self.animalCareName = name
 
-        nameLabel = Label(searchAnimalCareWindow,text = "Name:" + self.animalCareName)
+        nameLabel = Label(searchAnimalCareWindow,text = "Name:" + " " + self.animalCareName)
         nameLabel.grid(row=2, column=0,pady=10)
 
         self.animalCareSpecies = species
 
-        speciesLabel = Label(searchAnimalCareWindow, text="Species:" + self.animalCareSpecies)
+        speciesLabel = Label(searchAnimalCareWindow, text="Species:" + " " + self.animalCareSpecies)
         speciesLabel.grid(row=2, column=1,pady=10)
 
         self.animalCareAge = str(age)
         
-        ageLabel = Label(searchAnimalCareWindow,text = "Age:" + self.animalCareAge)
+        ageLabel = Label(searchAnimalCareWindow,text = "Age:" + " " + self.animalCareAge)
         ageLabel.grid(row=2,column=2,pady=10)
 
         self.animalCareExhibit = exhibit
 
-        exhibitLabel = Label(searchAnimalCareWindow,text = "Exhibit:" + self.animalCareExhibit)
+        exhibitLabel = Label(searchAnimalCareWindow,text = "Exhibit:" + " " + self.animalCareExhibit)
         exhibitLabel.grid(row=3,column=0,pady=10)
 
         self.animalCareType = animalType
 
-        typeLabel = Label(searchAnimalCareWindow,text = "Type:" + self.animalCareType)
+        typeLabel = Label(searchAnimalCareWindow,text = "Type:" + " " + self.animalCareType)
         typeLabel.grid(row=3,column=1,pady=10)
 
 
