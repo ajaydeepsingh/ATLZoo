@@ -320,26 +320,30 @@ class ATLzoo:
         viewShowsLabel = Label(chooseAdminFunctionalityWindow, text="View Shows", font = "Verdana 13")
         # viewShowsLabel.grid(row=3, column=1)
         viewShowsLabel.bind("<ButtonPress-1>", self.chooseAdminFunctionalityWindowViewShowsLabelClicked)
-        viewShowsLabel.place(x=400, y = 200, anchor="center")
+        viewShowsLabel.place(x=400, y = 175, anchor="center")
 
         # View Animals Label
         viewAnimalsLabel = Label(chooseAdminFunctionalityWindow, text="View Animals", font = "Verdana 13")
         # viewAnimalsLabel.grid(row=4,column=1)
         viewAnimalsLabel.bind("<ButtonPress-1>", self.chooseAdminFunctionalityWindowViewAnimalsLabelClicked)
-        viewAnimalsLabel.place(x=400, y = 300, anchor="center")
+        viewAnimalsLabel.place(x=400, y = 250, anchor="center")
 
         # View Staff
         viewStaffLabel = Label(chooseAdminFunctionalityWindow, text="View Staff", font = "Verdana 13")
         # viewStaffLabel.grid(row=5,column=1)
         viewStaffLabel.bind("<ButtonPress-1>", self.chooseAdminFunctionalityWindowViewStaffLabelClicked)
-        viewStaffLabel.place(x=400, y = 400, anchor="center")
+        viewStaffLabel.place(x=400, y = 325, anchor="center")
 
-
-        # View Show History Label
+        # View Add Show
         viewShowAdd = Label(chooseAdminFunctionalityWindow, text="Add Show", font = "Verdana 13")
         # viewReviewLabel.grid(row=6,column=1)
         viewShowAdd.bind("<ButtonPress-1>", self.chooseAdminFunctionalityWindowViewShowAddLabelClicked)
-        viewShowAdd.place(x=400, y = 500, anchor="center")
+        viewShowAdd.place(x=400, y = 400, anchor="center")
+
+        # View Add Animal
+        viewShowAdd = Label(chooseAdminFunctionalityWindow, text="Add Animal", font = "Verdana 13")
+        viewShowAdd.bind("<ButtonPress-1>", self.chooseAdminFunctionalityWindowAddAnimalLabelClicked)
+        viewShowAdd.place(x=400, y = 475, anchor="center")
 
         # Log Out Buttons
 
@@ -374,12 +378,333 @@ class ATLzoo:
         self.buildViewShowAddWindow(self.viewShowAddWindow)
         self.chooseAdminFunctionalityWindow.withdraw()
 
+    def chooseAdminFunctionalityWindowAddAnimalLabelClicked(self,event):
+        self.createAdminAddAnimalWindow()
+        self.buildAdminAddAnimalWindow(self.adminAddAnimalWindow)
+        self.chooseAdminFunctionalityWindow.withdraw()
+
     def chooseAdminFunctionalityWindowLogOutButtonClicked(self):
         # Click Log Out Buttion on Choose Functionality Window:
         # Destroy Choose Functionality Window
         # Display Login Window
         self.chooseAdminFunctionalityWindow.destroy()
         self.loginWindow.deiconify()
+
+
+#-------------------ADMIN PAGES------------------------------
+
+
+    def createViewVisitorsWindow(self):
+        self.viewVisitorsWindow = Toplevel()
+        self.viewVisitorsWindow.title("Zoo Atlanta")
+        self.viewVisitorsWindow.geometry("800x600")
+        self.viewVisitorsWindow.resizable(0,0)
+
+    def buildViewVisitorsWindow(self, viewVisitorsWindow):
+
+        # Title Label
+        titleLabel = Label(viewVisitorsWindow, text = "View Vistors", font = "Verdana 16 bold ")
+        titleLabel.place(x=350, y=25)
+
+        # Table of all the visitors
+        self.visitorsTree = ttk.Treeview(viewVisitorsWindow, columns=( "1", "2"), selectmode="extended")
+        self.visitorsTree['show'] = "headings"
+        self.visitorsTree.column("1", width = 300, anchor = "center")
+        self.visitorsTree.column("2", width = 300, anchor = "center")
+        
+        self.visitorsTree.heading("1", text = "UserName")
+        self.visitorsTree.heading("2", text = "Email")
+
+        self.visitorsTree.place(x=400, y=200, anchor="center")
+
+
+        self.cursor.execute("SELECT Username, Email FROM User WHERE Type = 'visitor'")
+
+        self.viewVisitorsTuple = self.cursor.fetchall()
+        self.usernameList = []
+        self.emailList = []
+
+        for i in self.viewVisitorsTuple:
+            self.usernameList.append(i[0])
+            self.emailList.append(i[1])
+
+        # Insert data into the treeview
+        for i in range(len(self.viewVisitorsTuple)):
+            self.visitorsTree.insert('', i , values=(self.usernameList[i], self.emailList[i]))
+
+        # Back Button
+        backButton = Button(viewVisitorsWindow, text="Back", command=self.viewVisitorsBackButtonClicked)
+        backButton.place(x=10,y=570)
+
+        removeVisitorsButton = Button(viewVisitorsWindow, text="Remove Staff", command=self.showVisitorsWindowAdminRemoveVisitorButtonClicked)
+        removeVisitorsButton.place(x=670,y=570)
+
+
+    def showVisitorsWindowAdminRemoveVisitorButtonClicked(self):
+
+        if not self.visitorsTree.focus():
+            messagebox.showwarning("Error","You haven't selected any Visitor.")
+            return False
+
+        treeIndexString = self.visitorsTree.focus()
+        valueRemoved = self.visitorsTree.item(treeIndexString)
+
+
+        messagebox.showwarning('Remove Visitor', 'Are you sure?')
+        valueslist = list(valueRemoved.values())
+        valueslist = valueslist[2]
+        uname = valueslist[0]
+        eml = valueslist[1]
+
+        self.cursor.execute("DELETE FROM User WHERE Username= %s OR Email = %s AND Type = 'visitor'",(uname, eml))
+
+        self.viewVisitorsWindow.destroy()
+        self.createViewVisitorsWindow()
+        self.buildViewVisitorsWindow(self.viewVisitorsWindow)
+
+
+    def viewVisitorsBackButtonClicked(self):
+        self.viewVisitorsWindow.destroy()
+        self.chooseAdminFunctionalityWindow.deiconify()
+
+
+    def createAdminAddAnimalWindow(self):
+        # Create blank Search Animal Window
+        self.adminAddAnimalWindow=Toplevel()
+        self.adminAddAnimalWindow.title("Zoo Atlanta")
+        self.adminAddAnimalWindow.geometry("800x600")
+
+    def buildAdminAddAnimalWindow(self, adminAddAnimalWindow):
+        '''
+        frame = Frame(staffShowHistoryWindow)
+        frame.pack()
+        treeFrame = Frame(staffShowHistoryWindow)
+        treeFrame.pack()
+        buttonFrame = Frame(staffShowHistoryWindow)
+        buttonFrame.pack(side=BOTTOM)
+        '''
+
+        titleLabel= Label(adminAddAnimalWindow,text = "Add Animal", font = "Verdana 16 bold ")
+        titleLabel.grid(row=1,column=2, sticky=W+E, padx=200,pady=20)
+
+
+        nameLabel = Label(adminAddAnimalWindow,text = "Name")
+        nameLabel.grid(row=2, column=1,pady=15)
+
+
+        self.animalNameSV = StringVar()
+        animalNameEntry = Entry(adminAddAnimalWindow, textvariable=self.animalNameSV, width=20)
+        animalNameEntry.grid(row=2, column=2,pady=15)
+
+        exhibitLabel = Label(adminAddAnimalWindow,text = "Exhibit")
+        exhibitLabel.grid(row=3,column=1,pady=15)
+        exhibitDefault = StringVar()
+        exhibitDefault.set("options")
+        exhibitMenu = OptionMenu(adminAddAnimalWindow, exhibitDefault, "this","will","have","options","later")
+        exhibitMenu.grid(row=3, column=2,pady=15)
+
+        typeLabel = Label(adminAddAnimalWindow,text = "Type")
+        typeLabel.grid(row=4, column=1,pady=15)
+        # Name Entry
+        typeDefault = StringVar()
+        typeDefault.set("mammal")
+        typeMenu = OptionMenu(adminAddAnimalWindow, typeDefault, "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
+        typeMenu.grid(row=4, column=2,pady=15)
+
+        speciesLabel = Label(adminAddAnimalWindow,text = "Species")
+        speciesLabel.grid(row=5,column=1,pady=15)
+        self.speciesNameSV = StringVar()
+        speciesNameEntry = Entry(adminAddAnimalWindow, textvariable=self.speciesNameSV, width=20)
+        speciesNameEntry.grid(row=5, column=2,pady=15)
+
+        ageLabel=Label(adminAddAnimalWindow,text="Date")
+        ageLabel.grid(row=6,column=1,pady=15)
+        ageSpinBox = Spinbox(adminAddAnimalWindow, from_=0, to=100)
+        ageSpinBox.grid(row=6, column=2,pady=15)
+
+
+        addAnimalButton = Button(adminAddAnimalWindow, text="Add Animal", command=self.adminAddAnimalWindowAddButtonClicked)
+        addAnimalButton.grid(row=4, column =3, pady=15)
+
+        backButton = Button(adminAddAnimalWindow, text="Back", command=self.adminAddAnimalWindowBackButtonClicked)
+        backButton.place(x=360, y=400)
+
+    def adminAddAnimalWindowAddButtonClicked(self):
+        self.adminAddAnimalWindow.destroy()
+
+    def adminViewShowWindowRemoveButtonClicked(self):
+        self.adminAddAnimalWindow.destroy()
+
+    def adminAddAnimalWindowBackButtonClicked(self):
+        self.adminAddAnimalWindow.destroy()
+
+#-------------------SHOW ANIMAL ADMIN PAGE------------------------------
+
+    def createShowAnimalWindowAdmin(self):
+        # Create blank Search Animal Window
+        self.showAnimalWindowAdmin=Toplevel()
+        self.showAnimalWindowAdmin.title("Zoo Atlanta")
+
+    def buildShowAnimalWindowAdmin(self,showAnimalWindowAdmin):
+
+        # Title Label
+        titleLabel= Label(showAnimalWindowAdmin,text = "Search Animals", font = "Verdana 16 bold ")
+        titleLabel.grid(row=1,column=2,sticky=W +E)
+
+        nameLabel = Label(showAnimalWindowAdmin,text = "Name")
+        nameLabel.grid(row=2, column=0)
+
+        self.animalNameSV = StringVar()
+        animalNameEntry = Entry(showAnimalWindowAdmin, textvariable=self.animalNameSV, width=20)
+        animalNameEntry.grid(row=2, column=1)
+
+        speciesLabel = Label(showAnimalWindowAdmin,text = "Species")
+        speciesLabel.grid(row=3,column=0)
+        self.speciesNameSV = StringVar()
+        speciesNameEntry = Entry(showAnimalWindowAdmin, textvariable=self.speciesNameSV, width=20)
+        speciesNameEntry.grid(row=3, column=1)
+
+        exhibitLabel = Label(showAnimalWindowAdmin,text = "Exhibit")
+        exhibitLabel.grid(row=4,column=0)
+        exhibitDefault = StringVar()
+        exhibitDefault.set("")
+        exhibitMenu = OptionMenu(showAnimalWindowAdmin, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
+        exhibitMenu.grid(row=4, column=1)
+
+        minLabel=Label(showAnimalWindowAdmin,text="Min")
+        minLabel.grid(row=2,column=3, sticky=W)
+
+        maxLabel=Label(showAnimalWindowAdmin,text="Max")
+        maxLabel.grid(row=2,column=4, sticky=W)
+
+        ageLabel = Label(showAnimalWindowAdmin,text = "Age")
+        ageLabel.grid(row=3,column=2)
+
+        minSpinBox = Spinbox(showAnimalWindowAdmin, from_=0, to=10000)
+        minSpinBox.grid(row=3, column=3,pady=10,sticky=W)
+
+        maxSpinBox = Spinbox(showAnimalWindowAdmin, from_=0, to=10000)
+        maxSpinBox.grid(row=3, column=4,pady=10,sticky=W)
+
+        typeLabel = Label(showAnimalWindowAdmin,text = "Type")
+        typeLabel.grid(row=4, column=2)
+        # Name Entry
+        typeDefault = StringVar()
+        typeDefault.set("")
+        typeMenu = OptionMenu(showAnimalWindowAdmin, typeDefault, "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
+        typeMenu.grid(row=4, column=3, sticky=W)
+
+        # Display Table for Results
+        selectAnimalTree = ttk.Treeview(showAnimalWindowAdmin, columns=("Name", "Size", "Exhibit", "Age"))
+        selectAnimalTree.heading('#0', text = "Name")
+        selectAnimalTree.heading('#1', text = "Species")
+        selectAnimalTree.heading('#2', text = "Exhibit")
+        selectAnimalTree.heading('#3', text = "Age")
+        selectAnimalTree.heading('#4', text = "Type")
+        selectAnimalTree.column('#0', width = 150, anchor = "center")
+        selectAnimalTree.column('#1', width = 150, anchor = "center")
+        selectAnimalTree.column('#2', width = 150, anchor = "center")
+        selectAnimalTree.column('#3', width = 150, anchor = "center")
+        selectAnimalTree.column('#4', width = 150, anchor = "center")
+        selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
+
+        # Button
+        findAnimalsButton = Button(showAnimalWindowAdmin, text="Find Animals", command=self.showAnimalWindowAdminFindAnimalsButtonClicked)
+        findAnimalsButton.grid(row=6,column=2)
+
+        removeAnimalsButton = Button(showAnimalWindowAdmin, text="Remove Animal", command=self.showAnimalWindowAdminRemoveAnimalWindowButtonClicked)
+        removeAnimalsButton.grid(row=6,column=3)
+
+        backButton = Button(showAnimalWindowAdmin, text="Back", command=self.showAnimalWindowAdminBackButtonClicked)
+        backButton.grid(row=6,column=1)
+
+
+    def showAnimalWindowAdminFindAnimalsButtonClicked(self):
+        self.showAnimalWindowAdmin.destroy()
+        self.createAnimalDetailWindow()
+
+    def showAnimalWindowAdminRemoveAnimalWindowButtonClicked(self):
+        self.showAnimalWindowAdmin.destroy()
+        self.chooseAdminFunctionalityWindow.deiconify()
+
+    def showAnimalWindowAdminBackButtonClicked(self):
+        self.showAnimalWindowAdmin.destroy()
+        self.chooseAdminFunctionalityWindow.deiconify()
+
+
+    def createViewStaffWindow(self):
+        self.viewStaffWindow = Toplevel()
+        self.viewStaffWindow.title("Zoo Atlanta")
+        self.viewStaffWindow.geometry("800x600")
+        self.viewStaffWindow.resizable(0,0)
+
+    def buildViewStaffWindow(self, viewStaffWindow):
+
+        # Title Label
+        titleLabel = Label(viewStaffWindow, text = "View Staff", font = "Verdana 16 bold ")
+        titleLabel.place(x=350, y=25)
+
+        # Table of all the staff members
+        self.staffTree = ttk.Treeview(viewStaffWindow, columns=("1", "2"), selectmode="extended")
+        self.staffTree['show'] = "headings"
+        self.staffTree.column("1", width = 300, anchor = "center")
+        self.staffTree.column("2", width = 300, anchor = "center")
+
+        self.staffTree.heading("1", text = "Name")
+        self.staffTree.heading("2", text = "Email")
+
+        self.staffTree.place(x=400, y=200, anchor="center")
+
+
+        self.cursor.execute("SELECT Username, Email FROM User WHERE Type = 'staff'")
+
+        self.viewStaffTuple = self.cursor.fetchall()
+        self.usernameList = []
+        self.emailList = []
+
+
+        for i in self.viewStaffTuple:
+            self.usernameList.append(i[0])
+            self.emailList.append(i[1])
+
+        # Insert data into the treeview
+        for i in range(len(self.viewStaffTuple)):
+            self.staffTree.insert('', i , values=(self.usernameList[i], self.emailList[i]))
+
+        
+        # Back Button
+        backButton = Button(viewStaffWindow, text="Back", command=self.viewStaffBackButtonClicked)
+        backButton.place(x=10,y=570)
+
+        removeStaffButton = Button(viewStaffWindow, text="Remove Staff", command=self.showStaffWindowAdminRemoveStaffButtonClicked)
+        removeStaffButton.place(x=670,y=570)
+
+
+    def showStaffWindowAdminRemoveStaffButtonClicked(self):
+
+        if not self.staffTree.focus():
+            messagebox.showwarning("Error","You haven't selected any Staff.")
+            return False
+
+        treeIndexString = self.staffTree.focus()
+        valueRemoved = self.staffTree.item(treeIndexString)
+
+
+        messagebox.showwarning('Remove Staff Member', 'Are you sure?')
+        valueslist = list(valueRemoved.values())
+        valueslist = valueslist[2]
+        uname = valueslist[0]
+        eml = valueslist[1]
+
+        self.cursor.execute("DELETE FROM User WHERE Username= %s OR Email = %s AND Type = 'staff'",(uname, eml))
+
+        self.viewStaffWindow.destroy()
+        self.createViewStaffWindow()
+        self.buildViewStaffWindow(self.viewStaffWindow)
+
+    def viewStaffBackButtonClicked(self):
+        self.viewStaffWindow.destroy()
+        self.chooseAdminFunctionalityWindow.deiconify()
 
 #--------------------Staff Functionality Window-----------------
 
@@ -496,7 +821,7 @@ class ATLzoo:
         typeLabel.grid(row=4, column=2)
         # Name Entry
         typeDefault = StringVar()
-        typeDefault.set("mammal")
+        typeDefault.set("")
         typeMenu = OptionMenu(searchStaffAnimalsWindow, typeDefault, "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
         typeMenu.grid(row=4, column=3, sticky=W)
        
@@ -1042,258 +1367,6 @@ class ATLzoo:
     def showHistoryWindowBackButtonClicked(self):
         self.showHistoryWindow.withdraw()
         import visitorFunctionality
-
-#-------------------ADMIN PAGES------------------------------
-
-
-    def createViewVisitorsWindow(self):
-        self.viewVisitorsWindow = Toplevel()
-        self.viewVisitorsWindow.title("Zoo Atlanta")
-        self.viewVisitorsWindow.geometry("800x600")
-        self.viewVisitorsWindow.resizable(0,0)
-
-    def buildViewVisitorsWindow(self, viewVisitorsWindow):
-
-        # Title Label
-        titleLabel = Label(viewVisitorsWindow, text = "View Vistors", font = "Verdana 16 bold ")
-        titleLabel.place(x=350, y=25)
-
-        # Table of all the visitors
-        self.visitorsTree = ttk.Treeview(viewVisitorsWindow, columns=( "1", "2"), selectmode="extended")
-        self.visitorsTree['show'] = "headings"
-        self.visitorsTree.column("1", width = 300, anchor = "center")
-        self.visitorsTree.column("2", width = 300, anchor = "center")
-        
-        self.visitorsTree.heading("1", text = "UserName")
-        self.visitorsTree.heading("2", text = "Email")
-
-        self.visitorsTree.place(x=400, y=200, anchor="center")
-
-
-        self.cursor.execute("SELECT Username, Email FROM User WHERE Type = 'visitor'")
-
-        self.viewVisitorsTuple = self.cursor.fetchall()
-        self.usernameList = []
-        self.emailList = []
-
-        for i in self.viewVisitorsTuple:
-            self.usernameList.append(i[0])
-            self.emailList.append(i[1])
-
-        # print(self.usernameList)
-        # print(self.emailList)
-
-        # Insert data into the treeview
-        for i in range(len(self.viewVisitorsTuple)):
-            self.visitorsTree.insert('', i , values=(self.usernameList[i], self.emailList[i]))
-
-        # Back Button
-        backButton = Button(viewVisitorsWindow, text="Back", command=self.viewVisitorsBackButtonClicked)
-        backButton.place(x=10,y=570)
-
-        removeVisitorsButton = Button(viewVisitorsWindow, text="Remove Staff", command=self.showVisitorsWindowAdminRemoveVisitorButtonClicked)
-        removeVisitorsButton.place(x=670,y=570)
-
-
-    def showVisitorsWindowAdminRemoveVisitorButtonClicked(self):
-
-        if not self.visitorsTree.focus():
-            messagebox.showwarning("Error","You haven't selected any Visitor.")
-            return False
-
-        treeIndexString = self.visitorsTree.focus()
-        valueRemoved = self.visitorsTree.item(treeIndexString)
-
-
-        messagebox.showwarning('Remove Visitor', 'Are you sure?')
-        valueslist = list(valueRemoved.values())
-        valueslist = valueslist[2]
-        uname = valueslist[0]
-        eml = valueslist[1]
-
-        self.cursor.execute("DELETE FROM User WHERE Username= %s OR Email = %s AND Type = 'visitor'",(uname, eml))
-
-        self.viewVisitorsWindow.destroy()
-        self.createViewVisitorsWindow()
-        self.buildViewVisitorsWindow(self.viewVisitorsWindow)
-
-
-    def viewVisitorsBackButtonClicked(self):
-        self.viewVisitorsWindow.destroy()
-        self.chooseAdminFunctionalityWindow.deiconify()
-
-#-------------------SHOW ANIMAL ADMIN PAGE------------------------------
-
-    def createShowAnimalWindowAdmin(self):
-        # Create blank Search Animal Window
-        self.showAnimalWindowAdmin=Toplevel()
-        self.showAnimalWindowAdmin.title("Zoo Atlanta")
-
-    def buildShowAnimalWindowAdmin(self,showAnimalWindowAdmin):
-
-        # Title Label
-        titleLabel= Label(showAnimalWindowAdmin,text = "Search Animals", font = "Verdana 16 bold ")
-        titleLabel.grid(row=1,column=2,sticky=W +E)
-
-        nameLabel = Label(showAnimalWindowAdmin,text = "Name")
-        nameLabel.grid(row=2, column=0)
-
-
-        self.animalNameSV = StringVar()
-        animalNameEntry = Entry(showAnimalWindowAdmin, textvariable=self.animalNameSV, width=20)
-        animalNameEntry.grid(row=2, column=1)
-
-        speciesLabel = Label(showAnimalWindowAdmin,text = "Species")
-        speciesLabel.grid(row=3,column=0)
-        self.speciesNameSV = StringVar()
-        speciesNameEntry = Entry(showAnimalWindowAdmin, textvariable=self.speciesNameSV, width=20)
-        speciesNameEntry.grid(row=3, column=1)
-
-        exhibitLabel = Label(showAnimalWindowAdmin,text = "Exhibit")
-        exhibitLabel.grid(row=4,column=0)
-        exhibitDefault = StringVar()
-        exhibitDefault.set("options")
-        exhibitMenu = OptionMenu(showAnimalWindowAdmin, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
-        exhibitMenu.grid(row=4, column=1)
-
-        minLabel=Label(showAnimalWindowAdmin,text="Min")
-        minLabel.grid(row=2,column=3, sticky=W)
-
-        maxLabel=Label(showAnimalWindowAdmin,text="Max")
-        maxLabel.grid(row=2,column=4, sticky=W)
-
-        ageLabel = Label(showAnimalWindowAdmin,text = "Age")
-        ageLabel.grid(row=3,column=2)
-
-        minDefault = StringVar()
-        minDefault.set("3")
-        minMenu = OptionMenu(showAnimalWindowAdmin, minDefault, "0","1","2","3","4","5")
-        minMenu.grid(row=3, column=3,pady=10,sticky=W)
-
-        maxDefault = StringVar()
-        maxDefault.set("3")
-        maxMenu = OptionMenu(showAnimalWindowAdmin, maxDefault, "0", "1","2","3","4","5")
-        maxMenu.grid(row=3, column=4,pady=10, sticky=W)
-
-        typeLabel = Label(showAnimalWindowAdmin,text = "Type")
-        typeLabel.grid(row=4, column=2)
-        # Name Entry
-        typeDefault = StringVar()
-        typeDefault.set("mammal")
-        typeMenu = OptionMenu(showAnimalWindowAdmin, typeDefault, "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
-        typeMenu.grid(row=4, column=3, sticky=W)
-
-        # Display Table for Results
-        selectAnimalTree = ttk.Treeview(showAnimalWindowAdmin, columns=("Name", "Size", "Exhibit", "Age"))
-        selectAnimalTree.heading('#0', text = "Name")
-        selectAnimalTree.heading('#1', text = "Species")
-        selectAnimalTree.heading('#2', text = "Exhibit")
-        selectAnimalTree.heading('#3', text = "Age")
-        selectAnimalTree.heading('#4', text = "Type")
-        selectAnimalTree.column('#0', width = 150, anchor = "center")
-        selectAnimalTree.column('#1', width = 150, anchor = "center")
-        selectAnimalTree.column('#2', width = 150, anchor = "center")
-        selectAnimalTree.column('#3', width = 150, anchor = "center")
-        selectAnimalTree.column('#4', width = 150, anchor = "center")
-        selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
-
-        # Button
-        findAnimalsButton = Button(showAnimalWindowAdmin, text="Find Animals", command=self.showAnimalWindowAdminFindAnimalsButtonClicked)
-        findAnimalsButton.grid(row=6,column=2)
-
-        removeAnimalsButton = Button(showAnimalWindowAdmin, text="Remove Animal", command=self.showAnimalWindowAdminRemoveAnimalWindowButtonClicked)
-        removeAnimalsButton.grid(row=6,column=3)
-
-        backButton = Button(showAnimalWindowAdmin, text="Back", command=self.showAnimalWindowAdminBackButtonClicked)
-        backButton.grid(row=6,column=1)
-
-
-    def showAnimalWindowAdminFindAnimalsButtonClicked(self):
-        self.showAnimalWindowAdmin.destroy()
-        self.createAnimalDetailWindow()
-
-    def showAnimalWindowAdminRemoveAnimalWindowButtonClicked(self):
-        self.showAnimalWindowAdmin.destroy()
-        self.chooseAdminFunctionalityWindow.deiconify()
-
-    def showAnimalWindowAdminBackButtonClicked(self):
-        self.showAnimalWindowAdmin.destroy()
-        self.chooseAdminFunctionalityWindow.deiconify()
-
-
-    def createViewStaffWindow(self):
-        self.viewStaffWindow = Toplevel()
-        self.viewStaffWindow.title("Zoo Atlanta")
-        self.viewStaffWindow.geometry("800x600")
-        self.viewStaffWindow.resizable(0,0)
-
-    def buildViewStaffWindow(self, viewStaffWindow):
-
-        # Title Label
-        titleLabel = Label(viewStaffWindow, text = "View Staff", font = "Verdana 16 bold ")
-        titleLabel.place(x=350, y=25)
-
-        # Table of all the staff members
-        self.staffTree = ttk.Treeview(viewStaffWindow, columns=("1", "2"), selectmode="extended")
-        self.staffTree['show'] = "headings"
-        self.staffTree.column("1", width = 300, anchor = "center")
-        self.staffTree.column("2", width = 300, anchor = "center")
-
-        self.staffTree.heading("1", text = "Name")
-        self.staffTree.heading("2", text = "Email")
-
-        self.staffTree.place(x=400, y=200, anchor="center")
-
-
-        self.cursor.execute("SELECT Username, Email FROM User WHERE Type = 'staff'")
-
-        self.viewStaffTuple = self.cursor.fetchall()
-        self.usernameList = []
-        self.emailList = []
-
-
-        for i in self.viewStaffTuple:
-            self.usernameList.append(i[0])
-            self.emailList.append(i[1])
-
-        # Insert data into the treeview
-        for i in range(len(self.viewStaffTuple)):
-            self.staffTree.insert('', i , values=(self.usernameList[i], self.emailList[i]))
-
-        
-        # Back Button
-        backButton = Button(viewStaffWindow, text="Back", command=self.viewStaffBackButtonClicked)
-        backButton.place(x=10,y=570)
-
-        removeStaffButton = Button(viewStaffWindow, text="Remove Staff", command=self.showStaffWindowAdminRemoveStaffButtonClicked)
-        removeStaffButton.place(x=670,y=570)
-
-
-    def showStaffWindowAdminRemoveStaffButtonClicked(self):
-
-        if not self.staffTree.focus():
-            messagebox.showwarning("Error","You haven't selected any Staff.")
-            return False
-
-        treeIndexString = self.staffTree.focus()
-        valueRemoved = self.staffTree.item(treeIndexString)
-
-
-        messagebox.showwarning('Remove Staff Member', 'Are you sure?')
-        valueslist = list(valueRemoved.values())
-        valueslist = valueslist[2]
-        uname = valueslist[0]
-        eml = valueslist[1]
-
-        self.cursor.execute("DELETE FROM User WHERE Username= %s OR Email = %s AND Type = 'staff'",(uname, eml))
-
-        self.viewStaffWindow.destroy()
-        self.createViewStaffWindow()
-        self.buildViewStaffWindow(self.viewStaffWindow)
-
-    def viewStaffBackButtonClicked(self):
-        self.viewStaffWindow.destroy()
-        self.chooseAdminFunctionalityWindow.deiconify()
 
 
 #-------------------VISITOR PAGES-----------------------------
