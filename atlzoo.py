@@ -624,7 +624,7 @@ class ATLzoo:
         try:
             datetime.strptime(self.dateTime, '%Y-%m-%d %I:%M%p')
         except ValueError:
-            messagebox.showwarning("date needs to be in format mm/dd/yy and time needs to be in format hh:mm:ss")
+            messagebox.showwarning("date needs to be in format yyyy-mm-dd and time needs to be in format hh:mmAM/PM")
             return False
 
 
@@ -646,7 +646,7 @@ class ATLzoo:
         else:
             messagebox.showwarning("this staff member is already hosting another show at this time")
             return False
-            
+
     def adminAddShowWindowBackButtonClicked(self):
         self.adminAddShowWindow.destroy()
         self.chooseAdminFunctionalityWindow.deiconify()
@@ -1013,7 +1013,7 @@ class ATLzoo:
             try:
                 datetime.strptime(self.dateTime, '%Y-%m-%d %I:%M%p')
             except ValueError:
-                messagebox.showwarning("date needs to be in format mm/dd/yy and time needs to be in format hh:mmAM/PM")
+                messagebox.showwarning("date needs to be in format yyyy-mm-dd and time needs to be in format hh:mmAM/PM")
                 return False
         if self.dateTime != "":
             self.dateTimeObject = datetime.strptime(self.dateTime, '%Y-%m-%d %I:%M%p')
