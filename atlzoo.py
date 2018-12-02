@@ -16,6 +16,7 @@ class ATLzoo:
         self.cursor = self.db.cursor()
         self.currentUser = ""
         self.exhibitOfInterest = ""
+        self.animalOfInterest = ""
         # Login Window
         self.createLoginWindow()
         self.buildLoginWindow(self.loginWindow)
@@ -2032,10 +2033,6 @@ class ATLzoo:
     # Log Visit Button
 
     def exhibitDetailWindowLogVisitButtonClicked(self):
-            # Click Log Out Buttion on Choose Functionality Window:
-            # Destroy Choose Functionality Window
-            # Display Login Window
-
             self.cursor.execute("INSERT INTO Exhibit_History(U_Name, E_Name, Time) VALUES (%s, %s, %s)",(self.currentUser, self.exhibitName, datetime.now()))
             messagebox.showwarning("Exhibit Visit","You have successfully logged your visit!")
 
@@ -2051,7 +2048,7 @@ class ATLzoo:
         valueslist = valueslist[2]
         # print(valueslist)
         # ['Goldy', 'Goldfish', 'Pacific', 1, 'fish']
-        self.exhibitOfInterest = valueslist[2]
+        self.animalOfInterest = valueslist[2]
         self.searchAnimalWindow.destroy()
         self.createExhibitDetailWindow()
         self.buildExhibitDetailWindow(self.exhibitDetailWindow)
