@@ -1598,7 +1598,7 @@ class ATLzoo:
 
     def showHistoryWindowBackButtonClicked(self):
         self.showHistoryWindow.withdraw()
-        import visitorFunctionality
+        self.chooseVisitorFunctionalityWindow.deiconify()
 
 
 #-------------------VISITOR SEARCH ANIMAL-----------------------------

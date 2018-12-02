@@ -99,7 +99,7 @@ class ATLzooVisitorFunctionality:
         # Destroy Choose Functionality Window
         # Display Login Window
         self.chooseFunctionalityWindow.destroy()
-        self.loginWindow.deiconify()
+      
 
 
 a=ATLzooVisitorFunctionality()
