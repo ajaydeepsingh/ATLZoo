@@ -1704,7 +1704,7 @@ class ATLzoo:
         self.exhibitHistoryTree.heading("2", text = "Time")
         self.exhibitHistoryTree.heading("3", text = "Number of Visits")
 
-        exhibitHistoryTree.place(x=20, y=200,width=600)
+        self.exhibitHistoryTree.place(x=20, y=200,width=600)
 
 
         self.cursor.execute("SELECT t2.Count, t1.E_Name, t1.Time  FROM (SELECT E_Name, Time FROM Exhibit_History WHERE U_Name = %s) AS t1 LEFT JOIN (SELECT COUNT(U_Name AND E_Name AND Time) as Count, E_Name as Name FROM Exhibit_History WHERE U_Name = %s GROUP BY E_Name) AS t2 on (t2.Name = t1.E_Name)",(self.currentUser ,self.currentUser))
