@@ -620,11 +620,13 @@ class ATLzoo:
         self.hostName = self.staffDefault.get()
         self.exhibitName = self.exhibitDefault.get()
 
+        #date validation
         try:
             datetime.strptime(self.dateTime, '%Y-%m-%d %I:%M%p')
         except ValueError:
-            messagebox.showwarning("date needs to be in format mm/dd/yy and time needs to be in format hh:mm:ss")
+            messagebox.showwarning("date needs to be in format yyyy-mm-dd and time needs to be in format hh:mmAM/PM")
             return False
+
 
         self.dateTimeObject = datetime.strptime(self.dateTime, '%Y-%m-%d %I:%M%p')
 
@@ -632,11 +634,18 @@ class ATLzoo:
             messagebox.showwarning("every field needs to be filled out")
             return False
 
-        #date validation
-        self.cursor.execute("INSERT INTO Performance(Name, Time, Host, E_Name) VALUES(%s, %s, %s, %s)",(self.showName, self.dateTime, self.hostName, self.exhibitName))
-        self.adminAddShowWindow.destroy()
+        #staff cannot host two shows at the same time
+        self.cursor.execute("SELECT * from Performance WHERE Host = %s AND Time = %s", (self.hostName, self.dateTime))
+        self.isDuplicate = self.cursor.fetchall()
 
-        self.chooseAdminFunctionalityWindow.deiconify()
+        if self.isDuplicate == ():
+            self.cursor.execute("INSERT INTO Performance(Name, Time, Host, E_Name) VALUES(%s, %s, %s, %s)",(self.showName, self.dateTime, self.hostName, self.exhibitName))
+            self.adminAddShowWindow.destroy()
+
+            self.chooseAdminFunctionalityWindow.deiconify()
+        else:
+            messagebox.showwarning("this staff member is already hosting another show at this time")
+            return False
 
     def adminAddShowWindowBackButtonClicked(self):
         self.adminAddShowWindow.destroy()
@@ -1004,7 +1013,7 @@ class ATLzoo:
             try:
                 datetime.strptime(self.dateTime, '%Y-%m-%d %I:%M%p')
             except ValueError:
-                messagebox.showwarning("date needs to be in format mm/dd/yy and time needs to be in format hh:mmAM/PM")
+                messagebox.showwarning("date needs to be in format yyyy-mm-dd and time needs to be in format hh:mmAM/PM")
                 return False
         if self.dateTime != "":
             self.dateTimeObject = datetime.strptime(self.dateTime, '%Y-%m-%d %I:%M%p')
