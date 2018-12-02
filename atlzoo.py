@@ -17,6 +17,7 @@ class ATLzoo:
         self.currentUser = ""
         self.exhibitOfInterest = ""
         self.animalOfInterest = ""
+        self.animalSpeciesOfInterest = ""
         # Login Window
         self.createLoginWindow()
         self.buildLoginWindow(self.loginWindow)
@@ -1572,10 +1573,10 @@ class ATLzoo:
         numAnimalsLabel = Label(searchExhibitWindow,text = "Number of Animals:")
         numAnimalsLabel.grid(row=3,column=3)
 
-        minSpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000)
+        minSpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000, width=5)
         minSpinBox.grid(row=3, column=4,pady=10,sticky=W)
 
-        maxSpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000)
+        maxSpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000, width=5)
         maxSpinBox.grid(row=3, column=5,pady=10,sticky=W)
 
 
@@ -1598,10 +1599,10 @@ class ATLzoo:
         sizeLabel.grid(row=4,column=0)
 
 
-        min2SpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000)
+        min2SpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000, width=5)
         min2SpinBox.grid(row=4, column=1,pady=5,sticky=W)
 
-        max2SpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000)
+        max2SpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000, width=5)
         max2SpinBox.grid(row=4, column=2,pady=5,sticky=W)
 
         # Button
@@ -2076,21 +2077,22 @@ class ATLzoo:
             messagebox.showwarning("Exhibit Visit","You have successfully logged your visit!")
 
     def exhibitDetailsAnimalGetDetailsButtonClicked(self):
-        if not self.selectAnimalTree.focus():
-            messagebox.showwarning("Error","You haven't selected any Animals.")
+        if not self.detailExhibitTree.focus():
+            messagebox.showwarning("Error","You haven't selected an Animal.")
             return False
 
-        treeIndexString = self.selectAnimalTree.focus()
-        valueDetail = self.selectAnimalTree.item(treeIndexString)
+        treeIndexString = self.detailExhibitTree.focus()
+        valueDetail = self.detailExhibitTree.item(treeIndexString)
 
         valueslist = list(valueDetail.values())
         valueslist = valueslist[2]
         # print(valueslist)
         # ['Goldy', 'Goldfish', 'Pacific', 1, 'fish']
-        self.animalOfInterest = valueslist[2]
-        self.searchAnimalWindow.destroy()
-        self.createExhibitDetailWindow()
-        self.buildExhibitDetailWindow(self.exhibitDetailWindow)
+        self.animalOfInterest = valueslist[0]
+        self.animalSpeciesOfInterest = valueslist[1]
+        self.exhibitDetailWindow.withdraw()
+        self.createAnimalDetailWindow()
+        self.buildAnimalDetailWindow(self.animalDetailWindow)
 
 #-------------------VISITOR ANIMAL DETAIL------------------------------
 # Can only get to from Exhibit detail page
@@ -2104,29 +2106,60 @@ class ATLzoo:
 
     def buildAnimalDetailWindow(self, animalDetailWindow):
          # Title Label
+
+        self.cursor.execute("SELECT * FROM Animal WHERE Name = %s AND Species = %s", (self.animalOfInterest, self.animalSpeciesOfInterest))
+        self.animaldetailfocus = self.cursor.fetchall()
+        # print(self.animaldetailfocus)
+        # ('1', 'fish', 'Goldy', 'Goldfish', 'Pacific')
+        results = self.animaldetailfocus[0]
+
+        age = results[0]
+        animaltype = results[1]
+        name = results[2]
+        species = results[3]
+        animalExhibit = results[4]
+
+
+
+
         titleLabel= Label(animalDetailWindow,text = "Animal Details", font = "Verdana 16 bold ")
-        titleLabel.place(x=130,y=25)
+        titleLabel.place(x=350,y=25)
         # titleLabel.grid(row=1, column=2)
 
         # Labels
         nameLabel = Label(animalDetailWindow,text = "Name:")
         nameLabel.place(x=130,y=60)
 
+        actualnameLabel = Label(animalDetailWindow,text = name)
+        actualnameLabel.place(x=200,y=60)
+
         speciesLabel = Label(animalDetailWindow,text = "Species:")
         speciesLabel.place(x=130,y=90)
+
+        actualspeciesLabel = Label(animalDetailWindow,text = species)
+        actualspeciesLabel.place(x=200,y=90)
 
         exhibitLabel = Label(animalDetailWindow,text = "Exhibit:")
         exhibitLabel.place(x=130,y=120)
 
+        actualexhibitLabel = Label(animalDetailWindow,text = animalExhibit)
+        actualexhibitLabel.place(x=200,y=120)
+
         ageLabel = Label(animalDetailWindow,text = "Age:")
         ageLabel.place(x=130,y=150)
+
+        actualageLabel = Label(animalDetailWindow,text = age)
+        actualageLabel.place(x=200,y=150)
 
         typeLabel = Label(animalDetailWindow,text = "Type:")
         typeLabel.place(x=130,y=180)
 
+        actualtypeLabel = Label(animalDetailWindow,text = animaltype)
+        actualtypeLabel.place(x=200,y=180)
+
         # Back Button
         backButton = Button(animalDetailWindow, text="Back", command=self.animalDetailWindowBackButtonClicked)
-        backButton.place(x=10,y=370)
+        backButton.place(x=400,y=370)
 
 
 
