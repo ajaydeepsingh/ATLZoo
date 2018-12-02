@@ -46,8 +46,6 @@ class ATLzooStaffSearchAnimals:
         speciesNameEntry = Entry(searchAnimalWindow, textvariable=self.speciesNameSV, width=20)
         speciesNameEntry.grid(row=3, column=1)
 
-
-
         exhibitLabel = Label(searchAnimalWindow,text = "Exhibit")
         exhibitLabel.grid(row=4,column=0)
         self.exhibitDefault = StringVar()
@@ -64,11 +62,11 @@ class ATLzooStaffSearchAnimals:
         ageLabel = Label(searchAnimalWindow,text = "Age")
         ageLabel.grid(row=3,column=2)
 
-        minSpinBox = Spinbox(searchAnimalWindow, from_=0, to=10000)
-        minSpinBox.grid(row=3, column=3,pady=10,sticky=W)
+        self.minSpinBox = Spinbox(searchAnimalWindow, from_=0, to=10000, width=5)
+        self.minSpinBox.grid(row=3, column=3,pady=10,sticky=W)
 
-        maxSpinBox = Spinbox(searchAnimalWindow, from_=0, to=10000)
-        maxSpinBox.grid(row=3, column=4,pady=10,sticky=W)
+        self.maxSpinBox = Spinbox(searchAnimalWindow, from_=0, to=10000, width=5)
+        self.maxSpinBox.grid(row=3, column=4,pady=10,sticky=W)
         
         typeLabel = Label(searchAnimalWindow,text = "Type")
         typeLabel.grid(row=4, column=2)
@@ -105,8 +103,11 @@ class ATLzooStaffSearchAnimals:
 
     def searchAnimalWindowFindAnimalsButtonClicked(self):
 
+        for i in self.selectAnimalTree.get_children():
+            self.selectAnimalTree.delete(i)  
+
         # Table is a list of table names"
-        attributes = ["Name", "Species", "Type", "E_Name", "Age"]
+        attributes = ["Name", "Species", "Type", "Age", "E_Name",]
 
         # Entry is a list of the filter inputs
         entry = []
@@ -114,11 +115,14 @@ class ATLzooStaffSearchAnimals:
         entry.append(str(self.speciesNameSV.get()))
         entry.append(self.typeDefault.get())
         entry.append(self.exhibitDefault.get())
-        
+
+
         sql = "SELECT * FROM Animal WHERE "
 
         for i in range(len(entry)):
-            if entry[i] != "":
+            if i == 3:
+                sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+            elif entry[i] != "":
                 sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
             else:
                 sql = sql + attributes[i] + " LIKE '%'"
@@ -132,7 +136,7 @@ class ATLzooStaffSearchAnimals:
         self.cursor.execute(sql)
 
         self.animalResults = self.cursor.fetchall()
-        print(self.animalResults)
+        # print(self.animalResults)
 
         self.animalName = []
         self.species = []
@@ -146,8 +150,7 @@ class ATLzooStaffSearchAnimals:
             self.animalName.append(i[2])
             self.species.append(i[3])
             self.ename.append(i[4])
-            
-
+        
         for i in range(len(self.animalResults)):
             self.selectAnimalTree.insert('', i , values=(self.animalName[i], self.species[i], self.ename[i], self.age[i], self.type[i]))
 

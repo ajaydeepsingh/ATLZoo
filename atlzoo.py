@@ -834,8 +834,10 @@ class ATLzoo:
         titleLabel= Label(searchStaffAnimalsWindow,text = "Search Animals", font = "Verdana 16 bold ")
         titleLabel.grid(row=1,column=2,sticky=W+E)
 
+        
         nameLabel = Label(searchStaffAnimalsWindow,text = "Name")
         nameLabel.grid(row=2, column=0)
+
 
         self.animalNameSV = StringVar()
         animalNameEntry = Entry(searchStaffAnimalsWindow, textvariable=self.animalNameSV, width=20)
@@ -847,12 +849,11 @@ class ATLzoo:
         speciesNameEntry = Entry(searchStaffAnimalsWindow, textvariable=self.speciesNameSV, width=20)
         speciesNameEntry.grid(row=3, column=1)
 
-
         exhibitLabel = Label(searchStaffAnimalsWindow,text = "Exhibit")
         exhibitLabel.grid(row=4,column=0)
-        exhibitDefault = StringVar()
-        exhibitDefault.set("options")
-        exhibitMenu = OptionMenu(searchStaffAnimalsWindow, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
+        self.exhibitDefault = StringVar()
+        self.exhibitDefault.set("")
+        exhibitMenu = OptionMenu(searchStaffAnimalsWindow, self.exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
         exhibitMenu.grid(row=4, column=1)
 
         minLabel=Label(searchStaffAnimalsWindow,text="Min")
@@ -864,41 +865,37 @@ class ATLzoo:
         ageLabel = Label(searchStaffAnimalsWindow,text = "Age")
         ageLabel.grid(row=3,column=2)
 
-        minDefault = StringVar()
-        minDefault.set("3")
-        minMenu = OptionMenu(searchStaffAnimalsWindow, minDefault, "0","1","2","3","4","5")
-        minMenu.grid(row=3, column=3,pady=10,sticky=W)
+        self.minSpinBox = Spinbox(searchStaffAnimalsWindow, from_=0, to=10000, width=5)
+        self.minSpinBox.grid(row=3, column=3,pady=10,sticky=W)
 
-        maxDefault = StringVar()
-        maxDefault.set("3")
-        maxMenu = OptionMenu(searchStaffAnimalsWindow, maxDefault, "0", "1","2","3","4","5")
-        maxMenu.grid(row=3, column=4,pady=10, sticky=W)
-
-
+        self.maxSpinBox = Spinbox(searchStaffAnimalsWindow, from_=0, to=10000, width=5)
+        self.maxSpinBox.grid(row=3, column=4,pady=10,sticky=W)
+        
         typeLabel = Label(searchStaffAnimalsWindow,text = "Type")
         typeLabel.grid(row=4, column=2)
         # Name Entry
-        typeDefault = StringVar()
-        typeDefault.set("")
-        typeMenu = OptionMenu(searchStaffAnimalsWindow, typeDefault, "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
+        self.typeDefault = StringVar()
+        self.typeDefault.set("")
+        typeMenu = OptionMenu(searchStaffAnimalsWindow, self.typeDefault, "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
         typeMenu.grid(row=4, column=3, sticky=W)
        
-        selectAnimalTree = ttk.Treeview(searchStaffAnimalsWindow, columns=("Name", "Size", "Exhibit", "Age"))
-        selectAnimalTree.heading('#0', text = "Name")
-        selectAnimalTree.heading('#1', text = "Species")
-        selectAnimalTree.heading('#2', text = "Exhibit")
-        selectAnimalTree.heading('#3', text = "Age")
-        selectAnimalTree.heading('#4', text = "Type")
-        
-        selectAnimalTree.column('#0', width = 150, anchor = "center")
-        selectAnimalTree.column('#1', width = 150, anchor = "center")
-        selectAnimalTree.column('#2', width = 150, anchor = "center")
-        selectAnimalTree.column('#3', width = 150, anchor = "center")
-        selectAnimalTree.column('#4', width = 150, anchor = "center")
-        selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
+        self.selectAnimalTree = ttk.Treeview(searchStaffAnimalsWindow, columns=("1", "2", "3", "4","5"))
+        self.selectAnimalTree['show'] = "headings"
+        self.selectAnimalTree.column("1", width = 150, anchor = "center")
+        self.selectAnimalTree.column("2", width = 150, anchor = "center")
+        self.selectAnimalTree.column("3", width = 150, anchor = "center")
+        self.selectAnimalTree.column("4", width = 150, anchor = "center")
+        self.selectAnimalTree.column("5", width = 150, anchor = "center")
+
+        self.selectAnimalTree.heading("1", text = "Name")
+        self.selectAnimalTree.heading("2", text = "Species")
+        self.selectAnimalTree.heading("3", text = "Exhibit")
+        self.selectAnimalTree.heading("4", text = "Age")
+        self.selectAnimalTree.heading("5", text = "Type")
+
+        self.selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
 
 
-        # self.cursor.execute( "SELECT * FROM Animal WHERE (Name = %s or %b) AND (Species = %s or %b) AND (Type = %s or %b)” ," (Name, Species,Type))
 
         findAnimalsButton = Button(searchStaffAnimalsWindow, text="Find Animals", command=self.searchStaffAnimalsWindowFindAnimalsButtonClicked)
         findAnimalsButton.grid(row=6,column=3)
@@ -907,10 +904,57 @@ class ATLzoo:
         backButton.grid(row=6,column=1)
 
 
-    def searchStaffAnimalsWindowFindAnimalsButtonClicked(self):
 
-        self.searchStaffAnimalsWindow.destroy()
-        self.createAnimalDetailWindow()
+    def searchStaffAnimalsWindowFindAnimalsButtonClicked(self):
+        for i in self.selectAnimalTree.get_children():
+            self.selectAnimalTree.delete(i)  
+
+        # Table is a list of table names"
+        attributes = ["Name", "Species", "Type", "Age", "E_Name",]
+
+        # Entry is a list of the filter inputs
+        entry = []
+        entry.append(str(self.animalNameSV.get()))
+        entry.append(str(self.speciesNameSV.get()))
+        entry.append(self.typeDefault.get())
+        entry.append(self.exhibitDefault.get())
+
+
+        sql = "SELECT * FROM Animal WHERE "
+
+        for i in range(len(entry)):
+            if i == 3:
+                sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+            elif entry[i] != "":
+                sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+            else:
+                sql = sql + attributes[i] + " LIKE '%'"
+        #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+            if i < len(entry)-1:
+                sql = sql + " AND "
+        #end of statement
+        sql = sql + ";"
+
+        # print(sql)
+        self.cursor.execute(sql)
+        self.animalResults = self.cursor.fetchall()
+        # print(self.animalResults)
+
+        self.animalName = []
+        self.species = []
+        self.type = []
+        self.ename = []
+        self.age = []
+
+        for i in self.animalResults:
+            self.age.append(i[0])
+            self.type.append(i[1])
+            self.animalName.append(i[2])
+            self.species.append(i[3])
+            self.ename.append(i[4])
+        
+        for i in range(len(self.animalResults)):
+            self.selectAnimalTree.insert('', i , values=(self.animalName[i], self.species[i], self.ename[i], self.age[i], self.type[i]))
 
     def  searchStaffAnimalsWindowBackButtonClicked(self):
         self.searchStaffAnimalsWindow.withdraw()
@@ -1054,7 +1098,6 @@ class ATLzoo:
         # searchShowsLabel.grid(row=3, column=1)
         searchShowsLabel.bind("<ButtonPress-1>", self.chooseFunctionalityWindowSearchShowsLabelClicked)
         searchShowsLabel.place(x=400, y = 200, anchor="center")
-
 
         # Search for Animals Label
         searchAnimalsLabel = Label(chooseVisitorFunctionalityWindow, text="Search for Animals", font = "Verdana 13")
@@ -1274,12 +1317,6 @@ class ATLzoo:
 
         if self.min == self.max:
             return False
-
-        # cur.execute("SELECT COUNT(Animal.Name AND Species), Exhibit.Name, Size, Has_Water FROM\
-        #  Exhibit JOIN ON Animal.E_Name = Exhibit.Name ANIMAL \
-        #  WHERE (Exhibit.Name = %) AND (Has_Water = %s OR %b) \
-        #  AND (Size = %s OR %b)"\
-        #  , [exhibit_name, has_water, size, boolean] GROUP BY Exhibit.Name)
 
         self.searchExhibitWindow.destroy()
         self.createExhibitDetailWindow()
