@@ -340,9 +340,9 @@ class ATLzoo:
         viewShowAdd.place(x=400, y = 400, anchor="center")
 
         # View Add Animal
-        viewShowAdd = Label(chooseAdminFunctionalityWindow, text="Add Animal", font = "Verdana 13")
-        viewShowAdd.bind("<ButtonPress-1>", self.chooseAdminFunctionalityWindowAddAnimalLabelClicked)
-        viewShowAdd.place(x=400, y = 475, anchor="center")
+        viewAnimalAdd = Label(chooseAdminFunctionalityWindow, text="Add Animal", font = "Verdana 13")
+        viewAnimalAdd.bind("<ButtonPress-1>", self.chooseAdminFunctionalityWindowAddAnimalLabelClicked)
+        viewAnimalAdd.place(x=400, y = 475, anchor="center")
 
         # Log Out Buttons
 
@@ -358,8 +358,9 @@ class ATLzoo:
 
     def chooseAdminFunctionalityWindowViewShowsLabelClicked(self,event):
         # Hide Choose Functionality Window
-        self.createViewShowsWindow()
-        self.buildViewShowsWindow(self.viewShowWindow)
+
+        self.createAdminViewShowWindow()
+        self.buildAdminViewShowWindow(self.adminViewShowWindow)
         self.chooseAdminFunctionalityWindow.withdraw()
 
     def chooseAdminFunctionalityWindowViewAnimalsLabelClicked(self,event):
@@ -507,7 +508,7 @@ class ATLzoo:
         speciesNameEntry = Entry(adminAddAnimalWindow, textvariable=self.speciesNameSV, width=20)
         speciesNameEntry.grid(row=5, column=2,pady=15)
 
-        ageLabel=Label(adminAddAnimalWindow,text="Date")
+        ageLabel=Label(adminAddAnimalWindow,text="Age")
         ageLabel.grid(row=6,column=1,pady=15)
         ageSpinBox = Spinbox(adminAddAnimalWindow, from_=0, to=100)
         ageSpinBox.grid(row=6, column=2,pady=15)
@@ -759,6 +760,151 @@ class ATLzoo:
 
     def viewStaffBackButtonClicked(self):
         self.viewStaffWindow.destroy()
+        self.chooseAdminFunctionalityWindow.deiconify()
+
+#-------------------ADMIN ADD SHOW STAFF PAGE------------------------------
+
+    def createAdminAddShowWindow(self):
+        # Create blank Search Animal Window
+        self.adminAddShowWindow=Toplevel()
+        self.adminAddShowWindow.title("Zoo Atlanta")
+        self.adminAddShowWindow.geometry("800x600")
+
+    def buildAdminAddShowWindow(self, adminAddShowWindow):
+
+        titleLabel= Label(adminAddShowWindow,text = "Add Show", font = "Verdana 16 bold ")
+        titleLabel.grid(row=1,column=2, sticky=W+E, padx=200,pady=20)
+
+
+        nameLabel = Label(adminAddShowWindow,text = "Show Name")
+        nameLabel.grid(row=2, column=1,pady=15)
+
+        self.showName = StringVar()
+        showNameEntry = Entry(adminAddShowWindow, textvariable=self.showName, width=20)
+        showNameEntry.grid(row=2, column=2,pady=15)
+
+
+        exhibitLabel = Label(adminAddShowWindow,text = "Exhibit")
+        exhibitLabel.grid(row=3,column=1,pady=15)
+        exhibitDefault = StringVar()
+        exhibitDefault.set("")
+        exhibitMenu = OptionMenu(adminAddShowWindow, exhibitDefault, "this","will","have","options","later")
+        exhibitMenu.grid(row=3, column=2,pady=15)
+
+        staffLabel = Label(adminAddShowWindow,text = "Staff")
+        staffLabel.grid(row=4, column=1,pady=15)
+        
+        # Name Entry
+        staffDefault = StringVar()
+        staffDefault.set("")
+        staffMenu = OptionMenu(adminAddShowWindow, staffDefault, "this","will","have","options","later")
+        staffMenu.grid(row=4, column=2,pady=15)
+
+        dateLabel = Label(adminAddShowWindow,text = "Date")
+        dateLabel.grid(row=5,column=1,pady=15)
+        self.dateNameSV = StringVar()
+        dateEntry = Entry(adminAddShowWindow, textvariable=self.dateNameSV, width=20)
+        dateEntry.grid(row=5, column=2,pady=15)
+
+        timeLabel = Label(adminAddShowWindow,text = "Time")
+        timeLabel.grid(row=6,column=1, pady=15)
+        self.timeNameSV = StringVar()
+        timeEntry = Entry(adminAddShowWindow, textvariable=self.timeNameSV, width=20)
+        timeEntry.grid(row=6, column=2, pady=15)
+
+
+
+        addShowButton = Button(adminAddShowWindow, text="Add Show", command=self.adminAddShowWindowAddButtonClicked)
+        addShowButton.grid(row=4, column =3, pady=15)
+
+
+        backButton = Button(adminAddShowWindow, text="Back", command=self.adminAddShowWindowBackButtonClicked)
+        backButton.place(x=360, y=400)
+
+    def adminAddShowWindowAddButtonClicked(self):
+        self.adminAddShowWindow.destroy()
+
+    def adminViewShowWindowRemoveButtonClicked(self):
+        self.adminAddShowWindow.destroy()
+
+    def adminAddShowWindowBackButtonClicked(self):
+        self.adminAddShowWindow.destroy()
+        self.chooseAdminFunctionalityWindow.deiconify()
+
+#-------------------ADMIN VIEW SHOW STAFF PAGE------------------------------
+
+    def createAdminViewShowWindow(self):
+        # Create blank Search Animal Window
+        self.adminViewShowWindow=Toplevel()
+        self.adminViewShowWindow.title("Zoo Atlanta")
+        self.adminViewShowWindow.geometry("800x600")
+
+    def buildAdminViewShowWindow(self, adminViewShowWindow):
+        '''
+        frame = Frame(staffShowHistoryWindow)
+        frame.pack()
+        treeFrame = Frame(staffShowHistoryWindow)
+        treeFrame.pack()
+        buttonFrame = Frame(staffShowHistoryWindow)
+        buttonFrame.pack(side=BOTTOM)
+        '''
+
+        titleLabel= Label(adminViewShowWindow,text = "Shows", font = "Verdana 16 bold ")
+        titleLabel.grid(row=1,column=2, sticky=W+E, padx=200)
+
+
+        nameLabel = Label(adminViewShowWindow,text = "Name")
+        nameLabel.grid(row=2, column=0,pady=10)
+
+
+        self.animalNameSV = StringVar()
+        animalNameEntry = Entry(adminViewShowWindow, textvariable=self.animalNameSV, width=20)
+        animalNameEntry.grid(row=2, column=1, pady=10)
+
+    
+
+
+        exhibitLabel = Label(adminViewShowWindow,text = "Exhibit")
+        exhibitLabel.grid(row=3,column=0,pady=10)
+        exhibitDefault = StringVar()
+        exhibitDefault.set("options")
+        exhibitMenu = OptionMenu(adminViewShowWindow, exhibitDefault, "this","will","have","options","later")
+        exhibitMenu.grid(row=3, column=1,pady=10)
+
+        dateLabel=Label(adminViewShowWindow,text="Date")
+        dateLabel.grid(row=2,column=2,pady=10)
+
+        self.dateSV = StringVar()
+        dateEntry = Entry(adminViewShowWindow, textvariable=self.animalNameSV, width=20)
+        dateEntry.grid(row=2, column=3,pady=10)
+
+        searchButton = Button(adminViewShowWindow, text="Search", command=self.adminViewShowWindowSearchButtonClicked)
+        searchButton.grid(row=3, column =2,pady=10)
+
+
+        viewShowTree = ttk.Treeview(adminViewShowWindow, columns=("Name", "Exhibit", "Date"))
+        viewShowTree.heading('#0', text = "Name")
+        viewShowTree.heading('#1', text = "Exhibit")
+        viewShowTree.heading('#2', text = "Date")
+        viewShowTree.column('#0', width = 200, anchor = "center")
+        viewShowTree.column('#1', width = 200, anchor = "center")
+        viewShowTree.column('#2', width = 200, anchor = "center")
+        viewShowTree.place(x=20, y=130,width=600)
+
+        removeShowButton = Button(adminViewShowWindow, text="Remove Show", command=self.adminViewShowWindowRemoveButtonClicked)
+        removeShowButton.place(x=220, y=400)
+
+        backButton = Button(adminViewShowWindow, text="Back", command=self.adminViewShowWindowBackButtonClicked)
+        backButton.place(x=360, y=400)
+
+    def adminViewShowWindowSearchButtonClicked(self):
+        self.adminViewShowWindow.destroy()
+
+    def adminViewShowWindowRemoveButtonClicked(self):
+        self.adminViewShowWindow.destroy()
+
+    def adminViewShowWindowBackButtonClicked(self):
+        self.adminViewShowWindow.destroy()
         self.chooseAdminFunctionalityWindow.deiconify()
 
 #--------------------Staff Functionality Window--------------------------------------------------------------------------------------------------------------------------------------
@@ -1157,6 +1303,7 @@ class ATLzoo:
         self.loginWindow.deiconify()
 
 #-------------------VISITOR PAGES------------------------------
+#-------------------VISITOR SEARCH SHOWS------------------------------
 
 
     def createVisitorSearchShowsWindow(self):
@@ -1223,6 +1370,8 @@ class ATLzoo:
         self.searchVisitorShowsWindow.withdraw()
         self.chooseVisitorFunctionalityWindow.deiconify()
 
+#-------------------VISITOR SEARCH EXHIBITS------------------------------
+
 
     def createSearchExhibitWindow(self):
         # Create blank Search Exhibit Window
@@ -1251,15 +1400,11 @@ class ATLzoo:
         numAnimalsLabel = Label(searchExhibitWindow,text = "Number of Animals:")
         numAnimalsLabel.grid(row=3,column=3)
 
-        minDefault = StringVar()
-        minDefault.set("3")
-        minMenu = OptionMenu(searchExhibitWindow, minDefault, "0","1","2","3","4","5")
-        minMenu.grid(row=3, column=4,pady=10,sticky=W)
+        minSpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000)
+        minSpinBox.grid(row=3, column=4,pady=10,sticky=W)
 
-        maxDefault = StringVar()
-        maxDefault.set("3")
-        maxMenu = OptionMenu(searchExhibitWindow, maxDefault, "0", "1","2","3","4","5")
-        maxMenu.grid(row=3, column=5,pady=10, sticky=W)
+        maxSpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000)
+        maxSpinBox.grid(row=3, column=5,pady=10,sticky=W)
 
 
         waterLabel = Label(searchExhibitWindow,text = "Water Feature:")
@@ -1272,23 +1417,20 @@ class ATLzoo:
 
 
         min2Label=Label(searchExhibitWindow,text="Min:")
-        min2Label.grid(row=3,column=0, sticky=E)
+        min2Label.grid(row=3,column=1, sticky=W)
 
         max2Label=Label(searchExhibitWindow,text="Max:")
-        max2Label.grid(row=3,column=1, sticky=E)
+        max2Label.grid(row=3,column=2, sticky=W)
 
         sizeLabel = Label(searchExhibitWindow,text = "Size:")
         sizeLabel.grid(row=4,column=0)
 
-        min2Default = StringVar()
-        min2Default.set("3")
-        min2Menu = OptionMenu(searchExhibitWindow, min2Default, "0","1","2","3","4","5")
-        min2Menu.grid(row=4, column=1,pady=5,sticky=E)
 
-        max2Default = StringVar()
-        max2Default.set("3")
-        max2Menu = OptionMenu(searchExhibitWindow, max2Default, "0", "1","2","3","4","5")
-        max2Menu.grid(row=4, column=2,pady=5, sticky=E)
+        min2SpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000)
+        min2SpinBox.grid(row=4, column=1,pady=5,sticky=W)
+
+        max2SpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000)
+        max2SpinBox.grid(row=4, column=2,pady=5,sticky=W)
 
         # Button
         findExhibitsButton = Button(searchExhibitWindow, text="Find Exhibits", command=self.searchExhibitWindowFindExhibitsButtonClicked)
@@ -1327,6 +1469,8 @@ class ATLzoo:
         self.searchExhibitWindow.destroy()
         self.chooseVisitorFunctionalityWindow.deiconify()
 
+#-------------------VISITOR EXHIBIT HISTORY------------------------------
+
 
     def createExhibitHistoryWindow(self):
 
@@ -1339,10 +1483,10 @@ class ATLzoo:
         titleLabel.grid(row=1,column=2,sticky=W+E)
 
         minLabel = Label(exhibitHistoryWindow, text="Min")
-        minLabel.grid(row=2, column=3,pady=10)
+        minLabel.grid(row=2, column=3,pady=10,sticky=W)
 
         maxLabel = Label(exhibitHistoryWindow, text="Max")
-        maxLabel.grid(row=2, column=4,pady=10)
+        maxLabel.grid(row=2, column=4,pady=10,sticky=W)
 
         exhibitLabel = Label(exhibitHistoryWindow,text = "Name")
         exhibitLabel.grid(row=3,column=0,pady=10)
@@ -1353,16 +1497,11 @@ class ATLzoo:
         numVisitsLabel = Label(exhibitHistoryWindow,text = "Number of Visits")
         numVisitsLabel.grid(row=3,column=2,pady=10)
 
+        minSpinBox = Spinbox(exhibitHistoryWindow, from_=0, to=10000)
+        minSpinBox.grid(row=3, column=3,pady=10,sticky=W)
 
-        minDefault = StringVar()
-        minDefault.set("0")
-        minMenu = OptionMenu(exhibitHistoryWindow, minDefault, "0","1","2","3","4","5")
-        minMenu.grid(row=3, column=3,pady=10)
-
-        maxDefault = StringVar()
-        maxDefault.set("2")
-        maxMenu = OptionMenu(exhibitHistoryWindow, maxDefault, "0", "1","2","3","4","5")
-        maxMenu.grid(row=3, column=4,pady=10)
+        maxSpinBox = Spinbox(exhibitHistoryWindow, from_=0, to=10000)
+        maxSpinBox.grid(row=3, column=4,pady=10,sticky=W)
 
 
         dateLabel = Label(exhibitHistoryWindow,text = "Date")
@@ -1399,6 +1538,8 @@ class ATLzoo:
     def exhibitHistoryWindowBackButtonClicked(self):
         self.exhibitHistoryWindow.withdraw()
         self.chooseVisitorFunctionalityWindow.deiconify()
+
+#-------------------VISITOR SHOW HISTORY------------------------------
 
 
     def createShowHistoryWindow(self):
@@ -1460,7 +1601,7 @@ class ATLzoo:
         import visitorFunctionality
 
 
-#-------------------VISITOR PAGES-----------------------------
+#-------------------VISITOR SEARCH ANIMAL-----------------------------
 
     def createSearchAnimalWindow(self):
         # Create blank Search Animal Window
@@ -1617,6 +1758,8 @@ class ATLzoo:
     def searchAnimalWindowBackButtonClicked(self):
         self.searchAnimalWindow.destroy()
         self.chooseVisitorFunctionalityWindow.deiconify()
+
+#-------------------VISITOR EXHIBIT DETAIL------------------------------
 
 
     def createExhibitDetailWindow(self):

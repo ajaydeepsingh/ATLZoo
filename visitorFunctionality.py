@@ -83,8 +83,7 @@ class ATLzooVisitorFunctionality:
         import searchShows
 
     def chooseFunctionalityWindowSearchAnimalsLabelClicked(self,event):
-        self.createSearchAnimalsWindow()
-        self.buildSearchAnimalsWindow(self.searchAnimalsWindow)
+        import searchAnimals
         self.chooseFunctionalityWindow.withdraw()
 
     def chooseFunctionalityWindowViewExhibitHistoryLabelClicked(self,event):
