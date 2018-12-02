@@ -1838,8 +1838,6 @@ class ATLzoo:
 
         self.selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
 
-
-
         findAnimalsButton = Button(searchAnimalWindow, text="Find Animals", command=self.searchAnimalWindowFindAnimalsButtonClicked)
         findAnimalsButton.grid(row=6,column=3)
 
@@ -1874,7 +1872,7 @@ class ATLzoo:
                 sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
             else:
                 sql = sql + attributes[i] + " LIKE '%'"
-        #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
             if i < len(entry)-1:
                 sql = sql + " AND "
         #end of statement
@@ -1903,7 +1901,7 @@ class ATLzoo:
 
     def searchAnimalWindowGetDetailsButtonClicked(self):
         if not self.selectAnimalTree.focus():
-            messagebox.showwarning("Error","You haven't selected any Staff.")
+            messagebox.showwarning("Error","You haven't selected any Animals.")
             return False
 
         treeIndexString = self.selectAnimalTree.focus()
@@ -1936,9 +1934,26 @@ class ATLzoo:
     def buildExhibitDetailWindow(self, exhibitDetailWindow):
         # Add component to chooseFunctionalityWindow
 
-        self.cursor.execute("SELECT Exhibit.Name , COUNT (Animal.Name AND Species), Size, Has_Water, Animal.Name, Species FROM Animal NATURAL JOIN Exhibit WHERE Exhibit.Name = Animal.E_Name AND Exhibit.Name = %s", (self.exhibitOfInterest))
+        self.cursor.execute("SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE Name = %s) AS t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name) AS t2 ON t2.E_Name = t1.Name JOIN (SELECT E_Name,Name as A_Name, Species FROM Animal) AS t3 ON t2.E_Name = t3.E_Name;", (self.exhibitOfInterest))
         self.exhibitFacts = self.cursor.fetchall()
-        print(self.exhibitFacts)
+        # print(self.exhibitFacts)
+        #(('Pacific', 850, b'\x01', 'Pacific', 2, 'Pacific', 'Goldy', 'Goldfish'), ('Pacific', 850, b'\x01', 'Pacific', 2, 'Pacific', 'Nemo', 'Clownfish'))
+
+        self.exhibitName = self.exhibitOfInterest
+        self.eSize = ""
+        self.numAnimals = 0
+        self.animalName = []
+        self.species = []
+        self.hasWater = False
+
+        for i in self.exhibitFacts:
+            self.eSize = i[1]
+            # print(ord(i[2]))
+            if ord(i[2]) == 1:
+                self.hasWater = True
+            self.numAnimals = i[4]
+            self.animalName.append(i[6])
+            self.species.append(i[7])
 
         # Title Label
         exhibitDetailLabel = Label(exhibitDetailWindow, text="Exhibit Details",font = "Verdana 16 bold ")
@@ -1947,17 +1962,29 @@ class ATLzoo:
 
 
         ## Name , Num Animals, Water Feature, List of Animals in the exhibit
-        nameLabel= Label(exhibitDetailWindow, text = "Name:")
-        nameLabel.place(x=400, y=150, anchor="center")
+        nameLabel = Label(exhibitDetailWindow, text = "Name:")
+        nameLabel.place(x=355, y=150, anchor="center")
+
+        foundName = Label(exhibitDetailWindow, text = self.exhibitName)
+        foundName.place(x = 415, y=150, anchor="center")
         
-        numAnimalsLabel= Label(exhibitDetailWindow, text = "Number of Animals")
+        numAnimalsLabel= Label(exhibitDetailWindow, text = "Number of Animals:")
         numAnimalsLabel.place(x=400, y=175, anchor="center")
 
-        sizeLabel= Label(exhibitDetailWindow, text = "Size:")
-        sizeLabel.place(x=400, y=200, anchor="center")
+        actualNumAnimalsLabel= Label(exhibitDetailWindow, text = self.numAnimals)
+        actualNumAnimalsLabel.place(x=500, y=175, anchor="center")
 
-        waterFeatureLabel= Label(exhibitDetailWindow, text = "Water Feature")
-        waterFeatureLabel.place(x=400, y=225, anchor="center")
+        sizeLabel= Label(exhibitDetailWindow, text = "Size:")
+        sizeLabel.place(x=350, y=200, anchor="center")
+
+        actualSizeLabel= Label(exhibitDetailWindow, text = self.eSize)
+        actualSizeLabel.place(x=400, y=200, anchor="center")
+
+        waterFeatureLabel= Label(exhibitDetailWindow, text = "Water Feature:")
+        waterFeatureLabel.place(x=375, y=225, anchor="center")
+
+        hasWaterFeatureLabel= Label(exhibitDetailWindow, text = str(self.hasWater))
+        hasWaterFeatureLabel.place(x=455, y=225, anchor="center")
 
 
         # Buttons
@@ -1967,19 +1994,30 @@ class ATLzoo:
         logVisitButton.grid(row=4)
         logVisitButton.place(x = 400, y=300, anchor="center")
 
-        # Table of Animals
 
-        detailExhibitTree = ttk.Treeview(exhibitDetailWindow, columns=("Name"))
-        detailExhibitTree.heading('#0', text = "Name")
-        detailExhibitTree.heading('#1', text = "Species")
-        detailExhibitTree.column('#0', width = 150, anchor = "center")
-        detailExhibitTree.column('#1', width = 150, anchor = "center")
+        getDetailsButton = Button(exhibitDetailWindow, text="Get Animal Details", command=self.exhibitDetailsAnimalGetDetailsButtonClicked)
+        getDetailsButton.place(x = 500, y=575, anchor="center")
+
+        backButton = Button(exhibitDetailWindow, text="Back", command=self.exhibitDetailWindowBackButtonClicked)
+        backButton.place(x = 300, y=575, anchor="center")
+
+        # Table of Animals in Exhibit
+        self.detailExhibitTree = ttk.Treeview(exhibitDetailWindow, columns=("1", "2"), selectmode="extended")
+        self.detailExhibitTree['show'] = "headings"
+        self.detailExhibitTree.heading("1", text = "Name")
+        self.detailExhibitTree.heading("2", text = "Species")
+        self.detailExhibitTree.column("1", width = 150, anchor = "center")
+        self.detailExhibitTree.column("2", width = 150, anchor = "center")
         # detailExhibitTree.grid(row=5, columnspan=4, sticky = 'nsew')
-        detailExhibitTree.place(x=400, y=450, anchor="center")
+        self.detailExhibitTree.place(x=400, y=450, anchor="center")
+
+
+        for i in range(len(self.exhibitFacts)):
+            self.detailExhibitTree.insert('', i , values=(self.animalName[i], self.species[i]))
 
 
     def exhibitDetailWindowBackButtonClicked(self):
-        self.searchAnimalWindow.destroy()
+        self.exhibitDetailWindow.destroy()
         self.chooseVisitorFunctionalityWindow.deiconify()
 
     # Log Visit Button
@@ -1988,10 +2026,26 @@ class ATLzoo:
             # Click Log Out Buttion on Choose Functionality Window:
             # Destroy Choose Functionality Window
             # Display Login Window
-            self.exhibitDetailWindow.destroy()
-            self.loginWindow.deiconify()
 
+            self.cursor.execute("INSERT INTO Exhibit_History(U_Name, E_Name, Time) VALUES (%s, %s, %s)",(self.currentUser, self.exhibitName, datetime.now()))
+            messagebox.showwarning("Exhibit Visit","You have successfully logged your visit!")
 
+    def exhibitDetailsAnimalGetDetailsButtonClicked(self):
+        if not self.selectAnimalTree.focus():
+            messagebox.showwarning("Error","You haven't selected any Animals.")
+            return False
+
+        treeIndexString = self.selectAnimalTree.focus()
+        valueDetail = self.selectAnimalTree.item(treeIndexString)
+
+        valueslist = list(valueDetail.values())
+        valueslist = valueslist[2]
+        # print(valueslist)
+        # ['Goldy', 'Goldfish', 'Pacific', 1, 'fish']
+        self.exhibitOfInterest = valueslist[2]
+        self.searchAnimalWindow.destroy()
+        self.createExhibitDetailWindow()
+        self.buildExhibitDetailWindow(self.exhibitDetailWindow)
 
 
 #--------------------Database Connection-----------------
