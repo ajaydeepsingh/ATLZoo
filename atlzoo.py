@@ -651,18 +651,39 @@ class ATLzoo:
         typeMenu.grid(row=4, column=3, sticky=W)
 
         # Display Table for Results
-        selectAnimalTree = ttk.Treeview(showAnimalWindowAdmin, columns=("Name", "Size", "Exhibit", "Age"))
-        selectAnimalTree.heading('#0', text = "Name")
-        selectAnimalTree.heading('#1', text = "Species")
-        selectAnimalTree.heading('#2', text = "Exhibit")
-        selectAnimalTree.heading('#3', text = "Age")
-        selectAnimalTree.heading('#4', text = "Type")
-        selectAnimalTree.column('#0', width = 150, anchor = "center")
-        selectAnimalTree.column('#1', width = 150, anchor = "center")
-        selectAnimalTree.column('#2', width = 150, anchor = "center")
-        selectAnimalTree.column('#3', width = 150, anchor = "center")
-        selectAnimalTree.column('#4', width = 150, anchor = "center")
-        selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
+        self.selectAnimalTree = ttk.Treeview(showAnimalWindowAdmin, columns=("1", "2", "3", "4","5"), selectmode="extended")
+        self.selectAnimalTree['show'] = "headings"
+        self.selectAnimalTree.heading('1', text = "Name")
+        self.selectAnimalTree.heading('2', text = "Species")
+        self.selectAnimalTree.heading('3', text = "Exhibit")
+        self.selectAnimalTree.heading('4', text = "Age")
+        self.selectAnimalTree.heading('5', text = "Type")
+        self.selectAnimalTree.column('1', width = 150, anchor = "center")
+        self.selectAnimalTree.column('2', width = 150, anchor = "center")
+        self.selectAnimalTree.column('3', width = 150, anchor = "center")
+        self.selectAnimalTree.column('4', width = 150, anchor = "center")
+        self.selectAnimalTree.column('5', width = 150, anchor = "center")
+        self.selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
+
+        self.cursor.execute("SELECT * FROM Animal")
+
+        self.adminViewAnimalTuple = self.cursor.fetchall()
+        self.nameList = []
+        self.speciesList = []
+        self.exhibitList = []
+        self.ageList = []
+        self.typeList = []
+
+        for i in self.adminViewAnimalTuple:
+            self.nameList.append(i[2])
+            self.speciesList.append(i[3])
+            self.exhibitList.append(i[4])
+            self.ageList.append(i[0])
+            self.typeList.append(i[1])
+
+        for i in range(len(self.adminViewAnimalTuple)):
+            self.selectAnimalTree.insert('', i, values=(self.nameList[i], self.speciesList[i], self.exhibitList[i], self.ageList[i], self.typeList[i]))
+
 
         # Button
         findAnimalsButton = Button(showAnimalWindowAdmin, text="Find Animals", command=self.showAnimalWindowAdminFindAnimalsButtonClicked)
@@ -831,7 +852,7 @@ class ATLzoo:
         self.adminAddShowWindow.destroy()
         self.chooseAdminFunctionalityWindow.deiconify()
 
-#-------------------ADMIN VIEW SHOW STAFF PAGE------------------------------
+#-------------------ADMIN VIEW SHOW PAGE------------------------------
 
     def createAdminViewShowWindow(self):
         # Create blank Search Animal Window
@@ -861,8 +882,6 @@ class ATLzoo:
         animalNameEntry = Entry(adminViewShowWindow, textvariable=self.animalNameSV, width=20)
         animalNameEntry.grid(row=2, column=1, pady=10)
 
-    
-
 
         exhibitLabel = Label(adminViewShowWindow,text = "Exhibit")
         exhibitLabel.grid(row=3,column=0,pady=10)
@@ -875,21 +894,39 @@ class ATLzoo:
         dateLabel.grid(row=2,column=2,pady=10)
 
         self.dateSV = StringVar()
-        dateEntry = Entry(adminViewShowWindow, textvariable=self.animalNameSV, width=20)
-        dateEntry.grid(row=2, column=3,pady=10)
+        dateEntry = Entry(adminViewShowWindow, textvariable=self.dateSV, width=20)
+        dateEntry.grid(row=2, column=3,pady=10,sticky=W)
 
         searchButton = Button(adminViewShowWindow, text="Search", command=self.adminViewShowWindowSearchButtonClicked)
         searchButton.grid(row=3, column =2,pady=10)
 
 
-        viewShowTree = ttk.Treeview(adminViewShowWindow, columns=("Name", "Exhibit", "Date"))
-        viewShowTree.heading('#0', text = "Name")
-        viewShowTree.heading('#1', text = "Exhibit")
-        viewShowTree.heading('#2', text = "Date")
-        viewShowTree.column('#0', width = 200, anchor = "center")
-        viewShowTree.column('#1', width = 200, anchor = "center")
-        viewShowTree.column('#2', width = 200, anchor = "center")
-        viewShowTree.place(x=20, y=130,width=600)
+        self.viewShowTree = ttk.Treeview(adminViewShowWindow, columns=("1", "2", "3"), selectmode = "extended")
+        self.viewShowTree['show'] = "headings"
+        self.viewShowTree.heading('1', text = "Name")
+        self.viewShowTree.heading('2', text = "Exhibit")
+        self.viewShowTree.heading('3', text = "Date")
+        self.viewShowTree.column('1', width = 200, anchor = "center")
+        self.viewShowTree.column('2', width = 200, anchor = "center")
+        self.viewShowTree.column('3', width = 200, anchor = "center")
+        self.viewShowTree.place(x=20, y=130,width=600)
+
+        self.cursor.execute("SELECT * FROM Performance")
+
+        self.adminViewShowTuple = self.cursor.fetchall()
+
+        self.nameList = []
+        self.exhibitList = []
+        self.dateList = []
+
+        for i in self.adminViewShowTuple:
+            self.nameList.append(i[0])
+            self.dateList.append(i[1])
+            self.exhibitList.append(i[3])
+
+
+        for i in range(len(self.adminViewShowTuple)):
+            self.viewShowTree.insert('', i, values = (self.nameList[i], self.exhibitList[i], self.dateList[i]))
 
         removeShowButton = Button(adminViewShowWindow, text="Remove Show", command=self.adminViewShowWindowRemoveButtonClicked)
         removeShowButton.place(x=220, y=400)
