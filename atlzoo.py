@@ -1736,8 +1736,8 @@ class ATLzoo:
 
         valueslist = list(valueDetail.values())
         valueslist = valueslist[2]
-        print(valueslist)
-        # self.exhibitOfInterest = valueslist[2]
+        # print(valueslist)
+        self.exhibitOfInterest = valueslist[0]
         self.exhibitHistoryWindow.destroy()
         self.createExhibitDetailWindow()
         self.buildExhibitDetailWindow(self.exhibitDetailWindow)
@@ -2091,6 +2091,48 @@ class ATLzoo:
         self.searchAnimalWindow.destroy()
         self.createExhibitDetailWindow()
         self.buildExhibitDetailWindow(self.exhibitDetailWindow)
+
+#-------------------VISITOR ANIMAL DETAIL------------------------------
+# Can only get to from Exhibit detail page
+
+    def createAnimalDetailWindow(self):
+            # Create blank chooseFunctionalityWindow
+            self.animalDetailWindow = Toplevel()
+            self.animalDetailWindow.title("Zoo Atlanta")
+            self.animalDetailWindow.geometry("800x600")
+            self.animalDetailWindow.resizable(0,0)
+
+    def buildAnimalDetailWindow(self, animalDetailWindow):
+         # Title Label
+        titleLabel= Label(animalDetailWindow,text = "Animal Details", font = "Verdana 16 bold ")
+        titleLabel.place(x=130,y=25)
+        # titleLabel.grid(row=1, column=2)
+
+        # Labels
+        nameLabel = Label(animalDetailWindow,text = "Name:")
+        nameLabel.place(x=130,y=60)
+
+        speciesLabel = Label(animalDetailWindow,text = "Species:")
+        speciesLabel.place(x=130,y=90)
+
+        exhibitLabel = Label(animalDetailWindow,text = "Exhibit:")
+        exhibitLabel.place(x=130,y=120)
+
+        ageLabel = Label(animalDetailWindow,text = "Age:")
+        ageLabel.place(x=130,y=150)
+
+        typeLabel = Label(animalDetailWindow,text = "Type:")
+        typeLabel.place(x=130,y=180)
+
+        # Back Button
+        backButton = Button(animalDetailWindow, text="Back", command=self.animalDetailWindowBackButtonClicked)
+        backButton.place(x=10,y=370)
+
+
+
+    def animalDetailWindowBackButtonClicked(self):
+        self.animalDetailWindow.destroy()
+        self.exhibitDetailWindow.deiconify()
 
 
 #--------------------Database Connection-----------------
