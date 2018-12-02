@@ -1517,12 +1517,12 @@ class ATLzoo:
         
         # self.selectExhibitTree['show'] = "headings"
         selectShowTree = ttk.Treeview(searchVisitorShowsWindow, columns=("Name", "Exhibit", "Date"))
-        selectShowTree.heading('#0', text = "Name")
-        selectShowTree.heading('#1', text = "Exhibit")
-        selectShowTree.heading('#2', text = "Date")
-        selectShowTree.column('#0', width = 175, anchor = "center")
-        selectShowTree.column('#1', width = 175, anchor = "center")
-        selectShowTree.column('#2', width = 175, anchor = "center")
+        selectShowTree.heading("1", text = "Name")
+        selectShowTree.heading("2", text = "Exhibit")
+        selectShowTree.heading("3", text = "Date")
+        selectShowTree.column("1", width = 175, anchor = "center")
+        selectShowTree.column("2", width = 175, anchor = "center")
+        selectShowTree.column("3", width = 175, anchor = "center")
         selectShowTree.place(x=280, y=280, anchor="center", width=525)
 
         logVisitButton = Button(searchVisitorShowsWindow, text="Log Visit", command = self.logVisitButtonClicked)  
@@ -1573,9 +1573,11 @@ class ATLzoo:
         numAnimalsLabel = Label(searchExhibitWindow,text = "Number of Animals:")
         numAnimalsLabel.grid(row=3,column=3)
 
+        #number of Animals min spin box
         minSpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000, width=5)
         minSpinBox.grid(row=3, column=4,pady=10,sticky=W)
 
+        # number of Animals max spin box
         maxSpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000, width=5)
         maxSpinBox.grid(row=3, column=5,pady=10,sticky=W)
 
@@ -1587,21 +1589,21 @@ class ATLzoo:
         typeDefault.set("No")
         typeMenu = OptionMenu(searchExhibitWindow, typeDefault, "Yes", "No")
         typeMenu.grid(row=4, column=4, sticky=W)
-
-
+        
         min2Label=Label(searchExhibitWindow,text="Min:")
         min2Label.grid(row=3,column=1, sticky=W)
-
+        
         max2Label=Label(searchExhibitWindow,text="Max:")
         max2Label.grid(row=3,column=2, sticky=W)
 
         sizeLabel = Label(searchExhibitWindow,text = "Size:")
         sizeLabel.grid(row=4,column=0)
 
-
+        # size min spin box
         min2SpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000, width=5)
         min2SpinBox.grid(row=4, column=1,pady=5,sticky=W)
 
+        # size max spin box
         max2SpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000, width=5)
         max2SpinBox.grid(row=4, column=2,pady=5,sticky=W)
 
@@ -1628,44 +1630,42 @@ class ATLzoo:
 
     def searchExhibitWindowFindExhibitsButtonClicked(self):
 
-        # Table is a list of table names"
-        attributes = ["Name", "Species", "Type", "Age", "E_Name",]
+        # # Table is a list of table names"
+        # attributes = ["Name", "Species", "Type", "Age", "E_Name",]
 
-        # Entry is a list of the filter inputs
-        entry = []
-        entry.append(str(self.exhibitNameSV.get()))
-        entry.append(str(self.speciesNameSV.get()))
-        entry.append(self.typeDefault.get())
-        entry.append(self.exhibitDefault.get())
+        # # Entry is a list of the filter inputs
+        # entry = []
+        # entry.append(str(self.exhibitNameSV.get()))
+        # entry.append(str(self.speciesNameSV.get()))
+        # entry.append(self.typeDefault.get())
+        # entry.append(self.exhibitDefault.get())
 
-        sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
+        # self.minSpinBox.get()
 
-        for i in range(len(entry)):
-            #min and max will never be empty
-            if i = 1:
-                sql = sql + attributes[i] + " BETWEEN " + entry[i[0]] + “AND” + entry[i[1]]
-            if i = 3:
-                sql = sql + ") t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name HAVING COUNT(Name)>" + entry[i[0]] + "AND COUNT(Name)<" + entry[i[1]] + ")t2 ON t2.E_Name = t1.Name;"
+        # sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
 
-        elif entry[i] != "":
-                sql = sql + attributes[i] + " = " + entry[i]
-            else:
-                sql = sql + attributes[i] + " LIKE %"
-        #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
-            if i<len(entry)-2:
-                sql = sql + " AND "
+        # for i in range(len(entry)):
+        #     #min and max will never be empty
+        #     if i == 1:
+        #         sql = sql + attributes[i] + " BETWEEN " + entry[i[0]] + “AND” + entry[i[1]]
+        #     if i == 3:
+        #         sql = sql + ") t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name HAVING COUNT(Name)>" + entry[i[0]] + "AND COUNT(Name)<" + entry[i[1]] + ")t2 ON t2.E_Name = t1.Name;"
+
+        # elif entry[i] != "":
+        #         sql = sql + attributes[i] + " = " + entry[i]
+        #     else:
+        #         sql = sql + attributes[i] + " LIKE %"
+        # #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+        #     if i<len(entry)-2:
+        #         sql = sql + " AND "
 
 
-        # print(sql)
-        self.cursor.execute(sql)
-        self.animalResults = self.cursor.fetchall()
+        # # print(sql)
+        # self.cursor.execute(sql)
+        # self.exhibitResults = self.cursor.fetchall()
 
-        self.min = self.minSV.get()
-        self.max = self.maxSV.get()
-        self.name = self.nameSV.get()
-
-        if self.min == self.max:
-            return False
+        # if self.min == self.max:
+        #     return False
 
         self.searchExhibitWindow.destroy()
         self.createExhibitDetailWindow()
@@ -1803,6 +1803,7 @@ class ATLzoo:
         # Labels
         showLabel = Label(showHistoryWindow,text = "Name")
         showLabel.grid(row=2,column=0,pady=10)
+        
         self.showNameString = StringVar()
         showNameEntry = Entry(showHistoryWindow, textvariable=self.showNameString, width=20)
         showNameEntry.grid(row=2,column=1,pady=10)
@@ -1810,7 +1811,7 @@ class ATLzoo:
         exhibitLabel = Label(showHistoryWindow,text = "Exhibit")
         exhibitLabel.grid(row=2,column=2,pady=10)
         exhibitDefault = StringVar()
-        exhibitDefault.set("options")
+        exhibitDefault.set("")
         exhibitMenu = OptionMenu(showHistoryWindow, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
         exhibitMenu.grid(row=2, column=3,pady=10)
 
@@ -1818,30 +1819,73 @@ class ATLzoo:
         dateLabel.grid(row=3, column=0,pady=10)
 
         #showDateEntry = CalendarDialog.main()
-        showDateEntry= Entry(showHistoryWindow)
+        self.showDateNameSV = StringVar()
+        showDateEntry = Entry(showHistoryWindow, textvariable = self.showDateNameSV, width=20)
         showDateEntry.grid(row=3, column=1,pady=10)
 
-        # Button
-        findShowsButton = Button(showHistoryWindow, text="Search", command=self.showHistoryWindowFindShowsButtonClicked)
-        findShowsButton.grid(row=3,column=2,pady=10)
+        self.selectShowTree = ttk.Treeview(showHistoryWindow, columns=("1", "2", "3"), selectmode = 'extended')
+        self.selectShowTree['show'] = "headings"
+        self.selectShowTree.heading("1", text = "Name")
+        self.selectShowTree.heading("2", text = "Date")
+        self.selectShowTree.heading("3", text = "Exhibit")
+        self.selectShowTree.column("1", width = 200, anchor = "center")
+        self.selectShowTree.column("2", width = 200, anchor = "center")
+        self.selectShowTree.column("3", width = 200, anchor = "center")
+        self.selectShowTree.place(x=50, y=130,width=600)
 
-        selectShowTree = ttk.Treeview(showHistoryWindow, columns=("Name", "Exhibit", "Date"))
-        selectShowTree.heading('#0', text = "Name")
-        selectShowTree.heading('#1', text = "Exhibit")
-        selectShowTree.heading('#2', text = "Date")
-        selectShowTree.column('#0', width = 200, anchor = "center")
-        selectShowTree.column('#1', width = 200, anchor = "center")
-        selectShowTree.column('#2', width = 200, anchor = "center")
-        selectShowTree.place(x=20, y=130,width=600)
 
+        # Get all Initial Unfiltered Records of the Visitors Show History
+        self.cursor.execute("SELECT Perform_Name, Performance_History.Time, E_Name FROM Performance_History JOIN Performance ON Performance.Name = Perform_Name WHERE U_Name = %s", (self.currentUser))
+        self.userShowHistory = self.cursor.fetchall()
+        # print(self.userShowHistory)
+
+        self.pName = []
+        self.pTime = []
+        self.ename = []
+
+        for i in self.userShowHistory:
+            self.pName.append(i[0])
+            self.pTime.append(i[1])
+            self.ename.append(i[2])
         
+        for i in range(len(self.userShowHistory)):
+            self.selectShowTree.insert('', i , values=(self.pName[i], self.pTime[i], self.ename[i]))
+       
+        # Buttons
+        findShowsButton = Button(showHistoryWindow, text="Search History", command=self.showHistoryWindowFindShowsButtonClicked)
+        findShowsButton.grid(row=3,column=2,pady=10)
 
         backButton = Button(showHistoryWindow, text="Back", command=self.showHistoryWindowBackButtonClicked)
         backButton.place(x=310,y=370)
 
     def showHistoryWindowFindShowsButtonClicked(self):
-        self.showHistoryWindow.destroy()
-        self.createShowsDetailWindow()
+
+        for i in self.selectShowTree.get_children():
+            self.selectShowTree.delete(i)
+
+        self.showDateTime = self.dateNameSV.get()
+
+        if self.showDateTime is not "":
+            try:
+                datetime.strptime(self.showDateTime, '%Y-%m-%d %I:%M%p')
+            except ValueError:
+                messagebox.showwarning("Error!, Date needs to be in format yyyy-mm-dd and time needs to be in format hh:mmAM/PM")
+                return False
+
+        self.cursor.execute("SELECT Perform_Name, Time, E_Name FROM Performance_History JOIN Performance WHERE U_Name = %s AND (Perform_Name = %s or %b) AND (Time = %s or %b) AND (E_Name = %s AND %b)", (self.currentUser, str(self.showNameString), self.showDateTime, str(self.exhibitDefault)))
+        self.userShowHistory = self.cursor.fetchall()
+
+        self.pName = []
+        self.pTime = []
+        self.ename = []
+
+        for i in self.userShowHistory:
+            self.pName.append(i[0])
+            self.pTime.append(i[1])
+            self.ename.append(i[2])
+        
+        for i in range(len(self.userShowHistory)):
+            self.selectShowTree.insert('', i , values=(self.pName[i], self.pTime[i], self.ename[i]))
 
     def showHistoryWindowBackButtonClicked(self):
         self.showHistoryWindow.withdraw()
