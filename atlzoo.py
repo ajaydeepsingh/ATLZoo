@@ -855,7 +855,7 @@ class ATLzoo:
         self.staffTree.column("1", width = 300, anchor = "center")
         self.staffTree.column("2", width = 300, anchor = "center")
 
-        self.staffTree.heading("1", text = "Name")
+        self.staffTree.heading("1", text = "Username")
         self.staffTree.heading("2", text = "Email")
 
         self.staffTree.place(x=400, y=200, anchor="center")
@@ -881,7 +881,7 @@ class ATLzoo:
         backButton = Button(viewStaffWindow, text="Back", command=self.viewStaffBackButtonClicked)
         backButton.place(x=10,y=570)
 
-        removeStaffButton = Button(viewStaffWindow, text="Remove Staff", command=self.showStaffWindowAdminRemoveStaffButtonClicked)
+        removeStaffButton = Button(viewStaffWindow, text="Delete Staff Member", command=self.showStaffWindowAdminRemoveStaffButtonClicked)
         removeStaffButton.place(x=670,y=570)
 
 
