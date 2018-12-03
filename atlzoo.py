@@ -2070,12 +2070,19 @@ class ATLzoo:
         self.showNameString = StringVar()
         showNameEntry = Entry(searchVisitorShowsWindow, textvariable = self.showNameString, width=20)
         showNameEntry.grid(row=2, column=1,pady=10)
+        
+        #populate exhibit menu with sql
+        self.cursor.execute("SELECT Name FROM Exhibit")
+        self.exhibitTuple = self.cursor.fetchall()
+        self.exhibitList = []
+        for i in self.exhibitTuple:
+            self.exhibitList.append(i[0])
 
         exhibitLabel = Label(searchVisitorShowsWindow,text = "Exhibit: ")
         exhibitLabel.grid(row=3,column=0,pady=10)
         self.exhibitDefault = StringVar()
         self.exhibitDefault.set("")
-        exhibitMenu = OptionMenu(searchVisitorShowsWindow, self.exhibitDefault, "Pacific", "Jungle", "Sahara", "Mountainous", "Birds")
+        exhibitMenu = OptionMenu(searchVisitorShowsWindow, self.exhibitDefault, "", *self.exhibitList)
         exhibitMenu.grid(row=3, column=1,pady=10)
 
 
@@ -2086,7 +2093,9 @@ class ATLzoo:
         showDateEntry = Entry(searchVisitorShowsWindow, textvariable = self.showDateSV, width=20)
         showDateEntry.grid(row=2, column=3,pady=10)
 
-        self.searchShowTree = ttk.Treeview(searchVisitorShowsWindow, columns=("1", "2", "3"), selectmode = 'extended')
+        self.columns = ("1", "2", "3")
+
+        self.searchShowTree = ttk.Treeview(searchVisitorShowsWindow, columns=self.columns, selectmode = 'extended')
         self.searchShowTree['show'] = "headings"
         self.searchShowTree.heading("1", text = "Name")
         self.searchShowTree.heading("2", text = "Exhibit")
@@ -2095,6 +2104,12 @@ class ATLzoo:
         self.searchShowTree.column("2", width = 175, anchor = "center")
         self.searchShowTree.column("3", width = 175, anchor = "center")
         self.searchShowTree.place(x=350, y=280, anchor="center", width=525)
+
+        searchShowTreeSort = self.searchShowTree
+
+        for col in self.columns:
+            self.searchShowTree.heading(col, command=lambda _col=col: \
+                self.sortVisitorSearchShows(searchShowTreeSort, _col, False))
 
         # show All shows upon page load
         self.cursor.execute("SELECT * FROM Performance WHERE Name LIKE '%' AND Time LIKE '%' AND E_Name LIKE '%'")
@@ -2130,6 +2145,245 @@ class ATLzoo:
 
         backButton = Button(searchVisitorShowsWindow, text="Back", command=self.searchVisitorShowsWindowBackButtonClicked)
         backButton.place(x=120, y=415)
+
+    def sortVisitorSearchShows(self, tv, column, resort):
+        for i in self.searchShowTree.get_children():
+            self.searchShowTree.delete(i)  
+
+        attributes = ['Name', 'Time', 'E_Name']
+
+        #Entry is a list of the filter inputs
+        entry = []
+
+        entry.append(str(self.showNameString.get()))
+        entry.append(str(self.showDateSV.get()))
+        entry.append(str(self.exhibitDefault.get()))
+
+        #print(entry)
+
+        if (column == "1" and resort == False):
+
+            sql = "SELECT * FROM Performance WHERE "
+
+            for i in range(len(entry)):
+                if entry[i] != "":
+                    sql = sql + attributes[i] + " = '" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+
+            sql = sql + "ORDER BY Name ASC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.exhibitListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.exhibitListSorted.append(i[3])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.searchShowTree.insert('', i, values=(self.nameListSorted[i], self.exhibitListSorted[i], self.timeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorSearchShows(tv, column, not resort))
+
+        elif (column == "1" and resort == True):
+
+            sql = "SELECT * FROM Performance WHERE "
+
+            for i in range(len(entry)):
+                if entry[i] != "":
+                    sql = sql + attributes[i] + " = '" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+
+            #end of statement
+            sql = sql + "ORDER BY Name DESC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.exhibitListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.exhibitListSorted.append(i[3])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.searchShowTree.insert('', i, values=(self.nameListSorted[i], self.exhibitListSorted[i], self.timeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorSearchShows(tv, column, not resort))
+
+        elif (column == "2" and resort == False):
+
+            sql = "SELECT * FROM Performance WHERE "
+
+            for i in range(len(entry)):
+                if entry[i] != "":
+                    sql = sql + attributes[i] + " = '" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+
+            #end of statement
+            sql = sql + "ORDER BY E_Name ASC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.exhibitListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.exhibitListSorted.append(i[3])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.searchShowTree.insert('', i, values=(self.nameListSorted[i], self.exhibitListSorted[i], self.timeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorSearchShows(tv, column, not resort))
+
+        elif (column == "2" and resort == True):
+
+            sql = "SELECT * FROM Performance WHERE "
+
+            for i in range(len(entry)):
+                if entry[i] != "":
+                    sql = sql + attributes[i] + " = '" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+
+            #end of statement
+            sql = sql + "ORDER BY E_Name DESC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.exhibitListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.exhibitListSorted.append(i[3])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.searchShowTree.insert('', i, values=(self.nameListSorted[i], self.exhibitListSorted[i], self.timeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorSearchShows(tv, column, not resort))
+
+        elif (column == "3" and resort == False):
+
+            sql = "SELECT * FROM Performance WHERE "
+
+            for i in range(len(entry)):
+                if entry[i] != "":
+                    sql = sql + attributes[i] + " = '" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+
+            #end of statement
+            sql = sql + "ORDER BY Time ASC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.exhibitListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.exhibitListSorted.append(i[3])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.searchShowTree.insert('', i, values=(self.nameListSorted[i], self.exhibitListSorted[i], self.timeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorSearchShows(tv, column, not resort))
+
+        elif (column == "3" and resort == True):
+
+            sql = "SELECT * FROM Performance WHERE "
+
+            for i in range(len(entry)):
+                if entry[i] != "":
+                    sql = sql + attributes[i] + " = '" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+
+            #end of statement
+            sql = sql + "ORDER BY Time DESC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.exhibitListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.exhibitListSorted.append(i[3])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.searchShowTree.insert('', i, values=(self.nameListSorted[i], self.exhibitListSorted[i], self.timeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorSearchShows(tv, column, not resort))
+
+        
+  
 
     def searchVisitorShowsWindowFindShowsButtonClicked(self):
 
@@ -2319,7 +2573,7 @@ class ATLzoo:
 
         for col in self.columns:
             self.searchExhibitTree.heading(col, command=lambda _col=col: \
-                self.sortColumnsClicked(searchExhibitTreeSort, _col, False))
+                self.sortVisitorSearchExhibit(searchExhibitTreeSort, _col, False))
 
 
         # pre-populate table
@@ -2344,7 +2598,7 @@ class ATLzoo:
         for i in range(len(self.exhibitResults)):
             self.searchExhibitTree.insert('', i , values=(self.eName[i], self.eSize[i], self.eNumAnimals[i], self.hasWater[i]))
 
-    def sortColumnsClicked(self, tv, column, resort):
+    def sortVisitorSearchExhibit(self, tv, column, resort):
         for i in self.searchExhibitTree.get_children():
             self.searchExhibitTree.delete(i)  
 
@@ -2398,17 +2652,17 @@ class ATLzoo:
                 for i in self.sortColumnsTuple:
                     self.nameListSorted.append(i[0])
                     if i[2] == b'\x01':
-                    	self.hasWaterSorted.append("True")
+                        self.hasWaterSorted.append("True")
                     if i[2] == b'\x00':
-                    	self.hasWaterSorted.append("False")
+                        self.hasWaterSorted.append("False")
                     self.sizeListSorted.append(i[1])
                     self.numAnimalsSorted.append(i[4])
 
-               	for i in range(len(self.sortColumnsTuple)):
-               		self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
+                for i in range(len(self.sortColumnsTuple)):
+                    self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
 
                 tv.heading(column, command=lambda: \
-                self.sortColumnsClicked(tv, column, not resort))
+                self.sortVisitorSearchExhibit(tv, column, not resort))
 
         if (column == "1" and resort == True):
                 sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
@@ -2445,17 +2699,17 @@ class ATLzoo:
                 for i in self.sortColumnsTuple:
                     self.nameListSorted.append(i[0])
                     if i[2] == b'\x01':
-                    	self.hasWaterSorted.append("True")
+                        self.hasWaterSorted.append("True")
                     if i[2] == b'\x00':
-                    	self.hasWaterSorted.append("False")
+                        self.hasWaterSorted.append("False")
                     self.sizeListSorted.append(i[1])
                     self.numAnimalsSorted.append(i[4])
 
-               	for i in range(len(self.sortColumnsTuple)):
-               		self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
+                for i in range(len(self.sortColumnsTuple)):
+                    self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
 
                 tv.heading(column, command=lambda: \
-                self.sortColumnsClicked(tv, column, not resort))
+                self.sortVisitorSearchExhibit(tv, column, not resort))
 
         if (column == "2" and resort == False):
                 sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
@@ -2492,17 +2746,17 @@ class ATLzoo:
                 for i in self.sortColumnsTuple:
                     self.nameListSorted.append(i[0])
                     if i[2] == b'\x01':
-                    	self.hasWaterSorted.append("True")
+                        self.hasWaterSorted.append("True")
                     if i[2] == b'\x00':
-                    	self.hasWaterSorted.append("False")
+                        self.hasWaterSorted.append("False")
                     self.sizeListSorted.append(i[1])
                     self.numAnimalsSorted.append(i[4])
 
-               	for i in range(len(self.sortColumnsTuple)):
-               		self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
+                for i in range(len(self.sortColumnsTuple)):
+                    self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
 
                 tv.heading(column, command=lambda: \
-                self.sortColumnsClicked(tv, column, not resort))
+                self.sortVisitorSearchExhibit(tv, column, not resort))
 
         if (column == "2" and resort == True):
                 sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
@@ -2539,17 +2793,17 @@ class ATLzoo:
                 for i in self.sortColumnsTuple:
                     self.nameListSorted.append(i[0])
                     if i[2] == b'\x01':
-                    	self.hasWaterSorted.append("True")
+                        self.hasWaterSorted.append("True")
                     if i[2] == b'\x00':
-                    	self.hasWaterSorted.append("False")
+                        self.hasWaterSorted.append("False")
                     self.sizeListSorted.append(i[1])
                     self.numAnimalsSorted.append(i[4])
 
-               	for i in range(len(self.sortColumnsTuple)):
-               		self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
+                for i in range(len(self.sortColumnsTuple)):
+                    self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
 
                 tv.heading(column, command=lambda: \
-                self.sortColumnsClicked(tv, column, not resort))
+                self.sortVisitorSearchExhibit(tv, column, not resort))
 
         if (column == "3" and resort == False):
                 sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
@@ -2586,17 +2840,17 @@ class ATLzoo:
                 for i in self.sortColumnsTuple:
                     self.nameListSorted.append(i[0])
                     if i[2] == b'\x01':
-                    	self.hasWaterSorted.append("True")
+                        self.hasWaterSorted.append("True")
                     if i[2] == b'\x00':
-                    	self.hasWaterSorted.append("False")
+                        self.hasWaterSorted.append("False")
                     self.sizeListSorted.append(i[1])
                     self.numAnimalsSorted.append(i[4])
 
-               	for i in range(len(self.sortColumnsTuple)):
-               		self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
+                for i in range(len(self.sortColumnsTuple)):
+                    self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
 
                 tv.heading(column, command=lambda: \
-                self.sortColumnsClicked(tv, column, not resort))
+                self.sortVisitorSearchExhibit(tv, column, not resort))
 
         if (column == "3" and resort == True):
                 sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
@@ -2633,17 +2887,17 @@ class ATLzoo:
                 for i in self.sortColumnsTuple:
                     self.nameListSorted.append(i[0])
                     if i[2] == b'\x01':
-                    	self.hasWaterSorted.append("True")
+                        self.hasWaterSorted.append("True")
                     if i[2] == b'\x00':
-                    	self.hasWaterSorted.append("False")
+                        self.hasWaterSorted.append("False")
                     self.sizeListSorted.append(i[1])
                     self.numAnimalsSorted.append(i[4])
 
-               	for i in range(len(self.sortColumnsTuple)):
-               		self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
+                for i in range(len(self.sortColumnsTuple)):
+                    self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
 
                 tv.heading(column, command=lambda: \
-                self.sortColumnsClicked(tv, column, not resort))
+                self.sortVisitorSearchExhibit(tv, column, not resort))
 
         if (column == "4" and resort == False):
                 sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
@@ -2670,7 +2924,7 @@ class ATLzoo:
                 self.cursor.execute(sql)
                 self.sortColumnsTuple = self.cursor.fetchall()
 
-                print(self.sortColumnsTuple)
+                #print(self.sortColumnsTuple)
 
                 self.nameListSorted = []
                 self.hasWaterSorted = []
@@ -2680,17 +2934,17 @@ class ATLzoo:
                 for i in self.sortColumnsTuple:
                     self.nameListSorted.append(i[0])
                     if i[2] == b'\x01':
-                    	self.hasWaterSorted.append("True")
+                        self.hasWaterSorted.append("True")
                     if i[2] == b'\x00':
-                    	self.hasWaterSorted.append("False")
+                        self.hasWaterSorted.append("False")
                     self.sizeListSorted.append(i[1])
                     self.numAnimalsSorted.append(i[4])
 
-               	for i in range(len(self.sortColumnsTuple)):
-               		self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
+                for i in range(len(self.sortColumnsTuple)):
+                    self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
 
                 tv.heading(column, command=lambda: \
-                self.sortColumnsClicked(tv, column, not resort))
+                self.sortVisitorSearchExhibit(tv, column, not resort))
 
         if (column == "4" and resort == True):
                 sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
@@ -2727,17 +2981,17 @@ class ATLzoo:
                 for i in self.sortColumnsTuple:
                     self.nameListSorted.append(i[0])
                     if i[2] == b'\x01':
-                    	self.hasWaterSorted.append("True")
+                        self.hasWaterSorted.append("True")
                     if i[2] == b'\x00':
-                    	self.hasWaterSorted.append("False")
+                        self.hasWaterSorted.append("False")
                     self.sizeListSorted.append(i[1])
                     self.numAnimalsSorted.append(i[4])
 
-               	for i in range(len(self.sortColumnsTuple)):
-               		self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
+                for i in range(len(self.sortColumnsTuple)):
+                    self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
 
                 tv.heading(column, command=lambda: \
-                self.sortColumnsClicked(tv, column, not resort))
+                self.sortVisitorSearchExhibit(tv, column, not resort))
 
     def searchExhibitWindowFindExhibitsButtonClicked(self):
 
@@ -3179,8 +3433,10 @@ class ATLzoo:
         self.typeDefault.set("")
         typeMenu = OptionMenu(searchAnimalWindow, self.typeDefault, "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
         typeMenu.grid(row=4, column=3, sticky=W)
+
+        self.columns = ("1", "2", "3", "4","5")
        
-        self.selectAnimalTree = ttk.Treeview(searchAnimalWindow, columns=("1", "2", "3", "4","5"), selectmode="extended")
+        self.selectAnimalTree = ttk.Treeview(searchAnimalWindow, columns=self.columns, selectmode="extended")
         self.selectAnimalTree['show'] = "headings"
         self.selectAnimalTree.column("1", width = 150, anchor = "center")
         self.selectAnimalTree.column("2", width = 150, anchor = "center")
@@ -3196,6 +3452,12 @@ class ATLzoo:
 
         self.selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
 
+        selectAnimalTreeSort = self.selectAnimalTree
+
+        for col in self.columns:
+            self.selectAnimalTree.heading(col, command=lambda _col=col: \
+                self.sortVisitorSearchAnimal(selectAnimalTreeSort, _col, False))
+
         findAnimalsButton = Button(searchAnimalWindow, text="Find Animals", command=self.searchAnimalWindowFindAnimalsButtonClicked)
         findAnimalsButton.grid(row=6,column=3)
 
@@ -3205,6 +3467,448 @@ class ATLzoo:
         backButton = Button(searchAnimalWindow, text="Back", command=self.searchAnimalWindowBackButtonClicked)
         backButton.grid(row=6,column=1)
 
+    def sortVisitorSearchAnimal(self, tv, column, resort):
+        for i in self.selectAnimalTree.get_children():
+            self.selectAnimalTree.delete(i)  
+
+        attributes = ["Name", "Species", "Type", "Age", "E_Name",]
+
+        # Entry is a list of the filter inputs
+        entry = []
+        entry.append(str(self.animalNameSV.get()))
+        entry.append(str(self.speciesNameSV.get()))
+        entry.append(self.typeDefault.get())
+        entry.append("")
+        entry.append(self.exhibitDefault.get())
+
+        #print(entry)
+
+        
+
+        if (column == "1" and resort == False):
+
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY Name ASC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorSearchAnimal(tv, column, not resort))
+
+        elif (column == "1" and resort == True):
+            #print("reversed")
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY Name DESC;"
+
+            self.cursor.execute(sql)
+
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorSearchAnimal(tv, column, not resort))
+        elif (column == "2" and resort == False):
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY Species ASC;"
+
+            self.cursor.execute(sql)
+
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorSearchAnimal(tv, column, not resort))
+        elif (column == "2" and resort == True): 
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY Species DESC;"
+
+            self.cursor.execute(sql)
+
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorSearchAnimal(tv, column, not resort))
+
+        elif (column == "3" and resort == False):
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY Type ASC;"
+
+            self.cursor.execute(sql)
+
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorSearchAnimal(tv, column, not resort))
+        elif (column == "3" and resort == True): 
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY Type DESC;"
+
+            self.cursor.execute(sql)
+
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorSearchAnimal(tv, column, not resort))
+
+        elif (column == "4" and resort == False):
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY Age ASC;"
+
+            self.cursor.execute(sql)
+
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorSearchAnimal(tv, column, not resort))
+        elif (column == "4" and resort == True): 
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY Age DESC;"
+
+            self.cursor.execute(sql)
+
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorSearchAnimal(tv, column, not resort))
+
+        elif (column == "5" and resort == False):
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY Type ASC;"
+
+            self.cursor.execute(sql)
+
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorSearchAnimal(tv, column, not resort))
+        elif (column == "5" and resort == True): 
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY Type DESC;"
+
+            self.cursor.execute(sql)
+
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorSearchAnimal(tv, column, not resort))
 
     def searchAnimalWindowFindAnimalsButtonClicked(self):
         
