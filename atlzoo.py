@@ -1305,6 +1305,7 @@ class ATLzoo:
         backButton = Button(searchStaffAnimalsWindow, text="Back", command=self.searchStaffAnimalsWindowBackButtonClicked)
         backButton.grid(row=6,column=1)
 
+    #sort functionality
     def sortColumnsClicked(self, tv, column, resort):
         for i in self.selectAnimalTree.get_children():
             self.selectAnimalTree.delete(i)  
@@ -2299,7 +2300,9 @@ class ATLzoo:
         backButton = Button(searchExhibitWindow, text="Back", command=self.searchExhibitWindowBackButtonClicked)
         backButton.grid(row=7,column=1)
 
-        self.searchExhibitTree = ttk.Treeview(searchExhibitWindow, columns=("1", "2", "3", "4"), selectmode='extended')
+        self.columns = ("1", "2", "3", "4")
+
+        self.searchExhibitTree = ttk.Treeview(searchExhibitWindow, columns=self.columns, selectmode='extended')
         self.searchExhibitTree['show'] = "headings"
         self.searchExhibitTree.column("1", width = 150, anchor = "center")
         self.searchExhibitTree.column("2", width = 150, anchor = "center")
@@ -2311,6 +2314,12 @@ class ATLzoo:
         self.searchExhibitTree.heading("4", text = "Water")
 
         self.searchExhibitTree.grid(row=6, columnspan=4, sticky = 'nsew')
+
+        searchExhibitTreeSort = self.searchExhibitTree
+
+        for col in self.columns:
+            self.searchExhibitTree.heading(col, command=lambda _col=col: \
+                self.sortColumnsClicked(searchExhibitTreeSort, _col, False))
 
 
         # pre-populate table
@@ -2335,7 +2344,401 @@ class ATLzoo:
         for i in range(len(self.exhibitResults)):
             self.searchExhibitTree.insert('', i , values=(self.eName[i], self.eSize[i], self.eNumAnimals[i], self.hasWater[i]))
 
-    
+    def sortColumnsClicked(self, tv, column, resort):
+        for i in self.searchExhibitTree.get_children():
+            self.searchExhibitTree.delete(i)  
+
+        attributes =  ["Name","Size","Has_Water"]
+
+        # Entry is a list of the filter inputs
+        entry = []
+        entry.append(str(self.exhibitNameSV.get()))
+
+        #for size attribute
+        entry.append("")
+        
+        # might need to fix this to accurately reflect boolean values in the SQL table
+        if self.typeDefault.get() == 'No':
+            entry.append(False)
+        else:
+            entry.append(True)
+
+        if (column == "1" and resort == False):
+                sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
+                for i in range(len(entry)):
+                #min and max will never be empty
+                        if type(entry[i]) != str:
+                                sql = sql + attributes[i] + " = " + str(entry[i]) + " AND "
+                        if i == 2:
+                                sql = sql + attributes[i-1] + " BETWEEN " + self.min2SpinBox.get() + " AND " + self.max2SpinBox.get()
+
+                        if i == 2:
+                                sql = sql + ") AS t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name HAVING COUNT(Name)>" + self.minSpinBox.get() + " AND COUNT(Name)<" + self.maxSpinBox.get() + ") AS t2 ON t2.E_Name = t1.Name"
+                        elif type(entry[i]) == str and entry[i] != "":
+                                sql = sql + attributes[i] + " = '" + entry[i] +"'"
+                        else:
+                                sql = sql + attributes[i] + " LIKE '%' "
+                                #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                        if i<len(entry)-1:
+                                sql = sql + " AND "
+                sql = sql + " ORDER BY Name ASC;"
+
+                #print(sql)
+
+                self.cursor.execute(sql)
+                self.sortColumnsTuple = self.cursor.fetchall()
+
+                #print(self.sortColumnsTuple)
+
+                self.nameListSorted = []
+                self.hasWaterSorted = []
+                self.sizeListSorted = []
+                self.numAnimalsSorted = []
+
+                for i in self.sortColumnsTuple:
+                    self.nameListSorted.append(i[0])
+                    if i[2] == b'\x01':
+                    	self.hasWaterSorted.append("True")
+                    if i[2] == b'\x00':
+                    	self.hasWaterSorted.append("False")
+                    self.sizeListSorted.append(i[1])
+                    self.numAnimalsSorted.append(i[4])
+
+               	for i in range(len(self.sortColumnsTuple)):
+               		self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
+
+                tv.heading(column, command=lambda: \
+                self.sortColumnsClicked(tv, column, not resort))
+
+        if (column == "1" and resort == True):
+                sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
+                for i in range(len(entry)):
+                #min and max will never be empty
+                        if type(entry[i]) != str:
+                                sql = sql + attributes[i] + " = " + str(entry[i]) + " AND "
+                        if i == 2:
+                                sql = sql + attributes[i-1] + " BETWEEN " + self.min2SpinBox.get() + " AND " + self.max2SpinBox.get()
+
+                        if i == 2:
+                                sql = sql + ") AS t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name HAVING COUNT(Name)>" + self.minSpinBox.get() + " AND COUNT(Name)<" + self.maxSpinBox.get() + ") AS t2 ON t2.E_Name = t1.Name"
+                        elif type(entry[i]) == str and entry[i] != "":
+                                sql = sql + attributes[i] + " = '" + entry[i] +"'"
+                        else:
+                                sql = sql + attributes[i] + " LIKE '%' "
+                                #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                        if i<len(entry)-1:
+                                sql = sql + " AND "
+                sql = sql + " ORDER BY Name DESC;"
+
+                #print(sql)
+
+                self.cursor.execute(sql)
+                self.sortColumnsTuple = self.cursor.fetchall()
+
+                #print(self.sortColumnsTuple)
+
+                self.nameListSorted = []
+                self.hasWaterSorted = []
+                self.sizeListSorted = []
+                self.numAnimalsSorted = []
+
+                for i in self.sortColumnsTuple:
+                    self.nameListSorted.append(i[0])
+                    if i[2] == b'\x01':
+                    	self.hasWaterSorted.append("True")
+                    if i[2] == b'\x00':
+                    	self.hasWaterSorted.append("False")
+                    self.sizeListSorted.append(i[1])
+                    self.numAnimalsSorted.append(i[4])
+
+               	for i in range(len(self.sortColumnsTuple)):
+               		self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
+
+                tv.heading(column, command=lambda: \
+                self.sortColumnsClicked(tv, column, not resort))
+
+        if (column == "2" and resort == False):
+                sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
+                for i in range(len(entry)):
+                #min and max will never be empty
+                        if type(entry[i]) != str:
+                                sql = sql + attributes[i] + " = " + str(entry[i]) + " AND "
+                        if i == 2:
+                                sql = sql + attributes[i-1] + " BETWEEN " + self.min2SpinBox.get() + " AND " + self.max2SpinBox.get()
+
+                        if i == 2:
+                                sql = sql + ") AS t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name HAVING COUNT(Name)>" + self.minSpinBox.get() + " AND COUNT(Name)<" + self.maxSpinBox.get() + ") AS t2 ON t2.E_Name = t1.Name"
+                        elif type(entry[i]) == str and entry[i] != "":
+                                sql = sql + attributes[i] + " = '" + entry[i] +"'"
+                        else:
+                                sql = sql + attributes[i] + " LIKE '%' "
+                                #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                        if i<len(entry)-1:
+                                sql = sql + " AND "
+                sql = sql + " ORDER BY Size ASC;"
+
+                #print(sql)
+
+                self.cursor.execute(sql)
+                self.sortColumnsTuple = self.cursor.fetchall()
+
+                #print(self.sortColumnsTuple)
+
+                self.nameListSorted = []
+                self.hasWaterSorted = []
+                self.sizeListSorted = []
+                self.numAnimalsSorted = []
+
+                for i in self.sortColumnsTuple:
+                    self.nameListSorted.append(i[0])
+                    if i[2] == b'\x01':
+                    	self.hasWaterSorted.append("True")
+                    if i[2] == b'\x00':
+                    	self.hasWaterSorted.append("False")
+                    self.sizeListSorted.append(i[1])
+                    self.numAnimalsSorted.append(i[4])
+
+               	for i in range(len(self.sortColumnsTuple)):
+               		self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
+
+                tv.heading(column, command=lambda: \
+                self.sortColumnsClicked(tv, column, not resort))
+
+        if (column == "2" and resort == True):
+                sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
+                for i in range(len(entry)):
+                #min and max will never be empty
+                        if type(entry[i]) != str:
+                                sql = sql + attributes[i] + " = " + str(entry[i]) + " AND "
+                        if i == 2:
+                                sql = sql + attributes[i-1] + " BETWEEN " + self.min2SpinBox.get() + " AND " + self.max2SpinBox.get()
+
+                        if i == 2:
+                                sql = sql + ") AS t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name HAVING COUNT(Name)>" + self.minSpinBox.get() + " AND COUNT(Name)<" + self.maxSpinBox.get() + ") AS t2 ON t2.E_Name = t1.Name"
+                        elif type(entry[i]) == str and entry[i] != "":
+                                sql = sql + attributes[i] + " = '" + entry[i] +"'"
+                        else:
+                                sql = sql + attributes[i] + " LIKE '%' "
+                                #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                        if i<len(entry)-1:
+                                sql = sql + " AND "
+                sql = sql + " ORDER BY Size DESC;"
+
+                #print(sql)
+
+                self.cursor.execute(sql)
+                self.sortColumnsTuple = self.cursor.fetchall()
+
+                #print(self.sortColumnsTuple)
+
+                self.nameListSorted = []
+                self.hasWaterSorted = []
+                self.sizeListSorted = []
+                self.numAnimalsSorted = []
+
+                for i in self.sortColumnsTuple:
+                    self.nameListSorted.append(i[0])
+                    if i[2] == b'\x01':
+                    	self.hasWaterSorted.append("True")
+                    if i[2] == b'\x00':
+                    	self.hasWaterSorted.append("False")
+                    self.sizeListSorted.append(i[1])
+                    self.numAnimalsSorted.append(i[4])
+
+               	for i in range(len(self.sortColumnsTuple)):
+               		self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
+
+                tv.heading(column, command=lambda: \
+                self.sortColumnsClicked(tv, column, not resort))
+
+        if (column == "3" and resort == False):
+                sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
+                for i in range(len(entry)):
+                #min and max will never be empty
+                        if type(entry[i]) != str:
+                                sql = sql + attributes[i] + " = " + str(entry[i]) + " AND "
+                        if i == 2:
+                                sql = sql + attributes[i-1] + " BETWEEN " + self.min2SpinBox.get() + " AND " + self.max2SpinBox.get()
+
+                        if i == 2:
+                                sql = sql + ") AS t1 JOIN (SELECT E_Name, COUNT(Name) AS Count FROM Animal GROUP BY E_Name HAVING COUNT(Name)>" + self.minSpinBox.get() + " AND COUNT(Name)<" + self.maxSpinBox.get() + ") AS t2 ON t2.E_Name = t1.Name"
+                        elif type(entry[i]) == str and entry[i] != "":
+                                sql = sql + attributes[i] + " = '" + entry[i] +"'"
+                        else:
+                                sql = sql + attributes[i] + " LIKE '%' "
+                                #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                        if i<len(entry)-1:
+                                sql = sql + " AND "
+                sql = sql + " ORDER BY Count ASC;"
+
+                #print(sql)
+
+                self.cursor.execute(sql)
+                self.sortColumnsTuple = self.cursor.fetchall()
+
+                #print(self.sortColumnsTuple)
+
+                self.nameListSorted = []
+                self.hasWaterSorted = []
+                self.sizeListSorted = []
+                self.numAnimalsSorted = []
+
+                for i in self.sortColumnsTuple:
+                    self.nameListSorted.append(i[0])
+                    if i[2] == b'\x01':
+                    	self.hasWaterSorted.append("True")
+                    if i[2] == b'\x00':
+                    	self.hasWaterSorted.append("False")
+                    self.sizeListSorted.append(i[1])
+                    self.numAnimalsSorted.append(i[4])
+
+               	for i in range(len(self.sortColumnsTuple)):
+               		self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
+
+                tv.heading(column, command=lambda: \
+                self.sortColumnsClicked(tv, column, not resort))
+
+        if (column == "3" and resort == True):
+                sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
+                for i in range(len(entry)):
+                #min and max will never be empty
+                        if type(entry[i]) != str:
+                                sql = sql + attributes[i] + " = " + str(entry[i]) + " AND "
+                        if i == 2:
+                                sql = sql + attributes[i-1] + " BETWEEN " + self.min2SpinBox.get() + " AND " + self.max2SpinBox.get()
+
+                        if i == 2:
+                                sql = sql + ") AS t1 JOIN (SELECT E_Name, COUNT(Name) AS Count FROM Animal GROUP BY E_Name HAVING COUNT(Name)>" + self.minSpinBox.get() + " AND COUNT(Name)<" + self.maxSpinBox.get() + ") AS t2 ON t2.E_Name = t1.Name"
+                        elif type(entry[i]) == str and entry[i] != "":
+                                sql = sql + attributes[i] + " = '" + entry[i] +"'"
+                        else:
+                                sql = sql + attributes[i] + " LIKE '%' "
+                                #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                        if i<len(entry)-1:
+                                sql = sql + " AND "
+                sql = sql + " ORDER BY Count DESC;"
+
+                #print(sql)
+
+                self.cursor.execute(sql)
+                self.sortColumnsTuple = self.cursor.fetchall()
+
+                #print(self.sortColumnsTuple)
+
+                self.nameListSorted = []
+                self.hasWaterSorted = []
+                self.sizeListSorted = []
+                self.numAnimalsSorted = []
+
+                for i in self.sortColumnsTuple:
+                    self.nameListSorted.append(i[0])
+                    if i[2] == b'\x01':
+                    	self.hasWaterSorted.append("True")
+                    if i[2] == b'\x00':
+                    	self.hasWaterSorted.append("False")
+                    self.sizeListSorted.append(i[1])
+                    self.numAnimalsSorted.append(i[4])
+
+               	for i in range(len(self.sortColumnsTuple)):
+               		self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
+
+                tv.heading(column, command=lambda: \
+                self.sortColumnsClicked(tv, column, not resort))
+
+        if (column == "4" and resort == False):
+                sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
+                for i in range(len(entry)):
+                #min and max will never be empty
+                        if type(entry[i]) != str:
+                                sql = sql + attributes[i] + " = " + str(entry[i]) + " AND "
+                        if i == 2:
+                                sql = sql + attributes[i-1] + " BETWEEN " + self.min2SpinBox.get() + " AND " + self.max2SpinBox.get()
+
+                        if i == 2:
+                                sql = sql + ") AS t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name HAVING COUNT(Name)>" + self.minSpinBox.get() + " AND COUNT(Name)<" + self.maxSpinBox.get() + ") AS t2 ON t2.E_Name = t1.Name"
+                        elif type(entry[i]) == str and entry[i] != "":
+                                sql = sql + attributes[i] + " = '" + entry[i] +"'"
+                        else:
+                                sql = sql + attributes[i] + " LIKE '%' "
+                                #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                        if i<len(entry)-1:
+                                sql = sql + " AND "
+                sql = sql + " ORDER BY Has_Water ASC;"
+
+                #print(sql)
+
+                self.cursor.execute(sql)
+                self.sortColumnsTuple = self.cursor.fetchall()
+
+                print(self.sortColumnsTuple)
+
+                self.nameListSorted = []
+                self.hasWaterSorted = []
+                self.sizeListSorted = []
+                self.numAnimalsSorted = []
+
+                for i in self.sortColumnsTuple:
+                    self.nameListSorted.append(i[0])
+                    if i[2] == b'\x01':
+                    	self.hasWaterSorted.append("True")
+                    if i[2] == b'\x00':
+                    	self.hasWaterSorted.append("False")
+                    self.sizeListSorted.append(i[1])
+                    self.numAnimalsSorted.append(i[4])
+
+               	for i in range(len(self.sortColumnsTuple)):
+               		self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
+
+                tv.heading(column, command=lambda: \
+                self.sortColumnsClicked(tv, column, not resort))
+
+        if (column == "4" and resort == True):
+                sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
+                for i in range(len(entry)):
+                #min and max will never be empty
+                        if type(entry[i]) != str:
+                                sql = sql + attributes[i] + " = " + str(entry[i]) + " AND "
+                        if i == 2:
+                                sql = sql + attributes[i-1] + " BETWEEN " + self.min2SpinBox.get() + " AND " + self.max2SpinBox.get()
+
+                        if i == 2:
+                                sql = sql + ") AS t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name HAVING COUNT(Name)>" + self.minSpinBox.get() + " AND COUNT(Name)<" + self.maxSpinBox.get() + ") AS t2 ON t2.E_Name = t1.Name"
+                        elif type(entry[i]) == str and entry[i] != "":
+                                sql = sql + attributes[i] + " = '" + entry[i] +"'"
+                        else:
+                                sql = sql + attributes[i] + " LIKE '%' "
+                                #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                        if i<len(entry)-1:
+                                sql = sql + " AND "
+                sql = sql + " ORDER BY Has_Water DESC;"
+
+                #print(sql)
+
+                self.cursor.execute(sql)
+                self.sortColumnsTuple = self.cursor.fetchall()
+
+                #print(self.sortColumnsTuple)
+
+                self.nameListSorted = []
+                self.hasWaterSorted = []
+                self.sizeListSorted = []
+                self.numAnimalsSorted = []
+
+                for i in self.sortColumnsTuple:
+                    self.nameListSorted.append(i[0])
+                    if i[2] == b'\x01':
+                    	self.hasWaterSorted.append("True")
+                    if i[2] == b'\x00':
+                    	self.hasWaterSorted.append("False")
+                    self.sizeListSorted.append(i[1])
+                    self.numAnimalsSorted.append(i[4])
+
+               	for i in range(len(self.sortColumnsTuple)):
+               		self.searchExhibitTree.insert('', i, values =(self.nameListSorted[i], self.sizeListSorted[i], self.numAnimalsSorted[i], self.hasWaterSorted[i]))
+
+                tv.heading(column, command=lambda: \
+                self.sortColumnsClicked(tv, column, not resort))
+
     def searchExhibitWindowFindExhibitsButtonClicked(self):
 
         # clear existing information in the table
@@ -2348,33 +2751,39 @@ class ATLzoo:
         # Entry is a list of the filter inputs
         entry = []
         entry.append(str(self.exhibitNameSV.get()))
+
+        #for size attribute
+        entry.append("")
         
         # might need to fix this to accurately reflect boolean values in the SQL table
         if self.typeDefault.get() == 'No':
-            entry.append(0)
+            entry.append(False)
         else:
-            entry.append(1)
+            entry.append(True)
+
+        #print(entry)
 
         sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
 
         for i in range(len(entry)):
             #min and max will never be empty
+            if type(entry[i]) != str:
+                sql = sql + attributes[i] + " = " + str(entry[i]) + " AND "
+            if i == 2:
+                sql = sql + attributes[i-1] + " BETWEEN " + self.min2SpinBox.get() + " AND " + self.max2SpinBox.get()
             
-            if i == 1:
-                sql = sql + " AND " + attributes[i] + " BETWEEN " + self.min2SpinBox.get() + " AND " + self.max2SpinBox.get()
-            
-            if i == 1:
+            if i == 2:
                 sql = sql + ") AS t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name HAVING COUNT(Name)>" + self.minSpinBox.get() + " AND COUNT(Name)<" + self.maxSpinBox.get() + ") AS t2 ON t2.E_Name = t1.Name;"
-            elif entry[i] != "":
+            elif type(entry[i]) == str and entry[i] != "":
                 sql = sql + attributes[i] + " = '" + entry[i] +"'"
             else:
                 sql = sql + attributes[i] + " LIKE '%' "
             #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
-            if i<len(entry)-2:
+            if i<len(entry)-1:
                 sql = sql + " AND "
 
+        #print(sql)
 
-        # print(sql)
         self.cursor.execute(sql)
         self.exhibitResults = self.cursor.fetchall()
         # print(self.exhibitResults)
