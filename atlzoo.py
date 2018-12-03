@@ -1224,6 +1224,24 @@ class ATLzoo:
 
         self.selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
 
+        self.cursor.execute("SELECT * FROM Animal")
+
+        self.staffSearchAnimalTuple = self.cursor.fetchall()
+        self.nameList = []
+        self.speciesList = []
+        self.exhibitList = []
+        self.ageList = []
+        self.typeList = []
+
+        for i in self.staffSearchAnimalTuple:
+            self.nameList.append(i[2])
+            self.speciesList.append(i[3])
+            self.exhibitList.append(i[4])
+            self.ageList.append(i[0])
+            self.typeList.append(i[1])
+
+        for i in range(len(self.staffSearchAnimalTuple)):
+            self.selectAnimalTree.insert('', i, values=(self.nameList[i], self.speciesList[i], self.exhibitList[i], self.ageList[i], self.typeList[i]))
 
 
         findAnimalsButton = Button(searchStaffAnimalsWindow, text="Find Animals", command=self.searchStaffAnimalsWindowFindAnimalsButtonClicked)
