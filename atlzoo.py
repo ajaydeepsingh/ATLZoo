@@ -3668,8 +3668,8 @@ class ATLzoo:
         waterLabel.grid(row=4, column=3)
         # Water Feature Entry
         self.typeDefault = StringVar()
-        self.typeDefault.set("No")
-        typeMenu = OptionMenu(searchExhibitWindow, self.typeDefault, "Yes", "No")
+        self.typeDefault.set("")
+        typeMenu = OptionMenu(searchExhibitWindow, self.typeDefault, "", "Yes", "No")
         typeMenu.grid(row=4, column=4, sticky=W)
         
         min2Label=Label(searchExhibitWindow,text="Min:")
@@ -3759,8 +3759,10 @@ class ATLzoo:
         # might need to fix this to accurately reflect boolean values in the SQL table
         if self.typeDefault.get() == 'No':
             entry.append(False)
+        if self.typeDefault.get() == 'Yes':
+        	entry.append(True)
         else:
-            entry.append(True)
+            entry.append("")
 
         if (column == "1" and resort == False):
                 sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
@@ -4157,8 +4159,10 @@ class ATLzoo:
         # might need to fix this to accurately reflect boolean values in the SQL table
         if self.typeDefault.get() == 'No':
             entry.append(False)
+        elif self.typeDefault.get() == 'Yes':
+        	entry.append(True)
         else:
-            entry.append(True)
+            entry.append("")
 
         #print(entry)
 
