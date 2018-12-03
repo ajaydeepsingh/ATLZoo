@@ -4325,7 +4325,7 @@ class ATLzoo:
         entry = []
 
         entry.append(str(self.exhibitNameString.get()))
-        entry.append(self.exhibitDateTime)
+        entry.append(self.exhibitDateSV.get())
 
         if (column == "1" and resort == False):
 
@@ -4363,7 +4363,197 @@ class ATLzoo:
                 self.exhibitHistoryTree.insert('', i, values=(self.nameListSorted[i], self.timeListSorted[i], self.numVisitsSorted[i]))
 
             tv.heading(column, command=lambda: \
-                self.sortColumnsClicked(tv, column, not resort))
+                self.sortVisitorExhibitHistory(tv, column, not resort))
+
+        elif (column == "1" and resort == True):
+
+            sql = "SELECT t1.E_Name, t1.Time, t2.Count FROM(SELECT E_Name, TIME FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' AND "
+
+            for i in range(len(entry)):
+            #min and max will never be empty
+                if i == 1:
+                    sql = sql + ") t1 JOIN (SELECT COUNT(E_Name AND TIME) AS Count, E_Name AS Name FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' GROUP BY E_Name HAVING COUNT(E_Name AND TIME)>" + self.minSpinBox.get() + " AND COUNT(E_Name AND TIME)<" + self.maxSpinBox.get() + ") t2 ON (t2.Name = t1.E_Name)"
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + entry[i]
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+                if i < len(entry)-2:
+                    sql = sql + "AND "
+
+            sql = sql + " ORDER BY E_name DESC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.numVisitsSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.numVisitsSorted.append(i[2])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.exhibitHistoryTree.insert('', i, values=(self.nameListSorted[i], self.timeListSorted[i], self.numVisitsSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorExhibitHistory(tv, column, not resort))
+
+        if (column == "2" and resort == False):
+
+            sql = "SELECT t1.E_Name, t1.Time, t2.Count FROM(SELECT E_Name, TIME FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' AND "
+
+            for i in range(len(entry)):
+            #min and max will never be empty
+                if i == 1:
+                    sql = sql + ") t1 JOIN (SELECT COUNT(E_Name AND TIME) AS Count, E_Name AS Name FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' GROUP BY E_Name HAVING COUNT(E_Name AND TIME)>" + self.minSpinBox.get() + " AND COUNT(E_Name AND TIME)<" + self.maxSpinBox.get() + ") t2 ON (t2.Name = t1.E_Name)"
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + entry[i]
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+                if i < len(entry)-2:
+                    sql = sql + "AND "
+
+            sql = sql + " ORDER BY Time ASC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.numVisitsSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.numVisitsSorted.append(i[2])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.exhibitHistoryTree.insert('', i, values=(self.nameListSorted[i], self.timeListSorted[i], self.numVisitsSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorExhibitHistory(tv, column, not resort))
+
+        if (column == "2" and resort == True):
+
+            sql = "SELECT t1.E_Name, t1.Time, t2.Count FROM(SELECT E_Name, TIME FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' AND "
+
+            for i in range(len(entry)):
+            #min and max will never be empty
+                if i == 1:
+                    sql = sql + ") t1 JOIN (SELECT COUNT(E_Name AND TIME) AS Count, E_Name AS Name FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' GROUP BY E_Name HAVING COUNT(E_Name AND TIME)>" + self.minSpinBox.get() + " AND COUNT(E_Name AND TIME)<" + self.maxSpinBox.get() + ") t2 ON (t2.Name = t1.E_Name)"
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + entry[i]
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+                if i < len(entry)-2:
+                    sql = sql + "AND "
+
+            sql = sql + " ORDER BY Time DESC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.numVisitsSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.numVisitsSorted.append(i[2])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.exhibitHistoryTree.insert('', i, values=(self.nameListSorted[i], self.timeListSorted[i], self.numVisitsSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorExhibitHistory(tv, column, not resort))
+
+        if (column == "3" and resort == False):
+
+            sql = "SELECT t1.E_Name, t1.Time, t2.Count FROM(SELECT E_Name, TIME FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' AND "
+
+            for i in range(len(entry)):
+            #min and max will never be empty
+                if i == 1:
+                    sql = sql + ") t1 JOIN (SELECT COUNT(E_Name AND TIME) AS Count, E_Name AS Name FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' GROUP BY E_Name HAVING COUNT(E_Name AND TIME)>" + self.minSpinBox.get() + " AND COUNT(E_Name AND TIME)<" + self.maxSpinBox.get() + ") t2 ON (t2.Name = t1.E_Name)"
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + entry[i]
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+                if i < len(entry)-2:
+                    sql = sql + "AND "
+
+            sql = sql + " ORDER BY Count ASC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.numVisitsSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.numVisitsSorted.append(i[2])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.exhibitHistoryTree.insert('', i, values=(self.nameListSorted[i], self.timeListSorted[i], self.numVisitsSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorExhibitHistory(tv, column, not resort))
+
+        if (column == "3" and resort == True):
+
+            sql = "SELECT t1.E_Name, t1.Time, t2.Count FROM(SELECT E_Name, TIME FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' AND "
+
+            for i in range(len(entry)):
+            #min and max will never be empty
+                if i == 1:
+                    sql = sql + ") t1 JOIN (SELECT COUNT(E_Name AND TIME) AS Count, E_Name AS Name FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' GROUP BY E_Name HAVING COUNT(E_Name AND TIME)>" + self.minSpinBox.get() + " AND COUNT(E_Name AND TIME)<" + self.maxSpinBox.get() + ") t2 ON (t2.Name = t1.E_Name)"
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + entry[i]
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+                if i < len(entry)-2:
+                    sql = sql + "AND "
+
+            sql = sql + " ORDER BY Count DESC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.numVisitsSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.numVisitsSorted.append(i[2])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.exhibitHistoryTree.insert('', i, values=(self.nameListSorted[i], self.timeListSorted[i], self.numVisitsSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorExhibitHistory(tv, column, not resort))
 
     def searchExhibitHistoryWindowGetDetailsButtonClicked(self):    
         if not self.exhibitHistoryTree.focus():
