@@ -2359,7 +2359,7 @@ class ATLzoo:
                 if i < len(entry)-1:
                     sql = sql + " AND "
             #end of statement
-            sql = sql + "ORDER BY Type ASC;"
+            sql = sql + "ORDER BY E_Name ASC;"
 
             self.cursor.execute(sql)
 
@@ -2401,7 +2401,7 @@ class ATLzoo:
                 if i < len(entry)-1:
                     sql = sql + " AND "
             #end of statement
-            sql = sql + "ORDER BY Type DESC;"
+            sql = sql + "ORDER BY E_Name DESC;"
 
             self.cursor.execute(sql)
 
@@ -2529,7 +2529,7 @@ class ATLzoo:
                 if i < len(entry)-1:
                     sql = sql + " AND "
             #end of statement
-            sql = sql + "ORDER BY E_name ASC;"
+            sql = sql + "ORDER BY Type ASC;"
 
             self.cursor.execute(sql)
 
@@ -2571,7 +2571,7 @@ class ATLzoo:
                 if i < len(entry)-1:
                     sql = sql + " AND "
             #end of statement
-            sql = sql + "ORDER BY E_name DESC;"
+            sql = sql + "ORDER BY Type DESC;"
 
             self.cursor.execute(sql)
 
