@@ -2640,7 +2640,7 @@ class ATLzoo:
                 return False
 
 
-        attributes = ['Perform_Name', 'Time', 'E_Name']
+        attributes = ['Perform_Name', 'P.Time', 'P.E_Name']
 
         entry = []
 
@@ -2648,11 +2648,11 @@ class ATLzoo:
         entry.append(self.showDateTime)
         entry.append(str(self.exhibitDefault.get()))
 
-        sql = "SELECT Perform_Name, Time, E_Name FROM Performance_History JOIN Performance WHERE U_Name = '" + self.currentUser + "' AND "
+        sql = "SELECT Perform_Name, P.Time, E_Name FROM Performance_History JOIN Performance  AS P WHERE U_Name = '" + self.currentUser + "' AND "
 
         for i in range(len(entry)):
             if entry[i] != "":
-                sql = sql + attributes[i] + " = " + entry[i]
+                sql = sql + attributes[i] + " = '" + entry[i] + "'"
             else:
                 sql = sql + attributes[i] + " LIKE '%'"
         #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
