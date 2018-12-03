@@ -222,17 +222,7 @@ class ATLzoo:
         self.emailAddress = self.registrationEmailAddress.get()
         self.password = self.registrationPassword.get()
 
-        def encrypt_string(hash_string):
-            sha_signature = hashlib.sha256(hash_string.encode()).hexdigest()
-            return sha_signature
         
-        hashedPass = encrypt_string(self.password)
-        # print(hashedPass)
-
-
-        self.confirmPassword = self.registrationConfirmPassword.get()
-
-        hashedPass2 = encrypt_string(self.confirmPassword)
         # print(hashedPass2)
         
         if not self.username:
@@ -241,12 +231,27 @@ class ATLzoo:
         if not self.emailAddress:
             messagebox.showwarning("Error", "E-mail input is empty. Please enter E-mail.")
             return False
+        if not len(self.password) >= 8:
+            messagebox.showwarning("Error", "Password needs to be longer than 8 characters")
+            return False
         if not self.password:
             messagebox.showwarning("Error", "Password input is empty. Please enter password")
             return False
         if not self.confirmPassword:
             messagebox.showwarning("Error", "Confirm password input is empty. Please enter confirm password")
             return False
+
+        def encrypt_string(hash_string):
+            sha_signature = hashlib.sha256(hash_string.encode()).hexdigest()
+            return sha_signature
+        
+        hashedPass = encrypt_string(self.password)
+        # print(hashedPass)
+        self.confirmPassword = self.registrationConfirmPassword.get()
+
+        hashedPass2 = encrypt_string(self.confirmPassword)
+
+
 
         isUsername = self.cursor.execute("SELECT * FROM User WHERE Username = %s", self.username)
         if isUsername:
@@ -280,19 +285,6 @@ class ATLzoo:
         self.emailAddress = self.registrationEmailAddress.get()
         self.password = self.registrationPassword.get()
         self.confirmPassword = self.registrationConfirmPassword.get()
-
-
-        def encrypt_string(hash_string):
-            sha_signature = hashlib.sha256(hash_string.encode()).hexdigest()
-            return sha_signature
-        
-        hashedPass = encrypt_string(self.password)
-        # print(hashedPass)
-
-        self.confirmPassword = self.registrationConfirmPassword.get()
-
-        hashedPass2 = encrypt_string(self.confirmPassword)
-        # print(hashedPass2)
         
         if not self.username:
             messagebox.showwarning("Error", "Username input is empty. Please enter username.")
@@ -300,12 +292,24 @@ class ATLzoo:
         if not self.emailAddress:
             messagebox.showwarning("Error", "E-mail input is empty. Please enter E-mail.")
             return False
+        if not len(self.password) >= 8:
+            messagebox.showwarning("Error", "Password needs to be longer than 8 characters")
+            return False
         if not self.password:
             messagebox.showwarning("Error", "Password input is empty. Please enter password")
             return False
         if not self.confirmPassword:
             messagebox.showwarning("Error", "Confirm password input is empty. Please enter confirm password")
             return False
+
+
+        def encrypt_string(hash_string):
+            sha_signature = hashlib.sha256(hash_string.encode()).hexdigest()
+            return sha_signature
+        
+        hashedPass = encrypt_string(self.password)
+        self.confirmPassword = self.registrationConfirmPassword.get()
+        hashedPass2 = encrypt_string(self.confirmPassword)
 
         isUsername = self.cursor.execute("SELECT * FROM User WHERE Username = %s", self.username)
         if isUsername:
