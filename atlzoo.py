@@ -417,7 +417,7 @@ class ATLzoo:
         self.visitorsTree.column("1", width = 300, anchor = "center")
         self.visitorsTree.column("2", width = 300, anchor = "center")
         
-        self.visitorsTree.heading("1", text = "UserName")
+        self.visitorsTree.heading("1", text = "Username")
         self.visitorsTree.heading("2", text = "Email")
 
         self.visitorsTree.place(x=400, y=200, anchor="center")
@@ -439,7 +439,7 @@ class ATLzoo:
         backButton = Button(viewVisitorsWindow, text="Back", command=self.viewVisitorsBackButtonClicked)
         backButton.place(x=10,y=570)
 
-        removeVisitorsButton = Button(viewVisitorsWindow, text="Remove Visitors", command=self.showVisitorsWindowAdminRemoveVisitorButtonClicked)
+        removeVisitorsButton = Button(viewVisitorsWindow, text="Delete Visitor", command=self.showVisitorsWindowAdminRemoveVisitorButtonClicked)
         removeVisitorsButton.place(x=670,y=570)
 
 
