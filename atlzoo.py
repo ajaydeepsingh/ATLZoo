@@ -227,42 +227,42 @@ class ATLzoo:
             return sha_signature
         
         hashedPass = encrypt_string(self.password)
-        print(hashedPass)
+        # print(hashedPass)
 
 
         self.confirmPassword = self.registrationConfirmPassword.get()
 
         hashedPass2 = encrypt_string(self.confirmPassword)
-        print(hashedPass2)
+        # print(hashedPass2)
         
         if not self.username:
-            messagebox.showwarning("Username input is empty", "Please enter username.")
+            messagebox.showwarning("Error", "Username input is empty. Please enter username.")
             return False
         if not self.emailAddress:
-            messagebox.showwarning("E-mail input is empty", "Please enter E-mail.")
+            messagebox.showwarning("Error", "E-mail input is empty. Please enter E-mail.")
             return False
         if not self.password:
-            messagebox.showwarning("Password input is empty", "Please enter password")
+            messagebox.showwarning("Error", "Password input is empty. Please enter password")
             return False
         if not self.confirmPassword:
-            messagebox.showwarning("Confirm password input is empty", "Please enter confirm password")
+            messagebox.showwarning("Error", "Confirm password input is empty. Please enter confirm password")
             return False
 
         isUsername = self.cursor.execute("SELECT * FROM User WHERE Username = %s", self.username)
         if isUsername:
-           messagebox.showwarning("This username has been used.",
-                                  "Please input another username.")
+           messagebox.showwarning("Error",
+                                  "This username has been used. Please input another username.")
            return False
         isEmail = self.cursor.execute("SELECT * FROM User WHERE Email = %s", self.emailAddress)
         if isEmail:
-           messagebox.showwarning("This E-mail address has been used.",
-                                  "Please input another E-mail address.")
+           messagebox.showwarning("Error",
+                                  "This E-mail address has been used. Please input another E-mail address.")
            return False
-        if not (self.password == self.confirmPassword):
-           messagebox.showwarning("Password does not match the confirm password.",
-                                  "Please reconfirm the password.")
+        if not (hashedPass == hashedPass2):
+           messagebox.showwarning("Error",
+                                  "Passwords do not match. Please reconfirm the password.")
            return False
-        messagebox.showinfo("info","Registered successfully!")
+        messagebox.showinfo("Success!","Registered successfully!")
         self.cursor.execute("INSERT INTO User VALUES (%s, %s, %s, %s)", (self.username, hashedPass, self.emailAddress, "visitor"))
         # self.cursor.execute("INSERT INTO User VALUES (%s, %s)", (self.username, self.password))
         self.currentUser = self.username
@@ -287,42 +287,41 @@ class ATLzoo:
             return sha_signature
         
         hashedPass = encrypt_string(self.password)
-        print(hashedPass)
-
+        # print(hashedPass)
 
         self.confirmPassword = self.registrationConfirmPassword.get()
 
         hashedPass2 = encrypt_string(self.confirmPassword)
-        print(hashedPass2)
+        # print(hashedPass2)
         
         if not self.username:
-            messagebox.showwarning("Username input is empty", "Please enter username.")
+            messagebox.showwarning("Error", "Username input is empty. Please enter username.")
             return False
         if not self.emailAddress:
-            messagebox.showwarning("E-mail input is empty", "Please enter E-mail.")
+            messagebox.showwarning("Error", "E-mail input is empty. Please enter E-mail.")
             return False
         if not self.password:
-            messagebox.showwarning("Password input is empty", "Please enter password")
+            messagebox.showwarning("Error", "Password input is empty. Please enter password")
             return False
         if not self.confirmPassword:
-            messagebox.showwarning("Confirm password input is empty", "Please enter confirm password")
+            messagebox.showwarning("Error", "Confirm password input is empty. Please enter confirm password")
             return False
 
         isUsername = self.cursor.execute("SELECT * FROM User WHERE Username = %s", self.username)
         if isUsername:
-           messagebox.showwarning("This username has been used.",
-                                  "Please input another username.")
+           messagebox.showwarning("Error",
+                                  "This username has been used. Please input another username.")
            return False
         isEmail = self.cursor.execute("SELECT * FROM User WHERE Email = %s", self.emailAddress)
         if isEmail:
-           messagebox.showwarning("This E-mail address has been used.",
-                                  "Please input another E-mail address.")
+           messagebox.showwarning("Error",
+                                  "This E-mail address has been used. Please input another E-mail address.")
            return False
-        if not (self.password == self.confirmPassword):
-           messagebox.showwarning("Password does not match the confirm password.",
-                                  "Please reconfirm the password.")
+        if not (hashedPass == hashedPass2):
+           messagebox.showwarning("Error",
+                                  "Passwords do not match. Please reconfirm the password.")
            return False
-        messagebox.showinfo("info","Registered successfully!")
+        messagebox.showinfo("Success!","Registered successfully!")
         self.cursor.execute("INSERT INTO User VALUES (%s, %s, %s, %s)", (self.username, hashedPass, self.emailAddress, "staff"))
         # self.cursor.execute("INSERT INTO User VALUES (%s, %s)", (self.username, self.password))
         self.loginWindow.withdraw()
