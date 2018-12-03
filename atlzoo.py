@@ -4336,7 +4336,7 @@ class ATLzoo:
                 if i == 1:
                     sql = sql + ") t1 JOIN (SELECT COUNT(E_Name AND TIME) AS Count, E_Name AS Name FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' GROUP BY E_Name HAVING COUNT(E_Name AND TIME)>" + self.minSpinBox.get() + " AND COUNT(E_Name AND TIME)<" + self.maxSpinBox.get() + ") t2 ON (t2.Name = t1.E_Name)"
                 elif entry[i] != "":
-                    sql = sql + attributes[i] + " = " + entry[i]
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
                 else:
                     sql = sql + attributes[i] + " LIKE '%'"
                 if i < len(entry)-2:
@@ -4374,7 +4374,7 @@ class ATLzoo:
                 if i == 1:
                     sql = sql + ") t1 JOIN (SELECT COUNT(E_Name AND TIME) AS Count, E_Name AS Name FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' GROUP BY E_Name HAVING COUNT(E_Name AND TIME)>" + self.minSpinBox.get() + " AND COUNT(E_Name AND TIME)<" + self.maxSpinBox.get() + ") t2 ON (t2.Name = t1.E_Name)"
                 elif entry[i] != "":
-                    sql = sql + attributes[i] + " = " + entry[i]
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
                 else:
                     sql = sql + attributes[i] + " LIKE '%'"
                 if i < len(entry)-2:
@@ -4412,7 +4412,7 @@ class ATLzoo:
                 if i == 1:
                     sql = sql + ") t1 JOIN (SELECT COUNT(E_Name AND TIME) AS Count, E_Name AS Name FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' GROUP BY E_Name HAVING COUNT(E_Name AND TIME)>" + self.minSpinBox.get() + " AND COUNT(E_Name AND TIME)<" + self.maxSpinBox.get() + ") t2 ON (t2.Name = t1.E_Name)"
                 elif entry[i] != "":
-                    sql = sql + attributes[i] + " = " + entry[i]
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
                 else:
                     sql = sql + attributes[i] + " LIKE '%'"
                 if i < len(entry)-2:
@@ -4450,7 +4450,7 @@ class ATLzoo:
                 if i == 1:
                     sql = sql + ") t1 JOIN (SELECT COUNT(E_Name AND TIME) AS Count, E_Name AS Name FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' GROUP BY E_Name HAVING COUNT(E_Name AND TIME)>" + self.minSpinBox.get() + " AND COUNT(E_Name AND TIME)<" + self.maxSpinBox.get() + ") t2 ON (t2.Name = t1.E_Name)"
                 elif entry[i] != "":
-                    sql = sql + attributes[i] + " = " + entry[i]
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
                 else:
                     sql = sql + attributes[i] + " LIKE '%'"
                 if i < len(entry)-2:
@@ -4488,7 +4488,7 @@ class ATLzoo:
                 if i == 1:
                     sql = sql + ") t1 JOIN (SELECT COUNT(E_Name AND TIME) AS Count, E_Name AS Name FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' GROUP BY E_Name HAVING COUNT(E_Name AND TIME)>" + self.minSpinBox.get() + " AND COUNT(E_Name AND TIME)<" + self.maxSpinBox.get() + ") t2 ON (t2.Name = t1.E_Name)"
                 elif entry[i] != "":
-                    sql = sql + attributes[i] + " = " + entry[i]
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
                 else:
                     sql = sql + attributes[i] + " LIKE '%'"
                 if i < len(entry)-2:
@@ -4526,7 +4526,7 @@ class ATLzoo:
                 if i == 1:
                     sql = sql + ") t1 JOIN (SELECT COUNT(E_Name AND TIME) AS Count, E_Name AS Name FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' GROUP BY E_Name HAVING COUNT(E_Name AND TIME)>" + self.minSpinBox.get() + " AND COUNT(E_Name AND TIME)<" + self.maxSpinBox.get() + ") t2 ON (t2.Name = t1.E_Name)"
                 elif entry[i] != "":
-                    sql = sql + attributes[i] + " = " + entry[i]
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
                 else:
                     sql = sql + attributes[i] + " LIKE '%'"
                 if i < len(entry)-2:
@@ -4605,29 +4605,32 @@ class ATLzoo:
             if i == 1:
                 sql = sql + ") t1 JOIN (SELECT COUNT(E_Name AND TIME) AS Count, E_Name AS Name FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' GROUP BY E_Name HAVING COUNT(E_Name AND TIME)>" + self.minSpinBox.get() + " AND COUNT(E_Name AND TIME)<" + self.maxSpinBox.get() + ") t2 ON (t2.Name = t1.E_Name);"
             elif entry[i] != "":
-                sql = sql + attributes[i] + " = " + entry[i]
+                sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
             else:
                 sql = sql + attributes[i] + " LIKE '%'"
             if i < len(entry)-2:
                 sql = sql + "AND "
 
-        # THIS ONE IS MESSED UP FOR SOME REASON IN PYTHON. BUT IN PHPMYADMIN IT WORKS
         print(sql)
-        self.historyResults = self.cursor.fetchall()
-        print(self.historyResults)
+
+        self.cursor.execute(sql)
+
+        self.exhibitHistoryResults = self.cursor.fetchall()
+
+        print(self.exhibitHistoryResults)
         # (1, 'Pacific', datetime.datetime(2018, 12, 2, 14, 59, 4))
 
         self.timesVisited = []
         self.exhibitTime = []
         self.exhibitVisited = []
 
-        for i in self.historyResults:
-            self.timesVisited.append(i[0])
-            self.exhibitVisited.append(i[1])
-            self.exhibitTime.append(i[2])
+        for i in self.exhibitHistoryResults:
+            self.timesVisited.append(i[2])
+            self.exhibitVisited.append(i[0])
+            self.exhibitTime.append(i[1])
             
 
-        for i in range(len(self.historyResults)):
+        for i in range(len(self.exhibitHistoryResults)):
             self.exhibitHistoryTree.insert('', i , values=(self.exhibitVisited[i], self.exhibitTime[i], self.timesVisited[i]))
 
 
@@ -5043,11 +5046,18 @@ class ATLzoo:
         speciesNameEntry = Entry(searchAnimalWindow, textvariable=self.speciesNameSV, width=20)
         speciesNameEntry.grid(row=3, column=1)
 
+        #populate exhibit menu with sql
+        self.cursor.execute("SELECT Name FROM Exhibit")
+        self.exhibitTuple = self.cursor.fetchall()
+        self.exhibitList = []
+        for i in self.exhibitTuple:
+            self.exhibitList.append(i[0])
+
         exhibitLabel = Label(searchAnimalWindow,text = "Exhibit")
         exhibitLabel.grid(row=4,column=0)
         self.exhibitDefault = StringVar()
         self.exhibitDefault.set("")
-        exhibitMenu = OptionMenu(searchAnimalWindow, self.exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
+        exhibitMenu = OptionMenu(searchAnimalWindow, self.exhibitDefault, "", *self.exhibitList)
         exhibitMenu.grid(row=4, column=1)
 
         minLabel=Label(searchAnimalWindow,text="Min")
