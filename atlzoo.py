@@ -4702,7 +4702,7 @@ class ATLzoo:
 
 
         # Get all Initial Unfiltered Records of the Visitors Show History
-        self.cursor.execute("SELECT t1.Perform_Name, t1.Time, t2.E_Name FROM (Select Perform_Name, Time FROM Performance_History WHERE U_Name = '{user}' AND Perform_Name LIKE '%') t1 JOIN (Select Name, Time, E_Name From Performance WHERE Time LIKE '%' AND E_Name LIKE '%') t2 ON t1.Perform_Name = t2.Name;".format(user=self.currentUser))
+        self.cursor.execute("SELECT DISTINCT t1.Perform_Name, t1.Time, t2.E_Name FROM (Select Perform_Name, Time FROM Performance_History WHERE U_Name = '{user}' AND Perform_Name LIKE '%') t1 JOIN (Select Name, Time, E_Name From Performance WHERE Time LIKE '%' AND E_Name LIKE '%') t2 ON t1.Perform_Name = t2.Name;".format(user=self.currentUser))
         self.userShowHistory = self.cursor.fetchall()
         print(self.userShowHistory)
 
@@ -4729,7 +4729,7 @@ class ATLzoo:
         for i in self.selectShowTree.get_children():
             self.selectShowTree.delete(i)  
 
-        attributes = ['Perform_Name', 'P.Time', 'P.E_Name']
+        attributes = ['Perform_Name', 'Time', 'E_Name']
 
         entry = []
 
@@ -4740,7 +4740,7 @@ class ATLzoo:
 
         if (column == "1" and resort == False):
 
-            sql = "SELECT Perform_Name, P.Time, E_Name FROM Performance_History JOIN Performance  AS P WHERE U_Name = '" + self.currentUser + "' AND "
+            sql = "SELECT DISTINCT t1.Perform_Name, t1.Time, t2.E_Name FROM (Select Perform_Name, Time FROM Performance_History WHERE U_Name = '" + self.currentUser + "' AND "
 
             for i in range(len(entry)):
                 if entry[i] != "":
@@ -4748,12 +4748,13 @@ class ATLzoo:
                 else:
                     sql = sql + attributes[i] + " LIKE '%'"
             #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
-                if i<len(entry)-1:
+                if i<len(entry)-2:
+                    sql = sql + ") t1 JOIN (Select Name, Time, E_Name From Performance WHERE "
+                if i == len(entry) - 2:
                     sql = sql + " AND "
             #end of statement
-            sql = sql + " ORDER BY Perform_Name ASC;"
+            sql = sql + ") t2 ON t1.Perform_Name = t2.Name ORDER BY Perform_Name ASC;"
 
-            print(sql)
 
             self.cursor.execute(sql)
             self.userShowHistory = self.cursor.fetchall()
@@ -4776,7 +4777,7 @@ class ATLzoo:
 
         elif (column == "1" and resort == True):
 
-            sql = "SELECT Perform_Name, P.Time, E_Name FROM Performance_History JOIN Performance  AS P WHERE U_Name = '" + self.currentUser + "' AND "
+            sql = "SELECT DISTINCT t1.Perform_Name, t1.Time, t2.E_Name FROM (Select Perform_Name, Time FROM Performance_History WHERE U_Name = '" + self.currentUser + "' AND "
 
             for i in range(len(entry)):
                 if entry[i] != "":
@@ -4784,10 +4785,12 @@ class ATLzoo:
                 else:
                     sql = sql + attributes[i] + " LIKE '%'"
             #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
-                if i<len(entry)-1:
+                if i<len(entry)-2:
+                    sql = sql + ") t1 JOIN (Select Name, Time, E_Name From Performance WHERE "
+                if i == len(entry) - 2:
                     sql = sql + " AND "
             #end of statement
-            sql = sql + " ORDER BY Perform_Name DESC;"
+            sql = sql + ") t2 ON t1.Perform_Name = t2.Name ORDER BY Perform_Name DESC;"
 
 
             self.cursor.execute(sql)
@@ -4811,7 +4814,7 @@ class ATLzoo:
 
         if (column == "2" and resort == False):
 
-            sql = "SELECT Perform_Name, P.Time, E_Name FROM Performance_History JOIN Performance  AS P WHERE U_Name = '" + self.currentUser + "' AND "
+            sql = "SELECT DISTINCT t1.Perform_Name, t1.Time, t2.E_Name FROM (Select Perform_Name, Time FROM Performance_History WHERE U_Name = '" + self.currentUser + "' AND "
 
             for i in range(len(entry)):
                 if entry[i] != "":
@@ -4819,10 +4822,12 @@ class ATLzoo:
                 else:
                     sql = sql + attributes[i] + " LIKE '%'"
             #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
-                if i<len(entry)-1:
+                if i<len(entry)-2:
+                    sql = sql + ") t1 JOIN (Select Name, Time, E_Name From Performance WHERE "
+                if i == len(entry) - 2:
                     sql = sql + " AND "
             #end of statement
-            sql = sql + " ORDER BY P.Time ASC;"
+            sql = sql + ") t2 ON t1.Perform_Name = t2.Name ORDER BY Time ASC;"
 
             print(sql)
 
@@ -4847,7 +4852,7 @@ class ATLzoo:
 
         if (column == "2" and resort == True):
 
-            sql = "SELECT Perform_Name, P.Time, E_Name FROM Performance_History JOIN Performance  AS P WHERE U_Name = '" + self.currentUser + "' AND "
+            sql = "SELECT DISTINCT t1.Perform_Name, t1.Time, t2.E_Name FROM (Select Perform_Name, Time FROM Performance_History WHERE U_Name = '" + self.currentUser + "' AND "
 
             for i in range(len(entry)):
                 if entry[i] != "":
@@ -4855,10 +4860,12 @@ class ATLzoo:
                 else:
                     sql = sql + attributes[i] + " LIKE '%'"
             #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
-                if i<len(entry)-1:
+                if i<len(entry)-2:
+                    sql = sql + ") t1 JOIN (Select Name, Time, E_Name From Performance WHERE "
+                if i == len(entry) - 2:
                     sql = sql + " AND "
             #end of statement
-            sql = sql + " ORDER BY P.Time DESC;"
+            sql = sql + ") t2 ON t1.Perform_Name = t2.Name ORDER BY Time DESC;"
 
             self.cursor.execute(sql)
             self.userShowHistory = self.cursor.fetchall()
@@ -4881,7 +4888,7 @@ class ATLzoo:
 
         if (column == "3" and resort == False):
 
-            sql = "SELECT Perform_Name, P.Time, E_Name FROM Performance_History JOIN Performance  AS P WHERE U_Name = '" + self.currentUser + "' AND "
+            sql = "SELECT DISTINCT t1.Perform_Name, t1.Time, t2.E_Name FROM (Select Perform_Name, Time FROM Performance_History WHERE U_Name = '" + self.currentUser + "' AND "
 
             for i in range(len(entry)):
                 if entry[i] != "":
@@ -4889,10 +4896,12 @@ class ATLzoo:
                 else:
                     sql = sql + attributes[i] + " LIKE '%'"
             #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
-                if i<len(entry)-1:
+                if i<len(entry)-2:
+                    sql = sql + ") t1 JOIN (Select Name, Time, E_Name From Performance WHERE "
+                if i == len(entry) - 2:
                     sql = sql + " AND "
             #end of statement
-            sql = sql + " ORDER BY E_Name ASC;"
+            sql = sql + ") t2 ON t1.Perform_Name = t2.Name ORDER BY E_Name ASC;"
 
             print(sql)
 
@@ -4917,7 +4926,7 @@ class ATLzoo:
 
         if (column == "3" and resort == True):
 
-            sql = "SELECT Perform_Name, P.Time, E_Name FROM Performance_History JOIN Performance  AS P WHERE U_Name = '" + self.currentUser + "' AND "
+            sql = "SELECT DISTINCT t1.Perform_Name, t1.Time, t2.E_Name FROM (Select Perform_Name, Time FROM Performance_History WHERE U_Name = '" + self.currentUser + "' AND "
 
             for i in range(len(entry)):
                 if entry[i] != "":
@@ -4925,10 +4934,12 @@ class ATLzoo:
                 else:
                     sql = sql + attributes[i] + " LIKE '%'"
             #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
-                if i<len(entry)-1:
+                if i<len(entry)-2:
+                    sql = sql + ") t1 JOIN (Select Name, Time, E_Name From Performance WHERE "
+                if i == len(entry) - 2:
                     sql = sql + " AND "
             #end of statement
-            sql = sql + " ORDER BY E_Name DESC;"
+            sql = sql + ") t2 ON t1.Perform_Name = t2.Name ORDER BY E_Name DESC;"
 
             self.cursor.execute(sql)
             self.userShowHistory = self.cursor.fetchall()
@@ -4972,7 +4983,7 @@ class ATLzoo:
         entry.append(self.showDateTime)
         entry.append(str(self.exhibitDefault.get()))
 
-        sql = "SELECT t1.Perform_Name, t1.Time, t2.E_Name FROM (Select Perform_Name, Time FROM Performance_History WHERE U_Name = '" + self.currentUser + "' AND "
+        sql = "SELECT DISTINCT t1.Perform_Name, t1.Time, t2.E_Name FROM (Select Perform_Name, Time FROM Performance_History WHERE U_Name = '" + self.currentUser + "' AND "
 
         for i in range(len(entry)):
             if entry[i] != "":
