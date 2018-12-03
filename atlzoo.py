@@ -980,8 +980,10 @@ class ATLzoo:
         titleLabel = Label(viewStaffWindow, text = "View Staff", font = "Verdana 16 bold ")
         titleLabel.place(x=350, y=25)
 
+        self.columns = ("1", "2")
+
         # Table of all the staff members
-        self.staffTree = ttk.Treeview(viewStaffWindow, columns=("1", "2"), selectmode="extended")
+        self.staffTree = ttk.Treeview(viewStaffWindow, columns=self.columns, selectmode="extended")
         self.staffTree['show'] = "headings"
         self.staffTree.column("1", width = 300, anchor = "center")
         self.staffTree.column("2", width = 300, anchor = "center")
@@ -990,6 +992,12 @@ class ATLzoo:
         self.staffTree.heading("2", text = "Email")
 
         self.staffTree.place(x=400, y=200, anchor="center")
+
+        adminShowStaffSort = self.staffTree
+
+        for col in self.columns:
+            self.staffTree.heading(col, command=lambda _col=col: \
+                self.sortAdminViewStaff(adminShowStaffSort, _col, False))
 
 
         self.cursor.execute("SELECT Username, Email FROM User WHERE Type = 'staff'")
@@ -1015,6 +1023,81 @@ class ATLzoo:
         removeStaffButton = Button(viewStaffWindow, text="Delete Staff Member", command=self.showStaffWindowAdminRemoveStaffButtonClicked)
         removeStaffButton.place(x=670,y=570)
 
+    def sortAdminViewStaff(self, tv, column, resort):
+        for i in self.staffTree.get_children():
+            self.staffTree.delete(i)
+
+        if (column == "1" and resort == False):
+            self.cursor.execute("SELECT Username, Email FROM User WHERE Type = 'staff' ORDER BY Username ASC")
+
+            self.viewStaffTuple = self.cursor.fetchall()
+            self.usernameList = []
+            self.emailList = []
+
+            for i in self.viewStaffTuple:
+                self.usernameList.append(i[0])
+                self.emailList.append(i[1])
+
+            # Insert data into the treeview
+            for i in range(len(self.viewStaffTuple)):
+                self.staffTree.insert('', i , values=(self.usernameList[i], self.emailList[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewStaff(tv, column, not resort))
+
+        elif (column == "1" and resort == True):
+            self.cursor.execute("SELECT Username, Email FROM User WHERE Type = 'staff' ORDER BY Username DESC")
+
+            self.viewStaffTuple = self.cursor.fetchall()
+            self.usernameList = []
+            self.emailList = []
+
+            for i in self.viewStaffTuple:
+                self.usernameList.append(i[0])
+                self.emailList.append(i[1])
+
+            # Insert data into the treeview
+            for i in range(len(self.viewStaffTuple)):
+                self.staffTree.insert('', i , values=(self.usernameList[i], self.emailList[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewStaff(tv, column, not resort))
+
+        if (column == "2" and resort == False):
+            self.cursor.execute("SELECT Username, Email FROM User WHERE Type = 'staff' ORDER BY Email ASC")
+
+            self.viewStaffTuple = self.cursor.fetchall()
+            self.usernameList = []
+            self.emailList = []
+
+            for i in self.viewStaffTuple:
+                self.usernameList.append(i[0])
+                self.emailList.append(i[1])
+
+            # Insert data into the treeview
+            for i in range(len(self.viewStaffTuple)):
+                self.staffTree.insert('', i , values=(self.usernameList[i], self.emailList[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewStaff(tv, column, not resort))
+
+        if (column == "2" and resort == True):
+            self.cursor.execute("SELECT Username, Email FROM User WHERE Type = 'staff' ORDER BY Email DESC")
+
+            self.viewStaffTuple = self.cursor.fetchall()
+            self.usernameList = []
+            self.emailList = []
+
+            for i in self.viewStaffTuple:
+                self.usernameList.append(i[0])
+                self.emailList.append(i[1])
+
+            # Insert data into the treeview
+            for i in range(len(self.viewStaffTuple)):
+                self.staffTree.insert('', i , values=(self.usernameList[i], self.emailList[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewStaff(tv, column, not resort))
 
     def showStaffWindowAdminRemoveStaffButtonClicked(self):
 
