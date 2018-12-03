@@ -5691,8 +5691,10 @@ class ATLzoo:
         backButton = Button(exhibitDetailWindow, text="Back", command=self.exhibitDetailWindowBackButtonClicked)
         backButton.place(x = 300, y=575, anchor="center")
 
+        self.columns = ("1", "2")
+
         # Table of Animals in Exhibit
-        self.detailExhibitTree = ttk.Treeview(exhibitDetailWindow, columns=("1", "2"), selectmode="extended")
+        self.detailExhibitTree = ttk.Treeview(exhibitDetailWindow, columns=self.columns, selectmode="extended")
         self.detailExhibitTree['show'] = "headings"
         self.detailExhibitTree.heading("1", text = "Name")
         self.detailExhibitTree.heading("2", text = "Species")
@@ -5701,9 +5703,109 @@ class ATLzoo:
         # detailExhibitTree.grid(row=5, columnspan=4, sticky = 'nsew')
         self.detailExhibitTree.place(x=400, y=450, anchor="center")
 
+        visitorExhibitDetailSort = self.detailExhibitTree
+
+        for col in self.columns:
+            self.detailExhibitTree.heading(col, command=lambda _col=col: \
+                self.sortVisitorExhibitDetail(visitorExhibitDetailSort, _col, False))
+
 
         for i in range(len(self.exhibitFacts)):
             self.detailExhibitTree.insert('', i , values=(self.animalName[i], self.species[i]))
+
+    def sortVisitorExhibitDetail(self, tv, column, resort):
+
+        for i in self.detailExhibitTree.get_children():
+            self.detailExhibitTree.delete(i)  
+
+
+        if (column == "1" and resort == False):
+
+            self.cursor.execute("SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE Name = %s) AS t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name) AS t2 ON t2.E_Name = t1.Name JOIN (SELECT E_Name,Name as A_Name, Species FROM Animal) AS t3 ON t2.E_Name = t3.E_Name ORDER BY A_Name ASC;", (self.exhibitOfInterest))
+            self.exhibitFacts = self.cursor.fetchall()
+
+            #print(self.exhibitFacts)
+    
+            self.animalName = []
+            self.species = []
+
+
+            for i in self.exhibitFacts:
+                self.animalName.append(i[6])
+                self.species.append(i[7])
+
+
+            for i in range(len(self.exhibitFacts)):
+                self.detailExhibitTree.insert('', i, values=(self.animalName[i], self.species[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorExhibitDetail(tv, column, not resort))
+
+        elif (column == "1" and resort == True):
+
+            self.cursor.execute("SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE Name = %s) AS t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name) AS t2 ON t2.E_Name = t1.Name JOIN (SELECT E_Name,Name as A_Name, Species FROM Animal) AS t3 ON t2.E_Name = t3.E_Name ORDER BY A_Name DESC;", (self.exhibitOfInterest))
+            self.exhibitFacts = self.cursor.fetchall()
+
+            #print(self.exhibitFacts)
+    
+            self.animalName = []
+            self.species = []
+
+
+            for i in self.exhibitFacts:
+                self.animalName.append(i[6])
+                self.species.append(i[7])
+
+
+            for i in range(len(self.exhibitFacts)):
+                self.detailExhibitTree.insert('', i, values=(self.animalName[i], self.species[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorExhibitDetail(tv, column, not resort))
+
+        elif (column == "2" and resort == False):
+
+            self.cursor.execute("SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE Name = %s) AS t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name) AS t2 ON t2.E_Name = t1.Name JOIN (SELECT E_Name,Name as A_Name, Species FROM Animal) AS t3 ON t2.E_Name = t3.E_Name ORDER BY Species ASC;", (self.exhibitOfInterest))
+            self.exhibitFacts = self.cursor.fetchall()
+
+            #print(self.exhibitFacts)
+    
+            self.animalName = []
+            self.species = []
+
+
+            for i in self.exhibitFacts:
+                self.animalName.append(i[6])
+                self.species.append(i[7])
+
+
+            for i in range(len(self.exhibitFacts)):
+                self.detailExhibitTree.insert('', i, values=(self.animalName[i], self.species[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorExhibitDetail(tv, column, not resort))
+
+        elif (column == "2" and resort == True):
+
+            self.cursor.execute("SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE Name = %s) AS t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name) AS t2 ON t2.E_Name = t1.Name JOIN (SELECT E_Name,Name as A_Name, Species FROM Animal) AS t3 ON t2.E_Name = t3.E_Name ORDER BY Species DESC;", (self.exhibitOfInterest))
+            self.exhibitFacts = self.cursor.fetchall()
+
+            #print(self.exhibitFacts)
+    
+            self.animalName = []
+            self.species = []
+
+
+            for i in self.exhibitFacts:
+                self.animalName.append(i[6])
+                self.species.append(i[7])
+
+
+            for i in range(len(self.exhibitFacts)):
+                self.detailExhibitTree.insert('', i, values=(self.animalName[i], self.species[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortVisitorExhibitDetail(tv, column, not resort))
 
 
     def exhibitDetailWindowBackButtonClicked(self):
