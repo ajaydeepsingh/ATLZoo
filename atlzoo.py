@@ -4611,6 +4611,7 @@ class ATLzoo:
             if i < len(entry)-2:
                 sql = sql + "AND "
 
+        # THIS ONE IS MESSED UP FOR SOME REASON IN PYTHON. BUT IN PHPMYADMIN IT WORKS
         print(sql)
         self.historyResults = self.cursor.fetchall()
         print(self.historyResults)
@@ -4953,7 +4954,7 @@ class ATLzoo:
                 return False
 
 
-        attributes = ['Perform_Name', 'P.Time', 'P.E_Name']
+        attributes = ['Perform_Name', 'Time', 'E_Name']
 
         entry = []
 
@@ -4961,7 +4962,7 @@ class ATLzoo:
         entry.append(self.showDateTime)
         entry.append(str(self.exhibitDefault.get()))
 
-        sql = "SELECT Perform_Name, P.Time, E_Name FROM Performance_History JOIN Performance  AS P WHERE U_Name = '" + self.currentUser + "' AND "
+        sql = "SELECT t1.Perform_Name, t1.Time, t2.E_Name FROM (Select Perform_Name, Time FROM Performance_History WHERE U_Name = '" + self.currentUser + "' AND "
 
         for i in range(len(entry)):
             if entry[i] != "":
@@ -4969,12 +4970,24 @@ class ATLzoo:
             else:
                 sql = sql + attributes[i] + " LIKE '%'"
         #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
-            if i<len(entry)-1:
+            if i<len(entry)-2:
+                sql = sql + ") t1 JOIN (Select Name, Time, E_Name From Performance WHERE "
+            if i == len(entry) - 2:
                 sql = sql + " AND "
         #end of statement
-        sql = sql + ";"
+        sql = sql + ") t2 ON t1.Perform_Name = t2.Name;"
 
         print(sql)
+
+        # SELECT DISTINCT t1.Perform_Name, t1.Time, t2.E_Name FROM
+        # (Select Perform_Name, Time FROM Performance_History WHERE U_Name = 'poops' AND Perform_Name LIKE '%') t1
+        # LEFT JOIN
+        # (Select Name, Time, E_Name From Performance WHERE Time LIKE '%' AND E_Name LIKE '%') t2
+        # ON t1.Perform_Name = t2.Name;
+
+        # SELECT DISTINCT t1.Perform_Name, t1.Time, t2.E_Name FROM 
+        # (Select Perform_Name, Time FROM Performance_History WHERE U_Name = 'poops' AND Perform_Name LIKE '%') t1
+        # JOIN (Select Name, Time, E_Name From Performance WHERE Time LIKE '%'E_Name LIKE '%';
 
         self.cursor.execute(sql)
         self.userShowHistory = self.cursor.fetchall()
