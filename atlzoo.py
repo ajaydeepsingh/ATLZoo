@@ -4699,9 +4699,9 @@ class ATLzoo:
 
 
         # Get all Initial Unfiltered Records of the Visitors Show History
-        self.cursor.execute("SELECT Perform_Name, Performance_History.Time, E_Name FROM Performance_History JOIN Performance ON Performance.Name = Perform_Name WHERE U_Name = %s", (self.currentUser))
+        self.cursor.execute("SELECT t1.Perform_Name, t1.Time, t2.E_Name FROM (Select Perform_Name, Time FROM Performance_History WHERE U_Name = '{user}' AND Perform_Name LIKE '%') t1 JOIN (Select Name, Time, E_Name From Performance WHERE Time LIKE '%' AND E_Name LIKE '%') t2 ON t1.Perform_Name = t2.Name;".format(user=self.currentUser))
         self.userShowHistory = self.cursor.fetchall()
-        # print(self.userShowHistory)
+        print(self.userShowHistory)
 
         self.pName = []
         self.pTime = []
