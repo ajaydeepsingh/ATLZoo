@@ -756,14 +756,14 @@ class ATLzoo:
         try:
             datetime.strptime(self.dateTime, '%Y-%m-%d %I:%M%p')
         except ValueError:
-            messagebox.showwarning("date needs to be in format yyyy-mm-dd and time needs to be in format hh:mmAM/PM")
+            messagebox.showwarning("Error", "Date needs to be in format yyyy-mm-dd and time needs to be in format hh:mmAM/PM")
             return False
 
 
         self.dateTimeObject = datetime.strptime(self.dateTime, '%Y-%m-%d %I:%M%p')
 
         if self.showName =="" or self.dateTime =="" or self.hostName =="" or self.exhibitName =="":
-            messagebox.showwarning("every field needs to be filled out")
+            messagebox.showwarning("Error", "Every field needs to be filled out")
             return False
 
         #staff cannot host two shows at the same time
@@ -776,7 +776,7 @@ class ATLzoo:
 
             self.chooseAdminFunctionalityWindow.deiconify()
         else:
-            messagebox.showwarning("this staff member is already hosting another show at this time")
+            messagebox.showwarning("Error", "This staff member is already hosting another show at this time")
             return False
 
     def adminAddShowWindowBackButtonClicked(self):
@@ -3537,7 +3537,7 @@ class ATLzoo:
             try:
                 datetime.strptime(self.performanceDateTime, '%Y-%m-%d %I:%M%p')
             except ValueError:
-                messagebox.showwarning("Error!, Date needs to be in format yyyy-mm-dd and time needs to be in format hh:mmAM/PM")
+                messagebox.showwarning("Error!", "Date needs to be in format yyyy-mm-dd and time needs to be in format hh:mmAM/PM")
                 return False
         
         attributes = ['Name', 'Time', 'E_Name']
@@ -4583,7 +4583,7 @@ class ATLzoo:
             try:
                 datetime.strptime(self.exhibitDateTime, '%Y-%m-%d %I:%M%p')
             except ValueError:
-                messagebox.showwarning("Error!, Date needs to be in format yyyy-mm-dd and time needs to be in format hh:mmAM/PM")
+                messagebox.showwarning("Error!", "Date needs to be in format yyyy-mm-dd and time needs to be in format hh:mmAM/PM")
                 return False
 
 
@@ -4717,7 +4717,7 @@ class ATLzoo:
             try:
                 datetime.strptime(self.showDateTime, '%Y-%m-%d %I:%M%p')
             except ValueError:
-                messagebox.showwarning("Error!, Date needs to be in format yyyy-mm-dd and time needs to be in format hh:mmAM/PM")
+                messagebox.showwarning("Error!", "Date needs to be in format yyyy-mm-dd and time needs to be in format hh:mmAM/PM")
                 return False
 
 
