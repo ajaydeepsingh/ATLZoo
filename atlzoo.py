@@ -4671,7 +4671,9 @@ class ATLzoo:
         showDateEntry = Entry(showHistoryWindow, textvariable = self.showDateNameSV, width=20)
         showDateEntry.grid(row=3, column=1,pady=10)
 
-        self.selectShowTree = ttk.Treeview(showHistoryWindow, columns=("1", "2", "3"), selectmode = 'extended')
+        self.columns = ("1", "2", "3")
+
+        self.selectShowTree = ttk.Treeview(showHistoryWindow, columns=self.columns, selectmode = 'extended')
         self.selectShowTree['show'] = "headings"
         self.selectShowTree.heading("1", text = "Name")
         self.selectShowTree.heading("2", text = "Date")
@@ -4680,6 +4682,12 @@ class ATLzoo:
         self.selectShowTree.column("2", width = 200, anchor = "center")
         self.selectShowTree.column("3", width = 200, anchor = "center")
         self.selectShowTree.place(x=50, y=130,width=600)
+
+        visitorShowHistoryTreeSort = self.selectShowTree
+
+        for col in self.columns:
+            self.selectShowTree.heading(col, command=lambda _col=col: \
+                self.sortVisitorShowHistory(visitorShowHistoryTreeSort, _col, False))
 
 
         # Get all Initial Unfiltered Records of the Visitors Show History
@@ -4705,6 +4713,230 @@ class ATLzoo:
 
         backButton = Button(showHistoryWindow, text="Back", command=self.showHistoryWindowBackButtonClicked)
         backButton.place(x=310,y=370)
+
+    def sortVisitorShowHistory(self, tv, column, resort):
+        for i in self.selectShowTree.get_children():
+            self.selectShowTree.delete(i)  
+
+        attributes = ['Perform_Name', 'P.Time', 'P.E_Name']
+
+        entry = []
+
+        entry.append(str(self.showNameString.get()))
+        entry.append(self.showDateNameSV.get())
+        entry.append(str(self.exhibitDefault.get()))
+
+
+        if (column == "1" and resort == False):
+
+            sql = "SELECT Perform_Name, P.Time, E_Name FROM Performance_History JOIN Performance  AS P WHERE U_Name = '" + self.currentUser + "' AND "
+
+            for i in range(len(entry)):
+                if entry[i] != "":
+                    sql = sql + attributes[i] + " = '" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i<len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + " ORDER BY Perform_Name ASC;"
+
+            print(sql)
+
+            self.cursor.execute(sql)
+            self.userShowHistory = self.cursor.fetchall()
+
+            self.pName = []
+            self.pTime = []
+            self.ename = []
+
+            for i in self.userShowHistory:
+                self.pName.append(i[0])
+                self.pTime.append(i[1])
+                self.ename.append(i[2])
+            
+            for i in range(len(self.userShowHistory)):
+                self.selectShowTree.insert('', i , values=(self.pName[i], self.pTime[i], self.ename[i]))
+
+            
+            tv.heading(column, command=lambda: \
+                self.sortVisitorShowHistory(tv, column, not resort))
+
+        elif (column == "1" and resort == True):
+
+            sql = "SELECT Perform_Name, P.Time, E_Name FROM Performance_History JOIN Performance  AS P WHERE U_Name = '" + self.currentUser + "' AND "
+
+            for i in range(len(entry)):
+                if entry[i] != "":
+                    sql = sql + attributes[i] + " = '" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i<len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + " ORDER BY Perform_Name DESC;"
+
+
+            self.cursor.execute(sql)
+            self.userShowHistory = self.cursor.fetchall()
+
+            self.pName = []
+            self.pTime = []
+            self.ename = []
+
+            for i in self.userShowHistory:
+                self.pName.append(i[0])
+                self.pTime.append(i[1])
+                self.ename.append(i[2])
+            
+            for i in range(len(self.userShowHistory)):
+                self.selectShowTree.insert('', i , values=(self.pName[i], self.pTime[i], self.ename[i]))
+
+            
+            tv.heading(column, command=lambda: \
+                self.sortVisitorShowHistory(tv, column, not resort))
+
+        if (column == "2" and resort == False):
+
+            sql = "SELECT Perform_Name, P.Time, E_Name FROM Performance_History JOIN Performance  AS P WHERE U_Name = '" + self.currentUser + "' AND "
+
+            for i in range(len(entry)):
+                if entry[i] != "":
+                    sql = sql + attributes[i] + " = '" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i<len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + " ORDER BY P.Time ASC;"
+
+            print(sql)
+
+            self.cursor.execute(sql)
+            self.userShowHistory = self.cursor.fetchall()
+
+            self.pName = []
+            self.pTime = []
+            self.ename = []
+
+            for i in self.userShowHistory:
+                self.pName.append(i[0])
+                self.pTime.append(i[1])
+                self.ename.append(i[2])
+            
+            for i in range(len(self.userShowHistory)):
+                self.selectShowTree.insert('', i , values=(self.pName[i], self.pTime[i], self.ename[i]))
+
+            
+            tv.heading(column, command=lambda: \
+                self.sortVisitorShowHistory(tv, column, not resort))
+
+        if (column == "2" and resort == True):
+
+            sql = "SELECT Perform_Name, P.Time, E_Name FROM Performance_History JOIN Performance  AS P WHERE U_Name = '" + self.currentUser + "' AND "
+
+            for i in range(len(entry)):
+                if entry[i] != "":
+                    sql = sql + attributes[i] + " = '" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i<len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + " ORDER BY P.Time DESC;"
+
+            self.cursor.execute(sql)
+            self.userShowHistory = self.cursor.fetchall()
+
+            self.pName = []
+            self.pTime = []
+            self.ename = []
+
+            for i in self.userShowHistory:
+                self.pName.append(i[0])
+                self.pTime.append(i[1])
+                self.ename.append(i[2])
+            
+            for i in range(len(self.userShowHistory)):
+                self.selectShowTree.insert('', i , values=(self.pName[i], self.pTime[i], self.ename[i]))
+
+            
+            tv.heading(column, command=lambda: \
+                self.sortVisitorShowHistory(tv, column, not resort))
+
+        if (column == "3" and resort == False):
+
+            sql = "SELECT Perform_Name, P.Time, E_Name FROM Performance_History JOIN Performance  AS P WHERE U_Name = '" + self.currentUser + "' AND "
+
+            for i in range(len(entry)):
+                if entry[i] != "":
+                    sql = sql + attributes[i] + " = '" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i<len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + " ORDER BY E_Name ASC;"
+
+            print(sql)
+
+            self.cursor.execute(sql)
+            self.userShowHistory = self.cursor.fetchall()
+
+            self.pName = []
+            self.pTime = []
+            self.ename = []
+
+            for i in self.userShowHistory:
+                self.pName.append(i[0])
+                self.pTime.append(i[1])
+                self.ename.append(i[2])
+            
+            for i in range(len(self.userShowHistory)):
+                self.selectShowTree.insert('', i , values=(self.pName[i], self.pTime[i], self.ename[i]))
+
+            
+            tv.heading(column, command=lambda: \
+                self.sortVisitorShowHistory(tv, column, not resort))
+
+        if (column == "3" and resort == True):
+
+            sql = "SELECT Perform_Name, P.Time, E_Name FROM Performance_History JOIN Performance  AS P WHERE U_Name = '" + self.currentUser + "' AND "
+
+            for i in range(len(entry)):
+                if entry[i] != "":
+                    sql = sql + attributes[i] + " = '" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i<len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + " ORDER BY E_Name DESC;"
+
+            self.cursor.execute(sql)
+            self.userShowHistory = self.cursor.fetchall()
+
+            self.pName = []
+            self.pTime = []
+            self.ename = []
+
+            for i in self.userShowHistory:
+                self.pName.append(i[0])
+                self.pTime.append(i[1])
+                self.ename.append(i[2])
+            
+            for i in range(len(self.userShowHistory)):
+                self.selectShowTree.insert('', i , values=(self.pName[i], self.pTime[i], self.ename[i]))
+
+            
+            tv.heading(column, command=lambda: \
+                self.sortVisitorShowHistory(tv, column, not resort))
 
     def showHistoryWindowFindShowsButtonClicked(self):
 
