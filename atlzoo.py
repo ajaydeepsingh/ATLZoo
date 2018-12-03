@@ -1567,15 +1567,36 @@ class ATLzoo:
         showDateEntry = Entry(searchVisitorShowsWindow, textvariable = self.showDateSV, width=20)
         showDateEntry.grid(row=2, column=3,pady=10)
 
-        self.selectShowTree = ttk.Treeview(searchVisitorShowsWindow, columns=("1", "2", "3"), selectmode = 'extended')
-        self.selectShowTree['show'] = "headings"
-        self.selectShowTree.heading("1", text = "Name")
-        self.selectShowTree.heading("2", text = "Exhibit")
-        self.selectShowTree.heading("3", text = "Date")
-        self.selectShowTree.column("1", width = 175, anchor = "center")
-        self.selectShowTree.column("2", width = 175, anchor = "center")
-        self.selectShowTree.column("3", width = 175, anchor = "center")
-        self.selectShowTree.place(x=350, y=280, anchor="center", width=525)
+        self.searchShowTree = ttk.Treeview(searchVisitorShowsWindow, columns=("1", "2", "3"), selectmode = 'extended')
+        self.searchShowTree['show'] = "headings"
+        self.searchShowTree.heading("1", text = "Name")
+        self.searchShowTree.heading("2", text = "Exhibit")
+        self.searchShowTree.heading("3", text = "Date")
+        self.searchShowTree.column("1", width = 175, anchor = "center")
+        self.searchShowTree.column("2", width = 175, anchor = "center")
+        self.searchShowTree.column("3", width = 175, anchor = "center")
+        self.searchShowTree.place(x=350, y=280, anchor="center", width=525)
+
+        # show All shows upon page load
+        self.cursor.execute("SELECT * FROM Performance WHERE Name LIKE '%' AND Time LIKE '%' AND E_Name LIKE '%'")
+
+        self.showResults = self.cursor.fetchall()
+        # print(self.showResults)
+        # ('Jungle Cruise', datetime.datetime(2010, 8, 18, 9, 0), 'martha_johnson', 'Jungle')
+
+        self.pName = []
+        self.pTime = []
+        self.pHost = []
+        self.ename = []
+
+        for i in self.showResults:
+            self.pName.append(i[0])
+            self.pTime.append(i[1])
+            self.pHost.append(i[2])
+            self.ename.append(i[3])
+        
+        for i in range(len(self.showResults)):
+            self.searchShowTree.insert('', i , values=(self.pName[i], self.ename[i], self.pTime[i]))
 
 
         # Buttons
@@ -1593,8 +1614,8 @@ class ATLzoo:
 
     def searchVisitorShowsWindowFindShowsButtonClicked(self):
 
-        for i in self.selectShowTree.get_children():
-            self.selectShowTree.delete(i)
+        for i in self.searchShowTree.get_children():
+            self.searchShowTree.delete(i)
 
         self.performanceDateTime = self.showDateSV.get()
 
@@ -1605,28 +1626,49 @@ class ATLzoo:
                 messagebox.showwarning("Error!, Date needs to be in format yyyy-mm-dd and time needs to be in format hh:mmAM/PM")
                 return False
         
-        attributes = ['Perform_Name', 'Time', 'Exhibit']
+        attributes = ['Name', 'Time', 'E_Name']
 
         #Entry is a list of the filter inputs
         entry = []
 
         entry.append(str(self.showNameString.get()))
         entry.append(str(self.performanceDateTime))
-        entry.append(str(self.exhibitDefault))
+        entry.append(str(self.exhibitDefault.get()))
 
         sql = "SELECT * FROM Performance WHERE "
 
         for i in range(len(entry)):
             if entry[i] != "":
-                sql = sql + attributes[i] + " = " + entry[i]
+                sql = sql + attributes[i] + " = '" + entry[i] + "'"
             else:
-                sql = sql + attributes[i] + " LIKE %"
+                sql = sql + attributes[i] + " LIKE '%'"
         #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
-            if i<len(entry)-1:
+            if i < len(entry)-1:
                 sql = sql + " AND "
         #end of statement
         sql = sql + ";"
-        prtin(sql)
+        print(sql)
+        # SELECT * FROM Performance WHERE Perform_Name LIKE % AND Time LIKE % AND Exhibit LIKE %;
+
+        self.cursor.execute(sql)
+
+        self.showResults = self.cursor.fetchall()
+        print(self.showResults)
+        # ('Jungle Cruise', datetime.datetime(2010, 8, 18, 9, 0), 'martha_johnson', 'Jungle')
+
+        self.pName = []
+        self.pTime = []
+        self.pHost = []
+        self.ename = []
+
+        for i in self.showResults:
+            self.pName.append(i[0])
+            self.pTime.append(i[1])
+            self.pHost.append(i[2])
+            self.ename.append(i[3])
+        
+        for i in range(len(self.showResults)):
+            self.searchShowTree.insert('', i , values=(self.pName[i], self.ename[i], self.pTime[i]))
 
 
     def exhibitDetailsButtonClicked(self):
