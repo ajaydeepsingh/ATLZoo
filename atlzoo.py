@@ -4656,11 +4656,18 @@ class ATLzoo:
         showNameEntry = Entry(showHistoryWindow, textvariable=self.showNameString, width=20)
         showNameEntry.grid(row=2,column=1,pady=10)
 
+        #populate exhibit menu with sql
+        self.cursor.execute("SELECT Name FROM Exhibit")
+        self.exhibitTuple = self.cursor.fetchall()
+        self.exhibitList = []
+        for i in self.exhibitTuple:
+            self.exhibitList.append(i[0])
+
         exhibitLabel = Label(showHistoryWindow,text = "Exhibit")
         exhibitLabel.grid(row=2,column=2,pady=10)
         self.exhibitDefault = StringVar()
         self.exhibitDefault.set("")
-        exhibitMenu = OptionMenu(showHistoryWindow, self.exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
+        exhibitMenu = OptionMenu(showHistoryWindow, self.exhibitDefault, "", *self.exhibitList)
         exhibitMenu.grid(row=2, column=3,pady=10)
 
         dateLabel = Label(showHistoryWindow,text = "Date")
