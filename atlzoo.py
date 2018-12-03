@@ -1181,8 +1181,9 @@ class ATLzoo:
         searchButton = Button(adminViewShowWindow, text="Search", command=self.adminViewShowWindowSearchButtonClicked)
         searchButton.grid(row=3, column =2,pady=10)
 
+        self.columns = ("1", "2", "3")
 
-        self.viewShowTree = ttk.Treeview(adminViewShowWindow, columns=("1", "2", "3"), selectmode = "extended")
+        self.viewShowTree = ttk.Treeview(adminViewShowWindow, columns=self.columns, selectmode = "extended")
         self.viewShowTree['show'] = "headings"
         self.viewShowTree.heading('1', text = "Name")
         self.viewShowTree.heading('2', text = "Exhibit")
@@ -1191,6 +1192,13 @@ class ATLzoo:
         self.viewShowTree.column('2', width = 200, anchor = "center")
         self.viewShowTree.column('3', width = 200, anchor = "center")
         self.viewShowTree.place(x=20, y=130,width=600)
+
+        adminViewShowTreeSort = self.viewShowTree
+
+        for col in self.columns:
+            self.viewShowTree.heading(col, command=lambda _col=col: \
+                self.sortAdminViewShows(adminViewShowTreeSort, _col, False))
+
 
         self.cursor.execute("SELECT * FROM Performance")
 
@@ -1214,6 +1222,237 @@ class ATLzoo:
 
         backButton = Button(adminViewShowWindow, text="Back", command=self.adminViewShowWindowBackButtonClicked)
         backButton.place(x=360, y=400)
+
+    def sortAdminViewShows(self, tv, column, resort):
+        for i in self.viewShowTree.get_children():
+            self.viewShowTree.delete(i)  
+
+        attributes = ['Name', 'Time', 'E_Name']
+
+        #Entry is a list of the filter inputs
+        entry = []
+
+        entry.append(str(self.showNameSV.get()))
+        entry.append(str(self.dateSV.get()))
+        entry.append(str(self.exhibitDefault.get()))
+
+        #print(entry)
+
+        if (column == "1" and resort == False):
+
+            sql = "SELECT * FROM Performance WHERE "
+
+            for i in range(len(entry)):
+                if entry[i] != "":
+                    sql = sql + attributes[i] + " = '" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+
+            sql = sql + "ORDER BY Name ASC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.exhibitListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.exhibitListSorted.append(i[3])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.viewShowTree.insert('', i, values=(self.nameListSorted[i], self.exhibitListSorted[i], self.timeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewShows(tv, column, not resort))
+
+        elif (column == "1" and resort == True):
+
+            sql = "SELECT * FROM Performance WHERE "
+
+            for i in range(len(entry)):
+                if entry[i] != "":
+                    sql = sql + attributes[i] + " = '" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+
+            sql = sql + "ORDER BY Name DESC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.exhibitListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.exhibitListSorted.append(i[3])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.viewShowTree.insert('', i, values=(self.nameListSorted[i], self.exhibitListSorted[i], self.timeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewShows(tv, column, not resort))
+
+        elif (column == "2" and resort == False):
+
+            sql = "SELECT * FROM Performance WHERE "
+
+            for i in range(len(entry)):
+                if entry[i] != "":
+                    sql = sql + attributes[i] + " = '" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+
+            sql = sql + "ORDER BY E_Name ASC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.exhibitListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.exhibitListSorted.append(i[3])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.viewShowTree.insert('', i, values=(self.nameListSorted[i], self.exhibitListSorted[i], self.timeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewShows(tv, column, not resort))
+
+        elif (column == "2" and resort == True):
+
+            sql = "SELECT * FROM Performance WHERE "
+
+            for i in range(len(entry)):
+                if entry[i] != "":
+                    sql = sql + attributes[i] + " = '" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+
+            sql = sql + "ORDER BY E_Name DESC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.exhibitListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.exhibitListSorted.append(i[3])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.viewShowTree.insert('', i, values=(self.nameListSorted[i], self.exhibitListSorted[i], self.timeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewShows(tv, column, not resort))
+
+        elif (column == "3" and resort == False):
+
+            sql = "SELECT * FROM Performance WHERE "
+
+            for i in range(len(entry)):
+                if entry[i] != "":
+                    sql = sql + attributes[i] + " = '" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+
+            sql = sql + "ORDER BY Time ASC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.exhibitListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.exhibitListSorted.append(i[3])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.viewShowTree.insert('', i, values=(self.nameListSorted[i], self.exhibitListSorted[i], self.timeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewShows(tv, column, not resort))
+
+        elif (column == "3" and resort == True):
+
+            sql = "SELECT * FROM Performance WHERE "
+
+            for i in range(len(entry)):
+                if entry[i] != "":
+                    sql = sql + attributes[i] + " = '" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+
+            sql = sql + "ORDER BY Time DESC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.exhibitListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.exhibitListSorted.append(i[3])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.viewShowTree.insert('', i, values=(self.nameListSorted[i], self.exhibitListSorted[i], self.timeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewShows(tv, column, not resort))
 
     def adminViewShowWindowSearchButtonClicked(self):
         for i in self.viewShowTree.get_children():
