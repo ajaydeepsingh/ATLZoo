@@ -4343,8 +4343,6 @@ class ATLzoo:
                     sql = sql + "AND "
 
             sql = sql + " ORDER BY E_name ASC;"
-
-            print(sql)
             self.cursor.execute(sql)
             self.sortColumnsTuple = self.cursor.fetchall()
 
@@ -4613,8 +4611,7 @@ class ATLzoo:
             if i < len(entry)-2:
                 sql = sql + "AND "
 
-        # print(sql)
-        self.cursor.execute(sql)
+        print(sql)
         self.historyResults = self.cursor.fetchall()
         print(self.historyResults)
         # (1, 'Pacific', datetime.datetime(2018, 12, 2, 14, 59, 4))
