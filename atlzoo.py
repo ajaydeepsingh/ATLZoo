@@ -4,6 +4,7 @@ import pymysql
 from tkinter import messagebox
 from tkinter import ttk
 from datetime import datetime, timedelta
+import hashlib
 import decimal
 
 
@@ -93,6 +94,14 @@ class ATLzoo:
         # Withdraw Login Window;
         self.username = self.loginUsername.get()
         self.password = self.loginPassword.get()
+
+        def encrypt_string(hash_string):
+            sha_signature = hashlib.sha256(hash_string.encode()).hexdigest()
+            return sha_signature
+        
+        sha_signature = encrypt_string(self.password)
+        print(sha_signature)
+
         if not self.username:
             messagebox.showwarning("Username input is empty", "Please enter username.")
             return False
@@ -105,8 +114,12 @@ class ATLzoo:
            messagebox.showwarning("Username is not an user\'s username",
                                   "The username you entered is not an user\'s username.")
            return False
-        usernameAndPasswordMatch = self.cursor.execute(
-           "SELECT * FROM User WHERE (Username = %s AND Password = %s)", (self.username, self.password))
+
+
+
+
+
+        usernameAndPasswordMatch = self.cursor.execute("SELECT * FROM User WHERE (Username = %s AND Password = %s)", (self.username, self.password))
         if not usernameAndPasswordMatch:
            messagebox.showwarning("Username and password don\'t match", "Sorry, the username and password you entered"
                                                                         + " do not match.")
@@ -211,6 +224,7 @@ class ATLzoo:
         self.username = self.registrationUsername.get()
         self.emailAddress = self.registrationEmailAddress.get()
         self.password = self.registrationPassword.get()
+        print(self.password)
         self.confirmPassword = self.registrationConfirmPassword.get()
         
         if not self.username:
@@ -288,9 +302,10 @@ class ATLzoo:
         messagebox.showinfo("info","Registered successfully!")
         self.cursor.execute("INSERT INTO User VALUES (%s, %s, %s, %s)", (self.username, self.password, self.emailAddress, "staff"))
         # self.cursor.execute("INSERT INTO User VALUES (%s, %s)", (self.username, self.password))
+        self.loginWindow.withdraw()
         self.currentUser = self.username
-        self.createChooseFunctionalityWindow()
-        self.buildChooseFunctionalityWindow(self.staffFunctionalityWindow)
+        self.createStaffChooseFunctionalityWindow()
+        self.buildStaffChooseFunctionalityWindow(self.chooseStaffFunctionalityWindow)
         self.newUserRegistrationWindow.destroy()
 
 #--------------------ADMIN FUNCTIONALITY WINDOW---------------------------
@@ -1045,7 +1060,7 @@ class ATLzoo:
         #end of statement
         sql = sql + ";"
 
-        #print(sql)
+        print(sql)
 
         # print(sql)
         self.cursor.execute(sql)
@@ -1866,7 +1881,7 @@ class ATLzoo:
             if i == 1:
                 sql = sql + ") AS t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name HAVING COUNT(Name)>" + self.minSpinBox.get() + " AND COUNT(Name)<" + self.maxSpinBox.get() + ") AS t2 ON t2.E_Name = t1.Name;"
             elif entry[i] != "":
-                sql = sql + attributes[i] + " = " + entry[i]
+                sql = sql + attributes[i] + " = '" + entry[i] +"'"
             else:
                 sql = sql + attributes[i] + " LIKE '%' "
             #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
@@ -2053,7 +2068,7 @@ class ATLzoo:
         for i in range(len(entry)):
         #min and max will never be empty
             if i == 1:
-                sql = sql + ") AS t1 JOIN (SELECT COUNT(U_Name AND E_Name AND TIME) AS Count, E_Name AS Name FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' GROUP BY E_Name HAVING COUNT(U_Name AND E_Name AND TIME)>" + self.minSpinBox.get() + " AND COUNT( U_Name AND E_Name AND TIME)<" + self.maxSpinBox.get() + ") AS t2 ON (t2.Name = t1.E_Name);"
+                sql = sql + ") t1 JOIN (SELECT COUNT(E_Name AND TIME) AS Count, E_Name AS Name FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' GROUP BY E_Name HAVING COUNT(E_Name AND TIME)>" + self.minSpinBox.get() + " AND COUNT(E_Name AND TIME)<" + self.maxSpinBox.get() + ") t2 ON (t2.Name = t1.E_Name);"
             elif entry[i] != "":
                 sql = sql + attributes[i] + " = " + entry[i]
             else:
@@ -2108,9 +2123,9 @@ class ATLzoo:
 
         exhibitLabel = Label(showHistoryWindow,text = "Exhibit")
         exhibitLabel.grid(row=2,column=2,pady=10)
-        exhibitDefault = StringVar()
-        exhibitDefault.set("")
-        exhibitMenu = OptionMenu(showHistoryWindow, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
+        self.exhibitDefault = StringVar()
+        self.exhibitDefault.set("")
+        exhibitMenu = OptionMenu(showHistoryWindow, self.exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
         exhibitMenu.grid(row=2, column=3,pady=10)
 
         dateLabel = Label(showHistoryWindow,text = "Date")
@@ -2161,7 +2176,7 @@ class ATLzoo:
         for i in self.selectShowTree.get_children():
             self.selectShowTree.delete(i)
 
-        self.showDateTime = self.dateNameSV.get()
+        self.showDateTime = self.showDateNameSV.get()
 
         if self.showDateTime is not "":
             try:
@@ -2170,7 +2185,31 @@ class ATLzoo:
                 messagebox.showwarning("Error!, Date needs to be in format yyyy-mm-dd and time needs to be in format hh:mmAM/PM")
                 return False
 
-        self.cursor.execute("SELECT Perform_Name, Time, E_Name FROM Performance_History JOIN Performance WHERE U_Name = %s AND (Perform_Name = %s or %b) AND (Time = %s or %b) AND (E_Name = %s AND %b)", (self.currentUser, str(self.showNameString), self.showDateTime, str(self.exhibitDefault)))
+
+        attributes = ['Perform_Name', 'Time', 'E_Name']
+
+        entry = []
+
+        entry.append(str(self.showNameString.get()))
+        entry.append(self.showDateTime)
+        entry.append(str(self.exhibitDefault.get()))
+
+        sql = "SELECT Perform_Name, Time, E_Name FROM Performance_History JOIN Performance WHERE U_Name = '" + self.currentUser + "' AND "
+
+        for i in range(len(entry)):
+            if entry[i] != "":
+                sql = sql + attributes[i] + " = " + entry[i]
+            else:
+                sql = sql + attributes[i] + " LIKE '%'"
+        #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+            if i<len(entry)-1:
+                sql = sql + " AND "
+        #end of statement
+        sql = sql + ";"
+
+        print(sql)
+
+        self.cursor.execute(sql)
         self.userShowHistory = self.cursor.fetchall()
 
         self.pName = []
