@@ -1537,42 +1537,42 @@ class ATLzoo:
         titleLabel.grid(row=1,column=2,sticky=W+E,pady=10)
 
         # Labels
-        showLabel = Label(searchVisitorShowsWindow,text = "Name")
+        showLabel = Label(searchVisitorShowsWindow,text = "Name: ")
         showLabel.grid(row=2,column=0,pady=10)
 
         self.showNameString = StringVar()
-        showNameEntry = Entry(searchVisitorShowsWindow, textvariable=self.showNameString, width=20)
+        showNameEntry = Entry(searchVisitorShowsWindow, textvariable = self.showNameString, width=20)
         showNameEntry.grid(row=2, column=1,pady=10)
 
-        exhibitLabel = Label(searchVisitorShowsWindow,text = "Exhibit")
+        exhibitLabel = Label(searchVisitorShowsWindow,text = "Exhibit: ")
         exhibitLabel.grid(row=3,column=0,pady=10)
-        exhibitDefault = StringVar()
-        exhibitDefault.set("options")
-        exhibitMenu = OptionMenu(searchVisitorShowsWindow, exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
+        self.exhibitDefault = StringVar()
+        self.exhibitDefault.set("")
+        exhibitMenu = OptionMenu(searchVisitorShowsWindow, self.exhibitDefault, "Pacific", "Jungle", "Sahara", "Mountainous", "Birds")
         exhibitMenu.grid(row=3, column=1,pady=10)
+
 
         dateLabel = Label(searchVisitorShowsWindow,text = "Date")
         dateLabel.grid(row=2, column=2,pady=10)
 
-        #showDateEntry = CalendarDialog.main()
-        showDateEntry= Entry(searchVisitorShowsWindow)
+        self.showDateSV = StringVar()
+        showDateEntry = Entry(searchVisitorShowsWindow, textvariable = self.showDateSV, width=20)
         showDateEntry.grid(row=2, column=3,pady=10)
 
-        # Button
+        self.selectShowTree = ttk.Treeview(searchVisitorShowsWindow, columns=("1", "2", "3"), selectmode = 'extended')
+        self.selectShowTree['show'] = "headings"
+        self.selectShowTree.heading("1", text = "Name")
+        self.selectShowTree.heading("2", text = "Exhibit")
+        self.selectShowTree.heading("3", text = "Date")
+        self.selectShowTree.column("1", width = 175, anchor = "center")
+        self.selectShowTree.column("2", width = 175, anchor = "center")
+        self.selectShowTree.column("3", width = 175, anchor = "center")
+        self.selectShowTree.place(x=350, y=280, anchor="center", width=525)
+
+
+        # Buttons
         findShowsButton = Button(searchVisitorShowsWindow, text="Search", command=self.searchVisitorShowsWindowFindShowsButtonClicked)
         findShowsButton.grid(row=3,column=2,pady=10)
-
-        
-        # self.selectExhibitTree['show'] = "headings"
-        selectShowTree = ttk.Treeview(searchVisitorShowsWindow, columns=("1", "2", "3"), selectmode = 'extended')
-        selectShowTree['show'] = "headings"
-        selectShowTree.heading("1", text = "Name")
-        selectShowTree.heading("2", text = "Exhibit")
-        selectShowTree.heading("3", text = "Date")
-        selectShowTree.column("1", width = 175, anchor = "center")
-        selectShowTree.column("2", width = 175, anchor = "center")
-        selectShowTree.column("3", width = 175, anchor = "center")
-        selectShowTree.place(x=350, y=280, anchor="center", width=525)
 
         logVisitButton = Button(searchVisitorShowsWindow, text="Log Visit", command = self.logVisitButtonClicked)  
         logVisitButton.place(x=320, y=415)
@@ -1584,15 +1584,27 @@ class ATLzoo:
         backButton.place(x=120, y=415)
 
     def searchVisitorShowsWindowFindShowsButtonClicked(self):
+
+        for i in self.selectShowTree.get_children():
+            self.selectShowTree.delete(i)
+
+        self.performanceDateTime = self.showDateSV.get()
+
+        if self.performanceDateTime is not "":
+            try:
+                datetime.strptime(self.performanceDateTime, '%Y-%m-%d %I:%M%p')
+            except ValueError:
+                messagebox.showwarning("Error!, Date needs to be in format yyyy-mm-dd and time needs to be in format hh:mmAM/PM")
+                return False
         
-        attributes = [a_name, a_date, a_Ename]
+        attributes = ['Perform_Name', 'Time', 'Exhibit']
 
         #Entry is a list of the filter inputs
         entry = []
 
-        entry.append(value_for_name)
-        entry.append(value_for_date)
-        entry.append(value_for_exhibit)
+        entry.append(str(self.showNameString.get()))
+        entry.append(str(self.performanceDateTime))
+        entry.append(str(self.exhibitDefault))
 
         sql = "SELECT * FROM Performance WHERE "
 
@@ -1606,6 +1618,7 @@ class ATLzoo:
                 sql = sql + " AND "
         #end of statement
         sql = sql + ";"
+        prtin(sql)
 
 
     def exhibitDetailsButtonClicked(self):
