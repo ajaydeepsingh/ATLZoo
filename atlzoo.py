@@ -1927,17 +1927,24 @@ class ATLzoo:
         titleLabel= Label(staffShowHistoryWindow,text = "Staff - Show History", font = "Verdana 16 bold ")
         titleLabel.grid(row=1,column=2, sticky=W+E, padx=200)
 
+        self.columns = ("1", "2", "3")
 
-        staffShowTree = ttk.Treeview(staffShowHistoryWindow, columns=("1", "2", "3"))
-        staffShowTree['show'] = "headings"
-        staffShowTree.heading("1", text="Name")
-        staffShowTree.heading("2", text="Time")
-        staffShowTree.heading("3", text="Exhibit")
-        staffShowTree.column("1", width=200, anchor="center")
-        staffShowTree.column("2", width= 200, anchor="center")
-        staffShowTree.column("3", width=200, anchor="center")
+        self.staffShowTree = ttk.Treeview(staffShowHistoryWindow, columns=self.columns)
+        self.staffShowTree['show'] = "headings"
+        self.staffShowTree.heading("1", text="Name")
+        self.staffShowTree.heading("2", text="Time")
+        self.staffShowTree.heading("3", text="Exhibit")
+        self.staffShowTree.column("1", width=200, anchor="center")
+        self.staffShowTree.column("2", width= 200, anchor="center")
+        self.staffShowTree.column("3", width=200, anchor="center")
 
-        staffShowTree.place(x=20,y=60,width=600)
+        self.staffShowTree.place(x=20,y=60,width=600)
+
+        staffSearchShowTreeSort = self.staffShowTree
+
+        for col in self.columns:
+            self.staffShowTree.heading(col, command=lambda _col=col: \
+                self.sortStaffViewShows(staffSearchShowTreeSort, _col, False))
 
         self.cursor.execute("SELECT Name, Time, E_Name FROM Performance WHERE Host = %s", (self.currentUser))
 
@@ -1954,10 +1961,164 @@ class ATLzoo:
             self.showExhibit.append(i[2])
 
         for i in range(len(self.viewShowsTuple)):
-            staffShowTree.insert('', i , values=(self.performanceName[i], self.showTimes[i], self.showExhibit[i]))
+            self.staffShowTree.insert('', i , values=(self.performanceName[i], self.showTimes[i], self.showExhibit[i]))
 
         backButton = Button(staffShowHistoryWindow, text="Back", command=self.staffShowHistoryWindowBackButtonClicked)
         backButton.place(x=290, y=300)
+
+    def sortStaffViewShows(self, tv, column, resort):
+        for i in self.staffShowTree.get_children():
+            self.staffShowTree.delete(i)  
+
+
+        if (column == "1" and resort == False):
+
+            self.cursor.execute("SELECT Name, Time, E_Name FROM Performance WHERE Host = %s ORDER BY Name ASC", (self.currentUser))
+
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.exhibitListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.exhibitListSorted.append(i[2])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.staffShowTree.insert('', i, values=(self.nameListSorted[i], self.timeListSorted[i], self.exhibitListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortStaffViewShows(tv, column, not resort))
+        elif (column == "1" and resort == True):
+
+            self.cursor.execute("SELECT Name, Time, E_Name FROM Performance WHERE Host = %s ORDER BY Name DESC", (self.currentUser))
+
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.exhibitListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.exhibitListSorted.append(i[2])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.staffShowTree.insert('', i, values=(self.nameListSorted[i], self.timeListSorted[i], self.exhibitListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortStaffViewShows(tv, column, not resort))
+
+        elif (column == "2" and resort == False):
+
+            self.cursor.execute("SELECT Name, Time, E_Name FROM Performance WHERE Host = %s ORDER BY Time ASC", (self.currentUser))
+
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.exhibitListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.exhibitListSorted.append(i[2])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.staffShowTree.insert('', i, values=(self.nameListSorted[i], self.timeListSorted[i], self.exhibitListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortStaffViewShows(tv, column, not resort))
+
+        elif (column == "2" and resort == True):
+
+            self.cursor.execute("SELECT Name, Time, E_Name FROM Performance WHERE Host = %s ORDER BY Time DESC", (self.currentUser))
+
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.exhibitListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.exhibitListSorted.append(i[2])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.staffShowTree.insert('', i, values=(self.nameListSorted[i], self.timeListSorted[i], self.exhibitListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortStaffViewShows(tv, column, not resort))
+
+        elif (column == "3" and resort == False):
+
+            self.cursor.execute("SELECT Name, Time, E_Name FROM Performance WHERE Host = %s ORDER BY E_Name ASC", (self.currentUser))
+
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.exhibitListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.exhibitListSorted.append(i[2])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.staffShowTree.insert('', i, values=(self.nameListSorted[i], self.timeListSorted[i], self.exhibitListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortStaffViewShows(tv, column, not resort))
+
+        elif (column == "3" and resort == True):
+
+            self.cursor.execute("SELECT Name, Time, E_Name FROM Performance WHERE Host = %s ORDER BY E_Name DESC", (self.currentUser))
+
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.exhibitListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.exhibitListSorted.append(i[2])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.staffShowTree.insert('', i, values=(self.nameListSorted[i], self.timeListSorted[i], self.exhibitListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortStaffViewShows(tv, column, not resort))
 
 
     def staffShowHistoryWindowBackButtonClicked(self):
@@ -2382,8 +2543,6 @@ class ATLzoo:
             tv.heading(column, command=lambda: \
                 self.sortVisitorSearchShows(tv, column, not resort))
 
-        
-  
 
     def searchVisitorShowsWindowFindShowsButtonClicked(self):
 
@@ -3135,9 +3294,10 @@ class ATLzoo:
         backButton = Button(exhibitHistoryWindow, text="Back", command=self.exhibitHistoryWindowBackButtonClicked)
         backButton.place(x=310, y=440)
 
+        self.columns = ("1", "2", "3")
         
         # self.selectExhibitTree['show'] = "headings"
-        self.exhibitHistoryTree = ttk.Treeview(exhibitHistoryWindow, columns=("1", "2", "3"), selectmode="extended")
+        self.exhibitHistoryTree = ttk.Treeview(exhibitHistoryWindow, columns=self.columns, selectmode="extended")
         self.exhibitHistoryTree['show'] = "headings"
         self.exhibitHistoryTree.column("1", width = 200, anchor = "center")
         self.exhibitHistoryTree.column("2", width = 200, anchor = "center")
@@ -3147,6 +3307,12 @@ class ATLzoo:
         self.exhibitHistoryTree.heading("3", text = "Number of Visits")
 
         self.exhibitHistoryTree.place(x=20, y=200,width=600)
+
+        exhibitHistoryTreeSort = self.exhibitHistoryTree
+
+        for col in self.columns:
+            self.exhibitHistoryTree.heading(col, command=lambda _col=col: \
+                self.sortVisitorExhibitHistory(exhibitHistoryTreeSort, _col, False))
 
 
         self.cursor.execute("SELECT t2.Count, t1.E_Name, t1.Time  FROM (SELECT E_Name, Time FROM Exhibit_History WHERE U_Name = %s) AS t1 LEFT JOIN (SELECT COUNT(U_Name AND E_Name AND Time) as Count, E_Name as Name FROM Exhibit_History WHERE U_Name = %s GROUP BY E_Name) AS t2 on (t2.Name = t1.E_Name)",(self.currentUser ,self.currentUser))
@@ -3167,6 +3333,55 @@ class ATLzoo:
         for i in range(len(self.historyResults)):
             self.exhibitHistoryTree.insert('', i , values=(self.exhibitVisited[i], self.exhibitTime[i], self.timesVisited[i]))
 
+    def sortVisitorExhibitHistory(self, tv, column, resort):
+        for i in self.exhibitHistoryTree.get_children():
+            self.exhibitHistoryTree.delete(i)  
+
+        attributes = ['E_name', 'Time', 'NumVisits']
+
+        #Entry is a list of the filter inputs
+        entry = []
+
+        entry.append(str(self.exhibitNameString.get()))
+        entry.append(self.exhibitDateTime)
+
+        if (column == "1" and resort == False):
+
+            sql = "SELECT t1.E_Name, t1.Time, t2.Count FROM(SELECT E_Name, TIME FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' AND "
+
+            for i in range(len(entry)):
+            #min and max will never be empty
+                if i == 1:
+                    sql = sql + ") t1 JOIN (SELECT COUNT(E_Name AND TIME) AS Count, E_Name AS Name FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' GROUP BY E_Name HAVING COUNT(E_Name AND TIME)>" + self.minSpinBox.get() + " AND COUNT(E_Name AND TIME)<" + self.maxSpinBox.get() + ") t2 ON (t2.Name = t1.E_Name)"
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + entry[i]
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+                if i < len(entry)-2:
+                    sql = sql + "AND "
+
+            sql = sql + " ORDER BY E_name ASC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.timeListSorted = []
+            self.numVisitsSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[0])
+                self.timeListSorted.append(i[1])
+                self.numVisitsSorted.append(i[2])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.exhibitHistoryTree.insert('', i, values=(self.nameListSorted[i], self.timeListSorted[i], self.numVisitsSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortColumnsClicked(tv, column, not resort))
 
     def searchExhibitHistoryWindowGetDetailsButtonClicked(self):    
         if not self.exhibitHistoryTree.focus():
