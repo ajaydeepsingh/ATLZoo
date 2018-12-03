@@ -457,8 +457,10 @@ class ATLzoo:
         titleLabel = Label(viewVisitorsWindow, text = "View Vistors", font = "Verdana 16 bold ")
         titleLabel.place(x=350, y=25)
 
+        self.columns = ("1", "2")
+
         # Table of all the visitors
-        self.visitorsTree = ttk.Treeview(viewVisitorsWindow, columns=( "1", "2"), selectmode="extended")
+        self.visitorsTree = ttk.Treeview(viewVisitorsWindow, columns=self.columns, selectmode="extended")
         self.visitorsTree['show'] = "headings"
         self.visitorsTree.column("1", width = 300, anchor = "center")
         self.visitorsTree.column("2", width = 300, anchor = "center")
@@ -467,6 +469,13 @@ class ATLzoo:
         self.visitorsTree.heading("2", text = "Email")
 
         self.visitorsTree.place(x=400, y=200, anchor="center")
+
+        adminShowVisitorSort = self.visitorsTree
+
+        for col in self.columns:
+            self.visitorsTree.heading(col, command=lambda _col=col: \
+                self.sortAdminViewVisitors(adminShowVisitorSort, _col, False))
+
         self.cursor.execute("SELECT Username, Email FROM User WHERE Type = 'visitor'")
 
         self.viewVisitorsTuple = self.cursor.fetchall()
@@ -487,6 +496,82 @@ class ATLzoo:
 
         removeVisitorsButton = Button(viewVisitorsWindow, text="Delete Visitor", command=self.showVisitorsWindowAdminRemoveVisitorButtonClicked)
         removeVisitorsButton.place(x=670,y=570)
+
+    def sortAdminViewVisitors(self, tv, column, resort):
+        for i in self.visitorsTree.get_children():
+            self.visitorsTree.delete(i)
+
+        if (column == "1" and resort == False):
+            self.cursor.execute("SELECT Username, Email FROM User WHERE Type = 'visitor' ORDER BY Username ASC")
+
+            self.viewVisitorsTuple = self.cursor.fetchall()
+            self.usernameList = []
+            self.emailList = []
+
+            for i in self.viewVisitorsTuple:
+                self.usernameList.append(i[0])
+                self.emailList.append(i[1])
+
+            # Insert data into the treeview
+            for i in range(len(self.viewVisitorsTuple)):
+                self.visitorsTree.insert('', i , values=(self.usernameList[i], self.emailList[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewVisitors(tv, column, not resort))
+
+        if (column == "1" and resort == True):
+            self.cursor.execute("SELECT Username, Email FROM User WHERE Type = 'visitor' ORDER BY Username DESC")
+
+            self.viewVisitorsTuple = self.cursor.fetchall()
+            self.usernameList = []
+            self.emailList = []
+
+            for i in self.viewVisitorsTuple:
+                self.usernameList.append(i[0])
+                self.emailList.append(i[1])
+
+            # Insert data into the treeview
+            for i in range(len(self.viewVisitorsTuple)):
+                self.visitorsTree.insert('', i , values=(self.usernameList[i], self.emailList[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewVisitors(tv, column, not resort))
+
+        if (column == "2" and resort == False):
+            self.cursor.execute("SELECT Username, Email FROM User WHERE Type = 'visitor' ORDER BY Email ASC")
+
+            self.viewVisitorsTuple = self.cursor.fetchall()
+            self.usernameList = []
+            self.emailList = []
+
+            for i in self.viewVisitorsTuple:
+                self.usernameList.append(i[0])
+                self.emailList.append(i[1])
+
+            # Insert data into the treeview
+            for i in range(len(self.viewVisitorsTuple)):
+                self.visitorsTree.insert('', i , values=(self.usernameList[i], self.emailList[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewVisitors(tv, column, not resort))
+
+        if (column == "2" and resort == True):
+            self.cursor.execute("SELECT Username, Email FROM User WHERE Type = 'visitor' ORDER BY Email DESC")
+
+            self.viewVisitorsTuple = self.cursor.fetchall()
+            self.usernameList = []
+            self.emailList = []
+
+            for i in self.viewVisitorsTuple:
+                self.usernameList.append(i[0])
+                self.emailList.append(i[1])
+
+            # Insert data into the treeview
+            for i in range(len(self.viewVisitorsTuple)):
+                self.visitorsTree.insert('', i , values=(self.usernameList[i], self.emailList[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewVisitors(tv, column, not resort))
 
 
     def showVisitorsWindowAdminRemoveVisitorButtonClicked(self):
