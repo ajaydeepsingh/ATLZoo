@@ -417,7 +417,7 @@ class ATLzoo:
         self.visitorsTree.column("1", width = 300, anchor = "center")
         self.visitorsTree.column("2", width = 300, anchor = "center")
         
-        self.visitorsTree.heading("1", text = "UserName")
+        self.visitorsTree.heading("1", text = "Username")
         self.visitorsTree.heading("2", text = "Email")
 
         self.visitorsTree.place(x=400, y=200, anchor="center")
@@ -439,7 +439,7 @@ class ATLzoo:
         backButton = Button(viewVisitorsWindow, text="Back", command=self.viewVisitorsBackButtonClicked)
         backButton.place(x=10,y=570)
 
-        removeVisitorsButton = Button(viewVisitorsWindow, text="Remove Visitors", command=self.showVisitorsWindowAdminRemoveVisitorButtonClicked)
+        removeVisitorsButton = Button(viewVisitorsWindow, text="Delete Visitor", command=self.showVisitorsWindowAdminRemoveVisitorButtonClicked)
         removeVisitorsButton.place(x=670,y=570)
 
 
@@ -855,7 +855,7 @@ class ATLzoo:
         self.staffTree.column("1", width = 300, anchor = "center")
         self.staffTree.column("2", width = 300, anchor = "center")
 
-        self.staffTree.heading("1", text = "Name")
+        self.staffTree.heading("1", text = "Username")
         self.staffTree.heading("2", text = "Email")
 
         self.staffTree.place(x=400, y=200, anchor="center")
@@ -881,7 +881,7 @@ class ATLzoo:
         backButton = Button(viewStaffWindow, text="Back", command=self.viewStaffBackButtonClicked)
         backButton.place(x=10,y=570)
 
-        removeStaffButton = Button(viewStaffWindow, text="Remove Staff", command=self.showStaffWindowAdminRemoveStaffButtonClicked)
+        removeStaffButton = Button(viewStaffWindow, text="Delete Staff Member", command=self.showStaffWindowAdminRemoveStaffButtonClicked)
         removeStaffButton.place(x=670,y=570)
 
 
@@ -1224,6 +1224,24 @@ class ATLzoo:
 
         self.selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
 
+        self.cursor.execute("SELECT * FROM Animal")
+
+        self.staffSearchAnimalTuple = self.cursor.fetchall()
+        self.nameList = []
+        self.speciesList = []
+        self.exhibitList = []
+        self.ageList = []
+        self.typeList = []
+
+        for i in self.staffSearchAnimalTuple:
+            self.nameList.append(i[2])
+            self.speciesList.append(i[3])
+            self.exhibitList.append(i[4])
+            self.ageList.append(i[0])
+            self.typeList.append(i[1])
+
+        for i in range(len(self.staffSearchAnimalTuple)):
+            self.selectAnimalTree.insert('', i, values=(self.nameList[i], self.speciesList[i], self.exhibitList[i], self.ageList[i], self.typeList[i]))
 
 
         findAnimalsButton = Button(searchStaffAnimalsWindow, text="Find Animals", command=self.searchStaffAnimalsWindowFindAnimalsButtonClicked)
