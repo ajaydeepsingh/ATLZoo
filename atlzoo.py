@@ -1793,8 +1793,8 @@ class ATLzoo:
         findExhibitsButton = Button(searchExhibitWindow, text="Find Exhibits", command=self.searchExhibitWindowFindExhibitsButtonClicked)
         findExhibitsButton.grid(row=7,column=3)
 
-        getExhibitDetailsButton = Button(exhibitHistoryWindow, text="Get Exhibit Details", command=self.searchExhibitHistoryWindowGetDetailsButtonClicked)
-        getExhibitDetailsButton.grid(row=6,column=2)
+        getExhibitDetailsButton = Button(searchExhibitWindow, text="Get Exhibit Details", command=self.searchExhibitWindowGetDetailsButtonClicked)
+        getExhibitDetailsButton.grid(row=7,column=2)
 
         backButton = Button(searchExhibitWindow, text="Back", command=self.searchExhibitWindowBackButtonClicked)
         backButton.grid(row=7,column=1)
@@ -1813,11 +1813,29 @@ class ATLzoo:
         self.searchExhibitTree.grid(row=6, columnspan=4, sticky = 'nsew')
 
 
+        # pre-populate table
+        self.cursor.execute("SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE Name LIKE '%'  AND Size BETWEEN 0 AND 1500) AS t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name HAVING COUNT(Name)>0 AND COUNT(Name)<100) AS t2 ON t2.E_Name = t1.Name;")
+        self.exhibitResults = self.cursor.fetchall()
 
-        # Fill in table with all exhibits to begin with:
-        # SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE Name BETWEEN 0 AND 0) AS t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name HAVING COUNT(Name)>0 AND COUNT(Name)<10000) AS t2 ON t2.E_Name = t1.Name;
-        
+        self.eName = []
+        self.eSize = []
+        self.eNumAnimals = []
+        self.hasWater = []
 
+        for i in self.exhibitResults:
+            self.eName.append(i[0])
+            self.eSize.append(i[1])
+            # print(ord(i[2]))
+            if ord(i[2]) == 1:
+                self.hasWater.append(True)
+            else:
+                self.hasWater.append(False)
+            self.eNumAnimals.append(i[4])
+
+        for i in range(len(self.exhibitResults)):
+            self.searchExhibitTree.insert('', i , values=(self.eName[i], self.eSize[i], self.eNumAnimals[i], self.hasWater[i]))
+
+    
     def searchExhibitWindowFindExhibitsButtonClicked(self):
 
         # clear existing information in the table
@@ -1830,26 +1848,28 @@ class ATLzoo:
         # Entry is a list of the filter inputs
         entry = []
         entry.append(str(self.exhibitNameSV.get()))
+        
+        # might need to fix this to accurately reflect boolean values in the SQL table
         if self.typeDefault.get() == 'No':
-            entry.append(False)
+            entry.append(0)
         else:
-            entry.append(True)
-    
-        # entry.append(self.exhibitDefault.get())
+            entry.append(1)
 
         sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
 
         for i in range(len(entry)):
             #min and max will never be empty
-            if i == 0:
-                sql = sql + attributes[i] + " BETWEEN " + self.min2SpinBox.get() + " AND " + self.max2SpinBox.get()
-            elif i == 1:
+            
+            if i == 1:
+                sql = sql + " AND " + attributes[i] + " BETWEEN " + self.min2SpinBox.get() + " AND " + self.max2SpinBox.get()
+            
+            if i == 1:
                 sql = sql + ") AS t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name HAVING COUNT(Name)>" + self.minSpinBox.get() + " AND COUNT(Name)<" + self.maxSpinBox.get() + ") AS t2 ON t2.E_Name = t1.Name;"
             elif entry[i] != "":
                 sql = sql + attributes[i] + " = " + entry[i]
             else:
                 sql = sql + attributes[i] + " LIKE '%' "
-        #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
             if i<len(entry)-2:
                 sql = sql + " AND "
 
@@ -1860,25 +1880,38 @@ class ATLzoo:
         # print(self.exhibitResults)
         # ('Birds', 1000, b'\x01', 'Birds', 2), ('Jungle', 600, b'\x00', 'Jungle', 1),
 
+        self.eName = []
+        self.eSize = []
+        self.eNumAnimals = []
+        self.hasWater = []
 
-        # self.searchExhibitWindow.destroy()
-        # self.createExhibitDetailWindow()
-        # self.buildExhibitDetailWindow(self.exhibitDetailWindow)
+        for i in self.exhibitResults:
+            self.eName.append(i[0])
+            self.eSize.append(i[1])
+            # print(ord(i[2]))
+            if ord(i[2]) == 1:
+                self.hasWater.append(True)
+            else:
+                self.hasWater.append(False)
+            self.eNumAnimals.append(i[4])
 
+        for i in range(len(self.exhibitResults)):
+            self.searchExhibitTree.insert('', i , values=(self.eName[i], self.eSize[i], self.eNumAnimals[i], self.hasWater[i]))
 
-    def searchExhibitHistoryWindowGetDetailsButtonClicked(self):    
-        if not self.exhibitHistoryTree.focus():
+    def searchExhibitWindowGetDetailsButtonClicked(self):    
+        if not self.searchExhibitTree.focus():
             messagebox.showwarning("Error","You have not selected an Exhibit.")
             return False
 
-        treeIndexString = self.exhibitHistoryTree.focus()
-        valueDetail = self.exhibitHistoryTree.item(treeIndexString)
+        treeIndexString = self.searchExhibitTree.focus()
+        valueDetail = self.searchExhibitTree.item(treeIndexString)
 
         valueslist = list(valueDetail.values())
         valueslist = valueslist[2]
-        # print(valueslist)
+        print(valueslist)
+
         self.exhibitOfInterest = valueslist[0]
-        self.exhibitHistoryWindow.destroy()
+        self.searchExhibitWindow.destroy()
         self.createExhibitDetailWindow()
         self.buildExhibitDetailWindow(self.exhibitDetailWindow)
 
@@ -2012,24 +2045,22 @@ class ATLzoo:
 
         entry.append(str(self.exhibitNameString.get()))
         entry.append(self.exhibitDateTime)
-        entry.append([self.minSpinBox.get(),self.maxSpinBox.get()])
+        # entry.append([self.minSpinBox.get(),self.maxSpinBox.get()])
 
-        sql = "SELECT * FROM Exhibit_History WHERE "
+
+        sql = "SELECT t1.E_Name, t1.Time, t2.Count FROM(SELECT E_Name, TIME FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' AND "
 
         for i in range(len(entry)):
-            #min and max will never be empty
-            if i == 2:
-                sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get()
+        #min and max will never be empty
+            if i == 1:
+                sql = sql + ") AS t1 JOIN (SELECT COUNT(U_Name AND E_Name AND TIME) AS Count, E_Name AS Name FROM Exhibit_History WHERE U_Name = '" + self.currentUser + "' GROUP BY E_Name HAVING COUNT(U_Name AND E_Name AND TIME)>" + self.minSpinBox.get() + " AND COUNT( U_Name AND E_Name AND TIME)<" + self.maxSpinBox.get() + ") AS t2 ON (t2.Name = t1.E_Name);"
             elif entry[i] != "":
                 sql = sql + attributes[i] + " = " + entry[i]
             else:
                 sql = sql + attributes[i] + " LIKE '%'"
-        #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
-            if i < len(entry)-1:
-                sql = sql + " AND "
-        #end of statement
-        sql = sql + ";"
-        
+            if i < len(entry)-2:
+                sql = sql + "AND "
+
         print(sql)
         self.historyResults = self.cursor.fetchall()
         print(self.historyResults)
