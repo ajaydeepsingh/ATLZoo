@@ -1871,8 +1871,10 @@ class ATLzoo:
 
         logCareButton = Button(searchAnimalCareWindow, text="Log Notes", command=self.logAnimalNotesButtonClicked)
         logCareButton.grid(row=4,column=1,pady=10)
+
+        self.columns = ("1", "2", "3")
         
-        self.selectAnimalTree = ttk.Treeview(searchAnimalCareWindow, columns=("1", "2", "3"), selectmode = "extended")
+        self.selectAnimalTree = ttk.Treeview(searchAnimalCareWindow, columns=self.columns, selectmode = "extended")
         self.selectAnimalTree['show'] = "headings"
         self.selectAnimalTree.heading('1', text = "Staff Member")
         self.selectAnimalTree.heading('2', text = "Note")
@@ -1881,6 +1883,12 @@ class ATLzoo:
         self.selectAnimalTree.column('2', width = 150, anchor = "center")
         self.selectAnimalTree.column('3', width = 150, anchor = "center")
         self.selectAnimalTree.place(x=20, y=200,width=450)
+
+        staffAnimalCareSort = self.selectAnimalTree
+
+        for col in self.columns:
+            self.selectAnimalTree.heading(col, command=lambda _col=col: \
+                self.sortStaffAnimalCare(staffAnimalCareSort, _col, False))
 
         self.cursor.execute("SELECT U_Name, Notes, Time FROM Care_Log JOIN Animal ON Care_Log.Anim_Name = Animal.Name WHERE Care_Log.Anim_Name = %s AND Care_Log.Species = %s", (self.animalName, self.animalSpecies))
         self.animalCareTuple = self.cursor.fetchall()
@@ -1899,6 +1907,129 @@ class ATLzoo:
 
         backButton = Button(searchAnimalCareWindow, text="Back", command=self.searchAnimalCareWindowBackButtonClicked)
         backButton.place(x=240,y=440)
+
+    def sortStaffAnimalCare(self, tv, column, resort):
+        for i in self.selectAnimalTree.get_children():
+            self.selectAnimalTree.delete(i)
+
+        if (column == "1" and resort == False):
+
+            self.cursor.execute("SELECT U_Name, Notes, Time FROM Care_Log JOIN Animal ON Care_Log.Anim_Name = Animal.Name WHERE Care_Log.Anim_Name = %s AND Care_Log.Species = %s ORDER BY U_Name ASC", (self.animalName, self.animalSpecies))
+            self.animalCareTuple = self.cursor.fetchall()
+
+            self.staffMemberList = []
+            self.noteList = []
+            self.dateTimeList = []
+
+            for i in self.animalCareTuple:
+                self.staffMemberList.append(i[0])
+                self.noteList.append(i[1])
+                self.dateTimeList.append(i[2])
+
+            for i in range(len(self.animalCareTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.staffMemberList[i], self.noteList[i], self.dateTimeList[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortStaffAnimalCare(tv, column, not resort))
+
+        elif (column == "1" and resort == True):
+
+            self.cursor.execute("SELECT U_Name, Notes, Time FROM Care_Log JOIN Animal ON Care_Log.Anim_Name = Animal.Name WHERE Care_Log.Anim_Name = %s AND Care_Log.Species = %s ORDER BY U_Name DESC", (self.animalName, self.animalSpecies))
+            self.animalCareTuple = self.cursor.fetchall()
+
+            self.staffMemberList = []
+            self.noteList = []
+            self.dateTimeList = []
+
+            for i in self.animalCareTuple:
+                self.staffMemberList.append(i[0])
+                self.noteList.append(i[1])
+                self.dateTimeList.append(i[2])
+
+            for i in range(len(self.animalCareTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.staffMemberList[i], self.noteList[i], self.dateTimeList[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortStaffAnimalCare(tv, column, not resort))
+        elif (column == "2" and resort == False):
+
+            self.cursor.execute("SELECT U_Name, Notes, Time FROM Care_Log JOIN Animal ON Care_Log.Anim_Name = Animal.Name WHERE Care_Log.Anim_Name = %s AND Care_Log.Species = %s ORDER BY Notes ASC", (self.animalName, self.animalSpecies))
+            self.animalCareTuple = self.cursor.fetchall()
+
+            self.staffMemberList = []
+            self.noteList = []
+            self.dateTimeList = []
+
+            for i in self.animalCareTuple:
+                self.staffMemberList.append(i[0])
+                self.noteList.append(i[1])
+                self.dateTimeList.append(i[2])
+
+            for i in range(len(self.animalCareTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.staffMemberList[i], self.noteList[i], self.dateTimeList[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortStaffAnimalCare(tv, column, not resort))
+
+        elif (column == "2" and resort == True):
+
+            self.cursor.execute("SELECT U_Name, Notes, Time FROM Care_Log JOIN Animal ON Care_Log.Anim_Name = Animal.Name WHERE Care_Log.Anim_Name = %s AND Care_Log.Species = %s ORDER BY Notes DESC", (self.animalName, self.animalSpecies))
+            self.animalCareTuple = self.cursor.fetchall()
+
+            self.staffMemberList = []
+            self.noteList = []
+            self.dateTimeList = []
+
+            for i in self.animalCareTuple:
+                self.staffMemberList.append(i[0])
+                self.noteList.append(i[1])
+                self.dateTimeList.append(i[2])
+
+            for i in range(len(self.animalCareTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.staffMemberList[i], self.noteList[i], self.dateTimeList[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortStaffAnimalCare(tv, column, not resort))
+
+        elif (column == "3" and resort == False):
+
+            self.cursor.execute("SELECT U_Name, Notes, Time FROM Care_Log JOIN Animal ON Care_Log.Anim_Name = Animal.Name WHERE Care_Log.Anim_Name = %s AND Care_Log.Species = %s ORDER BY Time ASC", (self.animalName, self.animalSpecies))
+            self.animalCareTuple = self.cursor.fetchall()
+
+            self.staffMemberList = []
+            self.noteList = []
+            self.dateTimeList = []
+
+            for i in self.animalCareTuple:
+                self.staffMemberList.append(i[0])
+                self.noteList.append(i[1])
+                self.dateTimeList.append(i[2])
+
+            for i in range(len(self.animalCareTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.staffMemberList[i], self.noteList[i], self.dateTimeList[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortStaffAnimalCare(tv, column, not resort))
+
+        elif (column == "3" and resort == True):
+
+            self.cursor.execute("SELECT U_Name, Notes, Time FROM Care_Log JOIN Animal ON Care_Log.Anim_Name = Animal.Name WHERE Care_Log.Anim_Name = %s AND Care_Log.Species = %s ORDER BY Time DESC", (self.animalName, self.animalSpecies))
+            self.animalCareTuple = self.cursor.fetchall()
+
+            self.staffMemberList = []
+            self.noteList = []
+            self.dateTimeList = []
+
+            for i in self.animalCareTuple:
+                self.staffMemberList.append(i[0])
+                self.noteList.append(i[1])
+                self.dateTimeList.append(i[2])
+
+            for i in range(len(self.animalCareTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.staffMemberList[i], self.noteList[i], self.dateTimeList[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortStaffAnimalCare(tv, column, not resort))
 
 
     def logAnimalNotesButtonClicked(self):
