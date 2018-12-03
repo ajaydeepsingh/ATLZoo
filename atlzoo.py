@@ -280,6 +280,20 @@ class ATLzoo:
         self.emailAddress = self.registrationEmailAddress.get()
         self.password = self.registrationPassword.get()
         self.confirmPassword = self.registrationConfirmPassword.get()
+
+
+        def encrypt_string(hash_string):
+            sha_signature = hashlib.sha256(hash_string.encode()).hexdigest()
+            return sha_signature
+        
+        hashedPass = encrypt_string(self.password)
+        print(hashedPass)
+
+
+        self.confirmPassword = self.registrationConfirmPassword.get()
+
+        hashedPass2 = encrypt_string(self.confirmPassword)
+        print(hashedPass2)
         
         if not self.username:
             messagebox.showwarning("Username input is empty", "Please enter username.")
@@ -309,7 +323,7 @@ class ATLzoo:
                                   "Please reconfirm the password.")
            return False
         messagebox.showinfo("info","Registered successfully!")
-        self.cursor.execute("INSERT INTO User VALUES (%s, %s, %s, %s)", (self.username, self.password, self.emailAddress, "staff"))
+        self.cursor.execute("INSERT INTO User VALUES (%s, %s, %s, %s)", (self.username, hashedPass, self.emailAddress, "staff"))
         # self.cursor.execute("INSERT INTO User VALUES (%s, %s)", (self.username, self.password))
         self.loginWindow.withdraw()
         self.currentUser = self.username
