@@ -99,8 +99,8 @@ class ATLzoo:
             sha_signature = hashlib.sha256(hash_string.encode()).hexdigest()
             return sha_signature
         
-        sha_signature = encrypt_string(self.password)
-        print(sha_signature)
+        hashedPass = encrypt_string(self.password)
+        print(hashedPass)
 
         if not self.username:
             messagebox.showwarning("Username input is empty", "Please enter username.")
@@ -116,10 +116,7 @@ class ATLzoo:
            return False
 
 
-
-
-
-        usernameAndPasswordMatch = self.cursor.execute("SELECT * FROM User WHERE (Username = %s AND Password = %s)", (self.username, self.password))
+        usernameAndPasswordMatch = self.cursor.execute("SELECT * FROM User WHERE (Username = %s AND Password = %s)", (self.username, hashedPass))
         if not usernameAndPasswordMatch:
            messagebox.showwarning("Username and password don\'t match", "Sorry, the username and password you entered"
                                                                         + " do not match.")
@@ -224,8 +221,19 @@ class ATLzoo:
         self.username = self.registrationUsername.get()
         self.emailAddress = self.registrationEmailAddress.get()
         self.password = self.registrationPassword.get()
-        print(self.password)
+
+        def encrypt_string(hash_string):
+            sha_signature = hashlib.sha256(hash_string.encode()).hexdigest()
+            return sha_signature
+        
+        hashedPass = encrypt_string(self.password)
+        print(hashedPass)
+
+
         self.confirmPassword = self.registrationConfirmPassword.get()
+
+        hashedPass2 = encrypt_string(self.confirmPassword)
+        print(hashedPass2)
         
         if not self.username:
             messagebox.showwarning("Username input is empty", "Please enter username.")
@@ -255,12 +263,13 @@ class ATLzoo:
                                   "Please reconfirm the password.")
            return False
         messagebox.showinfo("info","Registered successfully!")
-        self.cursor.execute("INSERT INTO User VALUES (%s, %s, %s, %s)", (self.username, self.password, self.emailAddress, "visitor"))
+        self.cursor.execute("INSERT INTO User VALUES (%s, %s, %s, %s)", (self.username, hashedPass, self.emailAddress, "visitor"))
         # self.cursor.execute("INSERT INTO User VALUES (%s, %s)", (self.username, self.password))
         self.currentUser = self.username
-        self.createChooseFunctionalityWindow()
-        self.buildChooseFunctionalityWindow(self.visitorFunctionalityWindow)
+        self.createVisitorChooseFunctionalityWindow()
+        self.buildVisitorChooseFunctionalityWindow(self.chooseVisitorFunctionalityWindow)
         self.newUserRegistrationWindow.destroy()
+
 
 
     def newUserRegistrationWindowCreateStaffButtonClicked(self):
@@ -307,6 +316,14 @@ class ATLzoo:
         self.createStaffChooseFunctionalityWindow()
         self.buildStaffChooseFunctionalityWindow(self.chooseStaffFunctionalityWindow)
         self.newUserRegistrationWindow.destroy()
+
+
+    # def newUserRegistrationWindowBackButtonClicked(self):
+    #     self.newUserRegistrationWindow.destroy()
+    #     self.createLoginWindow()
+    #     self.buildLoginWindow(self.loginWindow)
+
+
 
 #--------------------ADMIN FUNCTIONALITY WINDOW---------------------------
 
