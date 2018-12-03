@@ -846,8 +846,10 @@ class ATLzoo:
         typeMenu = OptionMenu(showAnimalWindowAdmin, self.typeDefault,"", "mammal", "bird", "amphibian", "reptile", "fish", "invertebrate")
         typeMenu.grid(row=4, column=3, sticky=W)
 
+        self.columns = ("1", "2", "3", "4","5")
+
         # Display Table for Results
-        self.selectAnimalTree = ttk.Treeview(showAnimalWindowAdmin, columns=("1", "2", "3", "4","5"), selectmode="extended")
+        self.selectAnimalTree = ttk.Treeview(showAnimalWindowAdmin, columns=self.columns, selectmode="extended")
         self.selectAnimalTree['show'] = "headings"
         self.selectAnimalTree.heading('1', text = "Name")
         self.selectAnimalTree.heading('2', text = "Species")
@@ -860,6 +862,14 @@ class ATLzoo:
         self.selectAnimalTree.column('4', width = 150, anchor = "center")
         self.selectAnimalTree.column('5', width = 150, anchor = "center")
         self.selectAnimalTree.grid(row=5, columnspan=4, sticky = 'nsew')
+
+        adminSelectAnimalTreeSort = self.selectAnimalTree
+
+        for col in self.columns:
+            self.selectAnimalTree.heading(col, command=lambda _col=col: \
+                self.sortAdminViewAnimals(adminSelectAnimalTreeSort, _col, False))
+
+
 
         self.cursor.execute("SELECT * FROM Animal")
 
@@ -890,6 +900,441 @@ class ATLzoo:
 
         backButton = Button(showAnimalWindowAdmin, text="Back", command=self.showAnimalWindowAdminBackButtonClicked)
         backButton.grid(row=6,column=1)
+
+    def sortAdminViewAnimals(self, tv, column, resort):
+        for i in self.selectAnimalTree.get_children():
+            self.selectAnimalTree.delete(i)  
+
+        attributes = ["Name", "Species", "Type", "Age", "E_Name",]
+
+        # Entry is a list of the filter inputs
+        entry = []
+        entry.append(str(self.animalNameSV.get()))
+        entry.append(str(self.speciesNameSV.get()))
+        entry.append(self.typeDefault.get())
+        entry.append("")
+        entry.append(self.exhibitDefault.get())
+        
+
+        if (column == "1" and resort == False):
+
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY Name ASC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewAnimals(tv, column, not resort))
+
+        elif (column == "1" and resort == True):
+
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY Name DESC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewAnimals(tv, column, not resort))
+
+        elif (column == "2" and resort == False):
+
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY Species ASC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewAnimals(tv, column, not resort))
+
+        elif (column == "2" and resort == True):
+
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY Species DESC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewAnimals(tv, column, not resort))
+
+        elif (column == "3" and resort == False):
+
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY E_Name ASC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewAnimals(tv, column, not resort))
+
+        elif (column == "3" and resort == True):
+
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY E_Name DESC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewAnimals(tv, column, not resort))
+
+        elif (column == "4" and resort == False):
+
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY Age ASC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewAnimals(tv, column, not resort))
+
+        elif (column == "4" and resort == True):
+
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY Age DESC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewAnimals(tv, column, not resort))
+
+        elif (column == "5" and resort == False):
+
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY Type ASC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewAnimals(tv, column, not resort))
+
+        elif (column == "5" and resort == True):
+
+            sql = "SELECT * FROM Animal WHERE "
+
+            for i in range(len(entry)):
+                if i == 3:
+                    sql = sql + attributes[i] + " BETWEEN " + self.minSpinBox.get() + " AND " + self.maxSpinBox.get() + " "
+                elif entry[i] != "":
+                    sql = sql + attributes[i] + " = " + "'" + entry[i] + "'"
+                else:
+                    sql = sql + attributes[i] + " LIKE '%'"
+            #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+                if i < len(entry)-1:
+                    sql = sql + " AND "
+            #end of statement
+            sql = sql + "ORDER BY Type DESC;"
+            self.cursor.execute(sql)
+            self.sortColumnsTuple = self.cursor.fetchall()
+
+            #print(self.sortColumnsTuple)
+
+            self.nameListSorted = []
+            self.speciesListSorted = []
+            self.exhibitListSorted = []
+            self.ageListSorted = []
+            self.typeListSorted = []
+
+            for i in self.sortColumnsTuple:
+                self.nameListSorted.append(i[2])
+                self.speciesListSorted.append(i[3])
+                self.exhibitListSorted.append(i[4])
+                self.ageListSorted.append(i[0])
+                self.typeListSorted.append(i[1])
+
+            #print(self.nameListSorted)
+
+            for i in range(len(self.sortColumnsTuple)):
+                self.selectAnimalTree.insert('', i, values=(self.nameListSorted[i], self.speciesListSorted[i], self.exhibitListSorted[i], self.ageListSorted[i], self.typeListSorted[i]))
+
+            tv.heading(column, command=lambda: \
+                self.sortAdminViewAnimals(tv, column, not resort))
 
 
     def showAnimalWindowAdminFindAnimalsButtonClicked(self):
@@ -1914,7 +2359,7 @@ class ATLzoo:
                 if i < len(entry)-1:
                     sql = sql + " AND "
             #end of statement
-            sql = sql + "ORDER BY Type ASC;"
+            sql = sql + "ORDER BY E_Name ASC;"
 
             self.cursor.execute(sql)
 
@@ -1956,7 +2401,7 @@ class ATLzoo:
                 if i < len(entry)-1:
                     sql = sql + " AND "
             #end of statement
-            sql = sql + "ORDER BY Type DESC;"
+            sql = sql + "ORDER BY E_Name DESC;"
 
             self.cursor.execute(sql)
 
@@ -2084,7 +2529,7 @@ class ATLzoo:
                 if i < len(entry)-1:
                     sql = sql + " AND "
             #end of statement
-            sql = sql + "ORDER BY E_name ASC;"
+            sql = sql + "ORDER BY Type ASC;"
 
             self.cursor.execute(sql)
 
@@ -2126,7 +2571,7 @@ class ATLzoo:
                 if i < len(entry)-1:
                     sql = sql + " AND "
             #end of statement
-            sql = sql + "ORDER BY E_name DESC;"
+            sql = sql + "ORDER BY Type DESC;"
 
             self.cursor.execute(sql)
 
