@@ -5043,11 +5043,18 @@ class ATLzoo:
         speciesNameEntry = Entry(searchAnimalWindow, textvariable=self.speciesNameSV, width=20)
         speciesNameEntry.grid(row=3, column=1)
 
+        #populate exhibit menu with sql
+        self.cursor.execute("SELECT Name FROM Exhibit")
+        self.exhibitTuple = self.cursor.fetchall()
+        self.exhibitList = []
+        for i in self.exhibitTuple:
+            self.exhibitList.append(i[0])
+
         exhibitLabel = Label(searchAnimalWindow,text = "Exhibit")
         exhibitLabel.grid(row=4,column=0)
         self.exhibitDefault = StringVar()
         self.exhibitDefault.set("")
-        exhibitMenu = OptionMenu(searchAnimalWindow, self.exhibitDefault, "Pacific","Jungle","Sahara","Mountainous","Birds")
+        exhibitMenu = OptionMenu(searchAnimalWindow, self.exhibitDefault, "", *self.exhibitList)
         exhibitMenu.grid(row=4, column=1)
 
         minLabel=Label(searchAnimalWindow,text="Min")
