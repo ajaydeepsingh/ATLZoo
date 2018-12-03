@@ -1647,13 +1647,13 @@ class ATLzoo:
                 sql = sql + " AND "
         #end of statement
         sql = sql + ";"
-        print(sql)
+        # print(sql)
         # SELECT * FROM Performance WHERE Perform_Name LIKE % AND Time LIKE % AND Exhibit LIKE %;
 
         self.cursor.execute(sql)
 
         self.showResults = self.cursor.fetchall()
-        print(self.showResults)
+        # print(self.showResults)
         # ('Jungle Cruise', datetime.datetime(2010, 8, 18, 9, 0), 'martha_johnson', 'Jungle')
 
         self.pName = []
@@ -1671,12 +1671,37 @@ class ATLzoo:
             self.searchShowTree.insert('', i , values=(self.pName[i], self.ename[i], self.pTime[i]))
 
 
-    def exhibitDetailsButtonClicked(self):
-        print("go to exhibit")
+    def exhibitDetailsButtonClicked(self):    
+        if not self.searchShowTree.focus():
+            messagebox.showwarning("Error","You have not selected an Exhibit.")
+            return False
+
+        treeIndexString = self.searchShowTree.focus()
+        valueDetail = self.searchShowTree.item(treeIndexString)
+
+        valueslist = list(valueDetail.values())
+        valueslist = valueslist[2]
+        # print(valueslist)
+        self.exhibitOfInterest = valueslist[1]
+        self.searchVisitorShowsWindow.destroy()
+        self.createExhibitDetailWindow()
+        self.buildExhibitDetailWindow(self.exhibitDetailWindow)
 
     def logVisitButtonClicked(self):
-        self.searchVisitorShowsWindow.withdraw()
-        import searchShows
+        if not self.searchShowTree.focus():
+            messagebox.showwarning("Error","You have not selected a Show.")
+            return False
+
+        treeIndexString = self.searchShowTree.focus()
+        valueDetail = self.searchShowTree.item(treeIndexString)
+
+        valueslist = list(valueDetail.values())
+        valueslist = valueslist[2]
+        self.exhibitOfInterest = valueslist[1]
+        self.cursor.execute("INSERT INTO Performance_History(U_Name, Perform_Name, Time) VALUES(%s, %s, CURRENT_TIMESTAMP)",(self.currentUser, valueslist[0]))
+        self.cursor.execute("INSERT INTO Exhibit_History(U_Name, E_Name, Time) VALUES (%s, %s, %s)",(self.currentUser, valueslist[1], datetime.now()))
+        messagebox.showwarning("Show Visit","You have successfully logged your visit to the Show and the Exhibit.")
+
 
     def searchVisitorShowsWindowBackButtonClicked(self):
         self.searchVisitorShowsWindow.withdraw()
@@ -1713,20 +1738,20 @@ class ATLzoo:
         numAnimalsLabel.grid(row=3,column=3)
 
         #number of Animals min spin box
-        minSpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000, width=5)
-        minSpinBox.grid(row=3, column=4,pady=10,sticky=W)
+        self.minSpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000, width=5)
+        self.minSpinBox.grid(row=3, column=4,pady=10,sticky=W)
 
         # number of Animals max spin box
-        maxSpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000, width=5)
-        maxSpinBox.grid(row=3, column=5,pady=10,sticky=W)
+        self.maxSpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000, width=5)
+        self.maxSpinBox.grid(row=3, column=5,pady=10,sticky=W)
 
 
         waterLabel = Label(searchExhibitWindow,text = "Water Feature:")
         waterLabel.grid(row=4, column=3)
-        # Name Entry
-        typeDefault = StringVar()
-        typeDefault.set("No")
-        typeMenu = OptionMenu(searchExhibitWindow, typeDefault, "Yes", "No")
+        # Water Feature Entry
+        self.typeDefault = StringVar()
+        self.typeDefault.set("No")
+        typeMenu = OptionMenu(searchExhibitWindow, self.typeDefault, "Yes", "No")
         typeMenu.grid(row=4, column=4, sticky=W)
         
         min2Label=Label(searchExhibitWindow,text="Min:")
@@ -1739,74 +1764,103 @@ class ATLzoo:
         sizeLabel.grid(row=4,column=0)
 
         # size min spin box
-        min2SpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000, width=5)
-        min2SpinBox.grid(row=4, column=1,pady=5,sticky=W)
+        self.min2SpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000, width=5)
+        self.min2SpinBox.grid(row=4, column=1,pady=5,sticky=W)
 
         # size max spin box
-        max2SpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000, width=5)
-        max2SpinBox.grid(row=4, column=2,pady=5,sticky=W)
+        self.max2SpinBox = Spinbox(searchExhibitWindow, from_=0, to=10000, width=5)
+        self.max2SpinBox.grid(row=4, column=2,pady=5,sticky=W)
 
         # Button
         findExhibitsButton = Button(searchExhibitWindow, text="Find Exhibits", command=self.searchExhibitWindowFindExhibitsButtonClicked)
         findExhibitsButton.grid(row=7,column=3)
 
+        getExhibitDetailsButton = Button(exhibitHistoryWindow, text="Get Exhibit Details", command=self.searchExhibitHistoryWindowGetDetailsButtonClicked)
+        getExhibitDetailsButton.grid(row=6,column=2)
+
         backButton = Button(searchExhibitWindow, text="Back", command=self.searchExhibitWindowBackButtonClicked)
         backButton.grid(row=7,column=1)
 
-        searchExhibitTree = ttk.Treeview(searchExhibitWindow, columns=("1", "2", "3", "4"), selectmode='extended')
-        searchExhibitTree['show'] = "headings"
-        searchExhibitTree.column("1", width = 150, anchor = "center")
-        searchExhibitTree.column("2", width = 150, anchor = "center")
-        searchExhibitTree.column("3", width = 150, anchor = "center")
-        searchExhibitTree.column("4", width = 150, anchor = "center")
-        searchExhibitTree.heading("1", text = "Name")
-        searchExhibitTree.heading("2", text = "Size")
-        searchExhibitTree.heading("3", text = "NumAnimals")
-        searchExhibitTree.heading("4", text = "Water")
+        self.searchExhibitTree = ttk.Treeview(searchExhibitWindow, columns=("1", "2", "3", "4"), selectmode='extended')
+        self.searchExhibitTree['show'] = "headings"
+        self.searchExhibitTree.column("1", width = 150, anchor = "center")
+        self.searchExhibitTree.column("2", width = 150, anchor = "center")
+        self.searchExhibitTree.column("3", width = 150, anchor = "center")
+        self.searchExhibitTree.column("4", width = 150, anchor = "center")
+        self.searchExhibitTree.heading("1", text = "Name")
+        self.searchExhibitTree.heading("2", text = "Size")
+        self.searchExhibitTree.heading("3", text = "NumAnimals")
+        self.searchExhibitTree.heading("4", text = "Water")
 
-        searchExhibitTree.grid(row=6, columnspan=4, sticky = 'nsew')
+        self.searchExhibitTree.grid(row=6, columnspan=4, sticky = 'nsew')
+
+
+
+        # Fill in table with all exhibits to begin with:
+        # SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE Name BETWEEN 0 AND 0) AS t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name HAVING COUNT(Name)>0 AND COUNT(Name)<10000) AS t2 ON t2.E_Name = t1.Name;
         
 
     def searchExhibitWindowFindExhibitsButtonClicked(self):
 
-        # # Table is a list of table names"
-        # attributes = ["Name", "Species", "Type", "Age", "E_Name",]
+        # clear existing information in the table
+        for i in self.searchExhibitTree.get_children():
+            self.searchExhibitTree.delete(i)
 
-        # # Entry is a list of the filter inputs
-        # entry = []
-        # entry.append(str(self.exhibitNameSV.get()))
-        # entry.append(str(self.speciesNameSV.get()))
-        # entry.append(self.typeDefault.get())
+        # Table is a list of table names"
+        attributes =  ["Name","Size","Has_Water"]
+
+        # Entry is a list of the filter inputs
+        entry = []
+        entry.append(str(self.exhibitNameSV.get()))
+        if self.typeDefault.get() == 'No':
+            entry.append(False)
+        else:
+            entry.append(True)
+    
         # entry.append(self.exhibitDefault.get())
 
-        # self.minSpinBox.get()
+        sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
 
-        # sql = "SELECT * FROM (SELECT Name, Size, Has_Water FROM Exhibit WHERE " 
-
-        # for i in range(len(entry)):
-        #     #min and max will never be empty
-        #     if i == 1:
-        #         sql = sql + attributes[i] + " BETWEEN " + entry[i[0]] + “AND” + entry[i[1]]
-        #     if i == 3:
-        #         sql = sql + ") t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name HAVING COUNT(Name)>" + entry[i[0]] + "AND COUNT(Name)<" + entry[i[1]] + ")t2 ON t2.E_Name = t1.Name;"
-
-        # elif entry[i] != "":
-        #         sql = sql + attributes[i] + " = " + entry[i]
-        #     else:
-        #         sql = sql + attributes[i] + " LIKE %"
-        # #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
-        #     if i<len(entry)-2:
-        #         sql = sql + " AND "
+        for i in range(len(entry)):
+            #min and max will never be empty
+            if i == 0:
+                sql = sql + attributes[i] + " BETWEEN " + self.min2SpinBox.get() + " AND " + self.max2SpinBox.get()
+            elif i == 1:
+                sql = sql + ") AS t1 JOIN (SELECT E_Name, COUNT(Name) FROM Animal GROUP BY E_Name HAVING COUNT(Name)>" + self.minSpinBox.get() + " AND COUNT(Name)<" + self.maxSpinBox.get() + ") AS t2 ON t2.E_Name = t1.Name;"
+            elif entry[i] != "":
+                sql = sql + attributes[i] + " = " + entry[i]
+            else:
+                sql = sql + attributes[i] + " LIKE '%' "
+        #This is to check if the next box is filled as well so we add an AND statement to make sure all conditions are met. 
+            if i<len(entry)-2:
+                sql = sql + " AND "
 
 
-        # # print(sql)
-        # self.cursor.execute(sql)
-        # self.exhibitResults = self.cursor.fetchall()
+        # print(sql)
+        self.cursor.execute(sql)
+        self.exhibitResults = self.cursor.fetchall()
+        # print(self.exhibitResults)
+        # ('Birds', 1000, b'\x01', 'Birds', 2), ('Jungle', 600, b'\x00', 'Jungle', 1),
 
-        # if self.min == self.max:
-        #     return False
 
-        self.searchExhibitWindow.destroy()
+        # self.searchExhibitWindow.destroy()
+        # self.createExhibitDetailWindow()
+        # self.buildExhibitDetailWindow(self.exhibitDetailWindow)
+
+
+    def searchExhibitHistoryWindowGetDetailsButtonClicked(self):    
+        if not self.exhibitHistoryTree.focus():
+            messagebox.showwarning("Error","You have not selected an Exhibit.")
+            return False
+
+        treeIndexString = self.exhibitHistoryTree.focus()
+        valueDetail = self.exhibitHistoryTree.item(treeIndexString)
+
+        valueslist = list(valueDetail.values())
+        valueslist = valueslist[2]
+        # print(valueslist)
+        self.exhibitOfInterest = valueslist[0]
+        self.exhibitHistoryWindow.destroy()
         self.createExhibitDetailWindow()
         self.buildExhibitDetailWindow(self.exhibitDetailWindow)
 
@@ -1957,8 +2011,24 @@ class ATLzoo:
                 sql = sql + " AND "
         #end of statement
         sql = sql + ";"
-
+        
         print(sql)
+        self.historyResults = self.cursor.fetchall()
+        print(self.historyResults)
+        # (1, 'Pacific', datetime.datetime(2018, 12, 2, 14, 59, 4))
+
+        self.timesVisited = []
+        self.exhibitTime = []
+        self.exhibitVisited = []
+
+        for i in self.historyResults:
+            self.timesVisited.append(i[0])
+            self.exhibitVisited.append(i[1])
+            self.exhibitTime.append(i[2])
+            
+
+        for i in range(len(self.historyResults)):
+            self.exhibitHistoryTree.insert('', i , values=(self.exhibitVisited[i], self.exhibitTime[i], self.timesVisited[i]))
 
 
     def exhibitHistoryWindowBackButtonClicked(self):
