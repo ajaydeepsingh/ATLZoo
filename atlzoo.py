@@ -221,6 +221,7 @@ class ATLzoo:
         self.username = self.registrationUsername.get()
         self.emailAddress = self.registrationEmailAddress.get()
         self.password = self.registrationPassword.get()
+        self.confirmPassword = self.registrationConfirmPassword.get()
 
         
         # print(hashedPass2)
